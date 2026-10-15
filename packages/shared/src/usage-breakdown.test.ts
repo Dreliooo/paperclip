@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rollupUsageRows, type UsageAggregateRow } from "./usage-breakdown";
+import { rollupUsageRows, type UsageAggregateRow } from "./usage-breakdown.js";
 
 function row(overrides: Partial<UsageAggregateRow>): UsageAggregateRow {
   return {
@@ -29,7 +29,7 @@ describe("rollupUsageRows", () => {
       row({ model: "claude-opus-5-5", inputTokens: 500_000, inputTokensWithCacheWrites: 500_000, outputTokens: 50_000, reportedSpendCents: 120 }),
       row({ groupKind: "automatic", groupId: null, label: null, inputTokens: 10, outputTokens: 5 }),
     ]);
-    expect(report.rows.map((r) => r.groupKind)).toEqual(["person", "automatic"]);
+    expect(report.rows.map((row) => row.groupKind)).toEqual(["person", "automatic"]);
     const person = report.rows[0]!;
     expect(person.tokens).toEqual({
       uncachedInputTokens: 1_100_000,
@@ -43,7 +43,7 @@ describe("rollupUsageRows", () => {
     expect(person.apiEquivalent.cents).toBeCloseTo(660, 6);
     expect(person.apiEquivalent.complete).toBe(true);
     expect(person.reportedSpendCents).toBe(120);
-    expect(person.models.map((m) => m.model)).toEqual(["claude-sonnet-5-5", "claude-opus-5-5"]);
+    expect(person.models.map((slice) => slice.model)).toEqual(["claude-sonnet-5-5", "claude-opus-5-5"]);
     expect(report.totals.tokens.totalTokens).toBe(3_650_015);
     expect(report.totals.eventCount).toBe(3);
   });

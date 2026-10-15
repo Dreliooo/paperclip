@@ -4,7 +4,7 @@ import {
   estimateApiEquivalent,
   findApiRateCard,
   normalizeModelForPricing,
-} from "./api-equivalent-pricing";
+} from "./api-equivalent-pricing.js";
 
 describe("API-equivalent pricing", () => {
   it("documents a source and verification date for every rate card", () => {

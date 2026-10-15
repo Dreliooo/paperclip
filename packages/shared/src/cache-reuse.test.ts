@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assessCacheReuse, type CacheRunSample } from "./cache-reuse";
+import { assessCacheReuse, type CacheRunSample } from "./cache-reuse.js";
 
 let minute = 0;
 function run(overrides: Partial<CacheRunSample> = {}): CacheRunSample {
