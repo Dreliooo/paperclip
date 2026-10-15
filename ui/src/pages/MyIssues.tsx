@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { issuesApi } from "../api/issues";
@@ -14,13 +15,14 @@ import { ListTodo } from "lucide-react";
 import { useStreamlinedUiEnabled } from "../hooks/useStreamlinedUiEnabled";
 
 export function MyIssues() {
+  const { t } = useTranslation();
   const { enabled: streamlinedUiEnabled } = useStreamlinedUiEnabled();
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "My Tasks" }]);
-  }, [setBreadcrumbs]);
+    setBreadcrumbs([{ label: t("ui2g0.myIssues.breadcrumb") }]);
+  }, [setBreadcrumbs, t]);
 
   const { data: issues, isLoading, error } = useQuery({
     queryKey: queryKeys.issues.list(selectedCompanyId!),
@@ -33,8 +35,8 @@ export function MyIssues() {
       <EmptyState
         icon={ListTodo}
         message={streamlinedUiEnabled
-          ? "Select an organization to view your tasks."
-          : "Select a company to view your tasks."}
+          ? t("ui2g0.myIssues.selectOrg")
+          : t("ui2g0.myIssues.selectCompany")}
       />
     );
   }
@@ -53,7 +55,7 @@ export function MyIssues() {
       {error && <p className="text-sm text-destructive">{error.message}</p>}
 
       {myIssues.length === 0 && (
-        <EmptyState icon={ListTodo} message="No tasks assigned to you." />
+        <EmptyState icon={ListTodo} message={t("ui2g0.myIssues.empty")} />
       )}
 
       {myIssues.length > 0 && (

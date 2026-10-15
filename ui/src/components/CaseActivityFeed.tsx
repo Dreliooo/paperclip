@@ -13,27 +13,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { t, useTranslation } from "@/i18n";
 import { cn, relativeTime } from "@/lib/utils";
 
 const EVENT_LABEL: Record<CaseEventKind, string> = {
-  created: "created",
-  updated: "updated",
-  fields_changed: "fields changed",
-  status_changed: "status changed",
-  issue_linked: "issue linked",
-  issue_unlinked: "issue unlinked",
-  document_revised: "document revised",
-  child_linked: "child linked",
-  attachment_added: "attachment added",
-  label_added: "label added",
-  label_removed: "label removed",
+  created: "ui2g0.caseActivity.kind.created",
+  updated: "ui2g0.caseActivity.kind.updated",
+  fields_changed: "ui2g0.caseActivity.kind.fields_changed",
+  status_changed: "ui2g0.caseActivity.kind.status_changed",
+  issue_linked: "ui2g0.caseActivity.kind.issue_linked",
+  issue_unlinked: "ui2g0.caseActivity.kind.issue_unlinked",
+  document_revised: "ui2g0.caseActivity.kind.document_revised",
+  child_linked: "ui2g0.caseActivity.kind.child_linked",
+  attachment_added: "ui2g0.caseActivity.kind.attachment_added",
+  label_added: "ui2g0.caseActivity.kind.label_added",
+  label_removed: "ui2g0.caseActivity.kind.label_removed",
 };
+
+function eventLabel(kind: CaseEventKind): string {
+  return EVENT_LABEL[kind] ? t(EVENT_LABEL[kind]) : kind;
+}
 
 /** Human label for the actor, preferring the resolved agent name. */
 function actorLabel(event: CaseEvent): string {
-  if (event.actorType === "agent") return event.actorAgentName ?? "Agent";
-  if (event.actorType === "user") return "User";
-  return "System";
+  if (event.actorType === "agent") return event.actorAgentName ?? t("ui2g0.caseActivity.agent");
+  if (event.actorType === "user") return t("ui2g0.caseActivity.user");
+  return t("ui2g0.caseActivity.system");
 }
 
 function ActorIcon({ event }: { event: CaseEvent }) {
@@ -42,11 +47,12 @@ function ActorIcon({ event }: { event: CaseEvent }) {
 }
 
 function issueRelationLabel(event: CaseEvent): string {
-  return event.kind === "issue_linked" || event.kind === "issue_unlinked" ? "issue" : "via";
+  return event.kind === "issue_linked" || event.kind === "issue_unlinked" ? t("ui2g0.caseActivity.issue") : t("ui2g0.caseActivity.via");
 }
 
 /** One event with actor + run→issue attribution (P4 §1). */
 export function CaseEventRow({ event, compact = false }: { event: CaseEvent; compact?: boolean }) {
+  useTranslation();
   const detail =
     event.kind === "status_changed" && event.payload
       ? `${(event.payload.previousStatus as string) ?? "?"} → ${(event.payload.status as string) ?? "?"}`
@@ -56,7 +62,7 @@ export function CaseEventRow({ event, compact = false }: { event: CaseEvent; com
       <span className="mt-1"><ActorIcon event={event} /></span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-1.5">
-          <span className="font-medium">{EVENT_LABEL[event.kind] ?? event.kind}</span>
+          <span className="font-medium">{eventLabel(event.kind)}</span>
           {detail && <span className="text-muted-foreground">· {detail}</span>}
         </div>
         <div className="flex flex-wrap items-center gap-x-1.5 text-muted-foreground">
@@ -86,6 +92,7 @@ export function CaseEventRow({ event, compact = false }: { event: CaseEvent; com
 
 /** The full activity feed with kind filters (detail-page Activity tab). */
 export function CaseActivityFeed({ events }: { events: CaseEvent[] }) {
+  useTranslation();
   const [active, setActive] = useState<Set<CaseEventKind>>(new Set());
 
   // Only offer filters for kinds actually present, in first-seen order.
@@ -110,20 +117,20 @@ export function CaseActivityFeed({ events }: { events: CaseEvent[] }) {
   }
 
   const filterLabel = active.size === 0
-    ? "All activity"
+    ? t("ui2g0.caseActivity.allActivity")
     : active.size === 1
-      ? EVENT_LABEL[[...active][0]!] ?? [...active][0]!
-      : `${active.size} filters`;
+      ? eventLabel([...active][0]!)
+      : t("ui2g0.caseActivity.filtersCount", { count: active.size });
 
   if (events.length === 0) {
-    return <p className="py-6 text-center text-sm text-muted-foreground">No activity yet.</p>;
+    return <p className="py-6 text-center text-sm text-muted-foreground">{t("ui2g0.caseActivity.noActivity")}</p>;
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs text-muted-foreground">
-          {filtered.length} of {events.length} events
+          {t("ui2g0.caseActivity.ofEvents", { shown: filtered.length, total: events.length })}
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -134,9 +141,9 @@ export function CaseActivityFeed({ events }: { events: CaseEvent[] }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Activity filter</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("ui2g0.caseActivity.activityFilter")}</DropdownMenuLabel>
             <DropdownMenuItem onSelect={() => setActive(new Set())}>
-              All activity
+              {t("ui2g0.caseActivity.allActivity")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {presentKinds.map((kind) => (
@@ -145,14 +152,14 @@ export function CaseActivityFeed({ events }: { events: CaseEvent[] }) {
                 checked={active.has(kind)}
                 onCheckedChange={() => toggle(kind)}
               >
-                {EVENT_LABEL[kind] ?? kind}
+                {eventLabel(kind)}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       {filtered.length === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">No events match this filter.</p>
+        <p className="py-6 text-center text-sm text-muted-foreground">{t("ui2g0.caseActivity.noMatch")}</p>
       ) : (
         <div className="divide-y divide-border">
           {filtered.map((event) => (
