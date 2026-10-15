@@ -5538,5 +5538,621 @@
       "hideArchived": "Hide archived",
       "showArchived": "Show archived ({{count}})"
     }
+  },
+  "ui2g1": {
+    "speekoPhoneLine": {
+      "heading": "Incoming calls",
+      "refreshNumbers": "Refresh numbers",
+      "description": "Let callers start a conversation in a new task, or require approval to discuss an existing task.",
+      "loadingNumbers": "Loading Speko numbers…",
+      "noNumbers": "No numbers are available. ",
+      "buyNumberLink": "Buy or import a number in Speko",
+      "noNumbersSuffix": ", complete verification and add credits, then refresh.",
+      "companyPhoneNumber": "Company phone number",
+      "selectNumber": "Select a number",
+      "unavailableOption": " · unavailable",
+      "completeSetup": "Complete number setup in Speko before enabling incoming calls.",
+      "enableIncoming": "Enable incoming calls on this number",
+      "guestIntake": "Let callers start new low-trust tasks without sign-in",
+      "guestIntakeHelp": "Each call gets its own task. The assigned agent can discuss that conversation under a low-trust policy, without access to existing private tasks or private tools.",
+      "executionSandbox": "Execution sandbox",
+      "useAgentSandbox": "Use this agent's sandbox",
+      "sandboxHelp": "Only new incoming tasks use this setting. Low-trust work requires an active sandbox and isolated workspaces.",
+      "invalidNumber": "Choose an available company phone number.",
+      "saved": "Incoming call setting saved",
+      "saving": "Saving…",
+      "saveSetting": "Save incoming call setting"
+    },
+    "taskVoiceLauncher": {
+      "loadError": "Voice connections could not be loaded.",
+      "retryConnections": "Retry voice connections",
+      "loading": "Loading voice connection…",
+      "unavailable": "Voice is unavailable. Check the Speko connection in Apps.",
+      "voicePersona": "Voice persona",
+      "talkTo": "Talk to {{name}}",
+      "conversationLabel": "Task voice conversation"
+    },
+    "csvPreview": {
+      "empty": "File is empty.",
+      "title": "CSV preview",
+      "rowCount_one": "{{formatted}} row",
+      "rowCount_other": "{{formatted}} rows",
+      "columnCount_one": "{{formatted}} column",
+      "columnCount_other": "{{formatted}} columns",
+      "truncated": "Showing the first {{rows}} rows and {{columns}} columns. Download for the complete file.",
+      "tableLabel": "{{title}} CSV table",
+      "captionLabel": "{{title}} — first record used as column headers",
+      "rowHeader": "Row",
+      "columnFallback": "Column {{number}}"
+    },
+    "sourceResolvedFoldBadge": {
+      "title": "System folded this run as a source-resolved false positive.",
+      "ariaLabel": "Source-resolved watchdog fold",
+      "label": "Source-resolved"
+    },
+    "announcementWell": {
+      "dismissedLocally": "Dismissed in this browser",
+      "dismissedForVisit": "Dismissed for this visit",
+      "saveFailedBody": "Couldn’t save across devices. We’ll retry when you reconnect or return.",
+      "ariaLabel": "Paperclip announcements"
+    },
+    "searchSortMenu": {
+      "sortResults": "Sort results",
+      "sortLabel": "Sort:",
+      "sortBy": "Sort by"
+    },
+    "companyConnections": {
+      "breadcrumbCompany": "Company",
+      "breadcrumbSettings": "Settings",
+      "breadcrumbConnections": "Connections",
+      "noOrganization": "No organization selected. Select an organization from the switcher above.",
+      "title": "Connections"
+    },
+    "agentLifecycleStatus": {
+      "phase": {
+        "preparing": {
+          "title": "Preparing agent",
+          "description": "Required resources are being prepared. Work stays queued."
+        },
+        "verifying": {
+          "title": "Verifying agent",
+          "description": "The saved execution configuration is being checked. Work stays queued."
+        },
+        "pausing": {
+          "title": "Pausing agent",
+          "description": "Waiting for execution and required resources to stop."
+        },
+        "resuming": {
+          "title": "Resuming agent",
+          "description": "Required resources are being started. Work stays queued."
+        },
+        "terminating": {
+          "title": "Terminating agent",
+          "description": "Stopping execution before resource cleanup."
+        },
+        "cleaning_up": {
+          "title": "Cleaning up agent",
+          "description": "Required resources are being removed. Termination is not complete."
+        }
+      },
+      "failed": {
+        "preparing": "Agent preparation failed",
+        "verifying": "Agent verification failed",
+        "pausing": "Agent pause failed",
+        "resuming": "Agent resume failed",
+        "terminating": "Agent termination failed",
+        "cleaning_up": "Agent cleanup failed"
+      },
+      "refreshError": "Could not refresh agent lifecycle status.",
+      "retrying": "Retrying…",
+      "retryNow": "Retry now",
+      "autoRetry": "Paperclip retries automatically; Retry now checks again immediately."
+    },
+    "agentToolsTab": {
+      "githubIdentity": "GitHub identity",
+      "checkingIdentity": "Checking GitHub identity…",
+      "identityLoadError": "Could not load GitHub identity",
+      "identityLoadErrorBody": "Paperclip could not verify this agent's current connection. Your existing setup was not changed.",
+      "dedicatedAccount": "Dedicated GitHub account",
+      "dedicatedHelp": "Used only by {{agentName}}. This dedicated connection takes precedence over the responsible person's GitHub.",
+      "useResponsibleGithub": "Use responsible person's GitHub",
+      "useResponsibleHelp": "At run start, Paperclip uses the personal GitHub connection of the person responsible for the task.",
+      "accountConnected": "Your account is connected",
+      "connectedAs": " as @{{login}}",
+      "connectedEnd": ".",
+      "retry": "Retry",
+      "manageIdentity": "Manage GitHub identity",
+      "manageMyGithub": "Manage my GitHub",
+      "connectMyGithub": "Connect my GitHub",
+      "useDedicated": "Use a dedicated account",
+      "installedApps": "Installed apps",
+      "installedAppsHelp": "Installed apps load tools into {{agentName}}'s context on every run. Permitted-only apps do not add context cost.",
+      "accessLegend": "Has access means the app is permitted. Installed means its tools are added to this agent's runtime context.",
+      "noPermittedApps": "No permitted apps yet. Bind an access profile to make apps available here.",
+      "installAria": "Install {{name}} on {{agent}}",
+      "saving": "Saving...",
+      "installedForAllHint": "Installed from the app page for every agent. Remove the all-agents install there.",
+      "loadedHint": "Loaded into this agent's runtime context.",
+      "openPermissions": "Open permissions",
+      "permittedNotInstalled": "Permitted but not installed — tools will not appear in runs.",
+      "installedForAll": "Installed for all",
+      "installed": "Installed",
+      "permittedOnly": "Permitted only",
+      "notPermitted": "Not permitted",
+      "couldNotSave": "Could not save",
+      "unsavedChanges": "Unsaved changes",
+      "saved": "Saved",
+      "policyEffect": {
+        "allow": "allow",
+        "block": "block",
+        "deny": "deny",
+        "requireApproval": "require approval",
+        "redact": "redact",
+        "rateLimit": "rate limit"
+      },
+      "resolving": "Resolving effective access…",
+      "effectiveTitle": "Effective access",
+      "effectiveBody1": "This is exactly the tool set Paperclip will accept for",
+      "effectiveBody2": ". Profile and policy edits are reflected within ~5 seconds. The agent's prompt can narrow this list but",
+      "cannotExpand": "cannot expand it",
+      "effectiveBody3": " — everything else is blocked by default.",
+      "allowedTools": "Allowed tools",
+      "toolCount_one": "{{count}} tool",
+      "toolCount_other": "{{count}} tools",
+      "noAllowedTools": "No tools are allowed for this agent. Bind a tool profile to grant access.",
+      "colTool": "Tool",
+      "colCapability": "Capability",
+      "colRisk": "Risk",
+      "colSource": "Source",
+      "whyTheseTools": "Why these tools?",
+      "accessProfiles": "Access profiles",
+      "checkAccess": "Check access",
+      "noProfile": "No active profile applies to this agent, so it has no allowed tools.",
+      "orgDefault": "Organization default",
+      "activePolicies": "Active policies",
+      "loadingPolicies": "Loading policies…",
+      "noPolicies": "No enabled policy currently mutates this agent's allow list.",
+      "policyTitle": "Policy #{{order}}: {{name}}",
+      "policyLabel": "#{{order}} {{name}}",
+      "unavailableTools": "Unavailable tools",
+      "checkingTools": "Checking tools…",
+      "allAllowed": "Every known tool this agent could name is allowed.",
+      "blockedToolsHelp": "Tools the agent could name but Paperclip would block:",
+      "moreTools": "+{{n}} more"
+    },
+    "searchableSelect": {
+      "searchPlaceholder": "Search...",
+      "emptyMessage": "No options found.",
+      "loadingMessage": "Loading...",
+      "closeSelector": "Close selector"
+    },
+    "taskChatBubble": {
+      "images_one": "Images · {{count}}",
+      "images_other": "Images · {{count}}",
+      "files_one": "Files · {{count}}",
+      "files_other": "Files · {{count}}",
+      "openNamed": "Open {{name}}",
+      "imageNumber": "image {{n}}",
+      "moreScreenshots": "Open {{count}} more screenshots",
+      "imageFallback": "image",
+      "verificationCaveat": "Verification caveat",
+      "queued": "Queued",
+      "sending": "Sending…",
+      "sentFromIMessage": "Sent from iMessage"
+    },
+    "markdownBody": {
+      "issueLabelWithTitle": "Issue {{identifier}}: {{title}}",
+      "issueLabel": "Issue {{identifier}}",
+      "caseLabel": "Case {{identifier}}",
+      "copyFailed": "Copy failed",
+      "copied": "Copied!",
+      "copy": "Copy",
+      "unwrapLines": "Unwrap lines",
+      "wrapLines": "Wrap lines",
+      "copyCode": "Copy code",
+      "mermaidFailed": "Failed to render Mermaid diagram.",
+      "mermaidError": "Unable to render Mermaid diagram: {{error}}",
+      "mermaidRendering": "Rendering Mermaid diagram...",
+      "scrollableTable": "Scrollable table",
+      "imageLabel": "Image: {{alt}}",
+      "imageSource": " ({{src}})",
+      "untitledImage": "Untitled image"
+    },
+    "markdownEditor": {
+      "noUploadHandler": "No image upload handler",
+      "imageUploadFailed": "Image upload failed",
+      "fallbackTitle": "Rich editor unavailable for this markdown. Showing raw source instead.",
+      "retryRichEditor": "Retry rich editor",
+      "kind": {
+        "issue": "Task",
+        "project": "Project",
+        "user": "User",
+        "skill": "Skill",
+        "routine": "Routine"
+      }
+    },
+    "launchers": {
+      "unknownError": "Unknown error",
+      "close": "Close",
+      "unavailable": "Plugin launchers unavailable: {{message}}"
+    },
+    "connectFlowPreview": {
+      "signInTo": "Sign in to {{provider}}",
+      "instructionTailHandsOver": " by providing the authorization code below",
+      "instructionTail": " then come back and enter authorization code",
+      "startOver": "Start over",
+      "connect": "Connect",
+      "waitingForCode": "Waiting for code",
+      "connecting": "Connecting",
+      "next": "Next",
+      "connected": "Connected",
+      "connectModel": "Connect a model",
+      "ledeDone": "The step advances straight to Review — there is no success screen.",
+      "lede": "Paperclip works with your existing subscription or API keys.",
+      "modelSource": "Model source",
+      "provideKey": "Provide your {{provider}} API key to connect",
+      "apiKeyLabel": "API key",
+      "apiKeyPlaceholder": "Enter API key here"
+    },
+    "financeTimelineCard": {
+      "emptyMessage": "No financial events recorded in this period. Events appear when reported through the API, CLI, or a supported integration.",
+      "providerCostReport": "Provider cost report",
+      "title": "Recent financial events",
+      "description": "Provider charges, subscriptions, fees, and credits. Reported separately from run-cost estimates.",
+      "invoice": "invoice {{id}}",
+      "region": "region {{value}}",
+      "tier": "tier {{value}}",
+      "estimated": "estimated"
+    },
+    "routeErrorBoundary": {
+      "title": "This page hit an error",
+      "description": "Something went wrong while rendering this page. You can go back and try again, or reload.",
+      "goBack": "Go back",
+      "reloadPage": "Reload page"
+    },
+    "devRestartBanner": {
+      "relative": {
+        "justNow": "just now",
+        "minutesAgo": "{{n}}m ago",
+        "hoursAgo": "{{n}}h ago",
+        "daysAgo": "{{n}}d ago"
+      },
+      "reason": {
+        "backendAndMigrations": "backend files changed and migrations are pending",
+        "pendingMigrations": "pending migrations need a fresh boot",
+        "backendChanged": "backend files changed since this server booted"
+      },
+      "liveRuns_one": "{{count}} live run",
+      "liveRuns_other": "{{count}} live runs",
+      "confirmWithRuns": "Restart Paperclip now? This may interrupt {{runs}}.",
+      "confirm": "Restart Paperclip now?",
+      "requestFailed": "Failed to request restart",
+      "restartRequired": "Restart Required",
+      "autoRestartOn": "Auto-Restart On",
+      "updated": " · updated {{time}}",
+      "changed": "Changed: {{paths}}",
+      "morePaths": " +{{n}} more",
+      "pendingMigrations": "Pending migrations: {{list}}",
+      "moreMigrations": " +{{n}} more",
+      "waitingForRuns": "Waiting for {{runs}} to finish",
+      "autoRestartIdle": "Auto-restart will trigger when the instance is idle",
+      "restartPrefix": "Restart ",
+      "restartSuffix": " after the active work is safe to interrupt",
+      "restartRequested": "Restart requested",
+      "restartNow": "Restart now"
+    },
+    "boardClaim": {
+      "invalidUrl": "Invalid board claim URL.",
+      "loading": "Loading claim challenge...",
+      "challengeUnavailable": "Claim challenge unavailable",
+      "invalidChallenge": "Challenge is invalid or expired.",
+      "challengeUnavailableNoData": "Claim challenge unavailable.",
+      "claimedTitle": "Board ownership claimed",
+      "claimedBody": "This instance is now linked to your authenticated user.",
+      "openBoard": "Open board",
+      "signInTitle": "Sign in required",
+      "signInBody": "Sign in or create an account, then return to this page to claim Board ownership.",
+      "signInLink": "Sign in / Create account",
+      "claimTitle": "Claim Board ownership",
+      "claimBody": "This will promote your user to instance admin and migrate organization ownership access from local trusted mode.",
+      "claimFailed": "Failed to claim board ownership",
+      "claiming": "Claiming…",
+      "claimButton": "Claim ownership"
+    },
+    "costDataQualityNotice": {
+      "reasons": {
+        "unknown_billing": {
+          "label": "Billing category unknown",
+          "description": "This run did not identify API or subscription billing. Any recorded charges are included in the inference ledger. For future runs, select an AI connection in the agent’s configuration so Paperclip can identify its billing."
+        },
+        "missing_model": {
+          "label": "Model not reported",
+          "description": "Token usage was recorded without a model, so Paperclip cannot estimate its cost. Select an explicit model in the agent’s configuration for future runs. Changing settings will not reprice this past run."
+        },
+        "missing_price": {
+          "label": "Cost unavailable",
+          "description": "The provider did not supply a reliable price for this usage. There is no action required for this past entry. New API runs with complete usage and a supported model are estimated automatically."
+        },
+        "waiting_for_receipt": {
+          "label": "Receiving usage",
+          "description": "This run has stopped. Paperclip is waiting for its final usage data and will record it automatically. You do not need to rerun the agent."
+        },
+        "receipt_unavailable": {
+          "label": "Final usage unavailable",
+          "description": "This run stopped without final usage data. Its cost remains unresolved for budget checks. Paperclip will record a late receipt if one arrives; rerunning the agent will not recover this usage."
+        },
+        "retryable": {
+          "label": "Ready to record",
+          "description": "Saved usage data is ready to be recorded. Paperclip retries automatically, or you can retry now. This records costs only; it does not rerun the agent."
+        }
+      },
+      "recorded": "Costs recorded.",
+      "noNewData": "No new cost data is available.",
+      "notRerun": "The agent was not rerun.",
+      "unavailableRuns_one": "{{count}} run cost unavailable",
+      "unavailableRuns_other": "{{count}} run costs unavailable",
+      "unknownBilling_one": "{{count}} billing type unknown",
+      "unknownBilling_other": "{{count}} billing types unknown",
+      "unknownAgent": "Unknown agent",
+      "paperclipServices": "Paperclip services",
+      "viewRun": "View run",
+      "retryRecording": "Retry cost recording",
+      "recording": "Recording saved costs…",
+      "recordingFailed": "Cost recording failed. Try again shortly.",
+      "loadingRuns": "Loading affected runs…",
+      "detailsLoadError": "Cost details could not be loaded.",
+      "retryLoading": "Retry loading",
+      "staleDetails": "Showing the last loaded cost details. Updates will resume automatically.",
+      "noGaps": "No cost gaps remain in this period.",
+      "detailsByAgent": "Cost details by agent",
+      "groupLabel": "{{name}} cost details",
+      "truncated": "Showing the 25 most recent entries in each category. Select a shorter date range to inspect more."
+    },
+    "issueSiblingNavigation": {
+      "navLabel": "Sub-task navigation",
+      "previous": "Previous",
+      "next": "Next",
+      "previousSubtask": "Previous sub-task",
+      "nextSubtask": "Next sub-task",
+      "linkLabel": "{{direction}}: {{identifier}} - {{title}}"
+    },
+    "enforcementBanner": {
+      "deniedSuffix_one": " governed tool call was denied or failed in the last hour. Access is enforced server-side by the tool gateway — open the affected connector to review what was blocked and why.",
+      "deniedSuffix_other": " governed tool calls were denied or failed in the last hour. Access is enforced server-side by the tool gateway — open the affected connector to review what was blocked and why.",
+      "defaultBody": "Tool access is enforced server-side by the tool gateway. These screens configure and observe that enforcement — they do not replace it. Agents see and call only the tools their profiles and policies allow; everything else is denied by default."
+    },
+    "breadcrumb": {
+      "ariaLabel": "breadcrumb",
+      "more": "More"
+    },
+    "sidePanelMobileTabs": {
+      "switchTabs": "Switch tabs, {{count}} open",
+      "chooseTab": "Choose a tab",
+      "openTabs": "Open tabs",
+      "closeTab": "Close {{label}}"
+    },
+    "emailConnectionAccess": {
+      "loading": "Loading access…",
+      "loadError": "Connection access could not be loaded.",
+      "anyHuman": "Any human in the organization",
+      "justMe": "Just me",
+      "credentialOwner": "Only the credential owner",
+      "accessRevoked": "Access revoked",
+      "humansHeading": "Which humans can use this credential?",
+      "agentsHeading": "Which agents can use this connection?",
+      "pickAgents": "Just agents I pick",
+      "anyAgent": "Any agent",
+      "removeAgentHelp": "Removing an assigned agent stops receiving and sending from its inbox."
+    },
+    "taskChatPerfHarness": {
+      "heading": "Task chat: {{responses}} responses, {{tools}} tools",
+      "stop": "Stop streaming",
+      "start": "Start streaming",
+      "recreate": "Recreate history objects",
+      "replyLabel": "Reply",
+      "replyPlaceholder": "Reply to the task"
+    },
+    "relationControls": {
+      "privateTask": "Private task",
+      "thisPrivateTask": "this private task",
+      "removeBlockerLabel": "Remove {{label}} as blocker",
+      "actionsForBlocker": "Actions for blocker {{label}}",
+      "visitTask": "Visit task",
+      "removeBlocker": "Remove blocker",
+      "taskLinkLabel": "Task {{label}}: {{title}}",
+      "taskLabelOnly": "Task: {{title}}",
+      "removeBlockerTitle": "Remove blocker?",
+      "removeConfirmBody": "Remove {{label}} as a blocker for this task.",
+      "cancel": "Cancel",
+      "showFewer": "Show fewer items",
+      "showMoreItems": "Show {{count}} more items",
+      "showLess": "Show less",
+      "showMore": "Show {{count}} more"
+    },
+    "inboxAgentPolicy": {
+      "modes": {
+        "open": {
+          "title": "Any of my agents",
+          "description": "Let any agent you manage archive tasks out of your inbox."
+        },
+        "allowlist": {
+          "title": "Only chosen agents",
+          "description": "Restrict inbox tidying to the agents you pick below."
+        },
+        "disabled": {
+          "title": "Off",
+          "description": "Agents can never archive tasks from your inbox."
+        }
+      },
+      "loadError": "Failed to load inbox agent policy.",
+      "loading": "Loading inbox agent policy…",
+      "title": "Let agents tidy my inbox",
+      "description": "Choose whether the agents you manage may archive tasks out of your inbox on your behalf. You can undo any archive, and every agent archive is attributed in the task's properties.",
+      "ariaLabel": "Inbox agent archiving policy",
+      "allowedAgents": "Agents allowed to tidy my inbox",
+      "selectAgents": "Select agents",
+      "agentsSelected_one": "{{count}} agent selected",
+      "agentsSelected_other": "{{count}} agents selected",
+      "noAgents": "You don’t manage any agents yet.",
+      "saveError": "Failed to save inbox agent policy.",
+      "saved": "Saved",
+      "saving": "Saving…",
+      "save": "Save"
+    },
+    "issuePrivacy": {
+      "nonSetterTooltip": "Only the task owner or an admin can change who can see this task.",
+      "publicCheckFailed": "Couldn't check task privacy. Retry before making this task public.",
+      "checkingPrivacy": "Checking task privacy…",
+      "movePrivateParent": "Move this task out of its private parent before making it public.",
+      "movePrivateProject": "Move this task out of its private project before making it public.",
+      "nowPrivate": "Task is now private",
+      "nowPublic": "Task is now public",
+      "visibilityFailed": "Couldn't change visibility",
+      "share": "Share…",
+      "makePublic": "Make public",
+      "makePrivate": "Make private",
+      "retryAccess": "Retry access check",
+      "makePublicTitle": "Make this task public?",
+      "publicBody": "Everyone in the company will be able to read this task, its comments, documents, and run history. Existing private subtasks keep their privacy.",
+      "publicBodyPersonal": "This task will also leave its personal project. ",
+      "publicBodyBold": "Content already seen by others cannot be taken back.",
+      "keepPrivate": "Keep private",
+      "makingPublic": "Making public…"
+    },
+    "liveRunWidget": {
+      "title": "Live Runs",
+      "description": "Uses the shared chat-style run surface from task activity.",
+      "stopping": "Stopping…",
+      "stop": "Stop",
+      "openRun": "Open run"
+    },
+    "searchFilterMenu": {
+      "searchPlaceholder": "Search…",
+      "emptyMessage": "No options",
+      "filterBy": "Filter by {{label}}",
+      "clear": "Clear",
+      "triggerWithOption": "{{label}}: {{option}}",
+      "triggerCount": "{{label}}: {{n}}"
+    },
+    "budgetPolicyCard": {
+      "lifetime": "Lifetime budget",
+      "monthly": "Monthly UTC budget",
+      "reserveLabel": "Reserve per run (USD)",
+      "reserveInvalid": "Enter a valid amount of zero or more.",
+      "reserveHelp": "An estimate held before each run starts. Zero disables the estimate. Actual provider charges may exceed it.",
+      "updateReservation": "Update reservation",
+      "advanced": "Advanced settings",
+      "blockUnpriced": "Block new work when usage has no reliable price",
+      "observed": "Observed",
+      "budget": "Budget",
+      "percentOfLimit": "{{percent}}% of limit",
+      "noCap": "No cap configured",
+      "disabled": "Disabled",
+      "softAlert": "Soft alert at {{percent}}%",
+      "pauseSuffix": " · {{reason}} pause",
+      "remaining": "Remaining",
+      "unlimited": "Unlimited",
+      "pendingRuns": "{{count}} completed runs await accounting.",
+      "unpricedEvents": "{{count}} usage events are unpriced. Known spend excludes their unknown cost.",
+      "utilization": "Budget utilization: {{percent}}% used",
+      "pausedProject": "Execution is paused for this project until the budget block is resolved.",
+      "pausedScope": "Heartbeats are paused for this scope until the budget block is resolved.",
+      "budgetUsd": "Budget (USD)",
+      "saving": "Saving...",
+      "updateBudget": "Update budget",
+      "setBudget": "Set budget",
+      "invalidAmount": "Enter a valid non-negative dollar amount.",
+      "paused": "Paused",
+      "warning": "Warning",
+      "hardStop": "Hard stop",
+      "healthy": "Healthy"
+    },
+    "artifacts": {
+      "kind": {
+        "all": "All",
+        "image": "Images",
+        "video": "Videos",
+        "document": "Documents",
+        "text": "Text",
+        "file": "Files"
+      },
+      "group": {
+        "none": "None",
+        "task": "Task",
+        "parentTask": "Parent task"
+      },
+      "breadcrumb": "Artifacts",
+      "selectOrganization": "Select an organization to view artifacts.",
+      "empty": {
+        "noStacksMatch": "No artifact stacks match this search.",
+        "noStacks": "No artifact stacks yet.",
+        "noMatch": "No artifacts match this search.",
+        "noStackMatch": "No artifacts in this stack match the current filters.",
+        "none": "No artifacts yet. Outputs attached to issues will appear here.",
+        "noneOfType": "No artifacts of this type yet."
+      },
+      "searchPlaceholder": "Search artifacts...",
+      "searchLabel": "Search artifacts",
+      "clearSearch": "Clear artifact search",
+      "groupControl": "Group artifacts (currently {{group}})",
+      "groupTitle": "Group artifacts",
+      "groupBy": "Group by",
+      "filterByType": "Filter artifacts by type",
+      "allStacks": "All stacks",
+      "loadingMore": "Loading more artifacts...",
+      "updating": "Updating artifacts..."
+    },
+    "proposalReview": {
+      "noFingerprint": "no fingerprint",
+      "bytes_one": "{{count}} byte",
+      "bytes_other": "{{count}} bytes",
+      "fingerprintCopied": "Fingerprint copied",
+      "fingerprintCopyFailed": "Couldn’t copy fingerprint",
+      "copyDigest": "Copy full digest — {{digest}}",
+      "reasonGiven": "Reason given by the agent",
+      "proposed": "Proposed",
+      "proposedSecretFallback": "proposed secret",
+      "secretFallback": "secret",
+      "requestFailed": "Request failed: {{status}}",
+      "genericError": "Something went wrong. Try again.",
+      "secretApproved": "Secret approved",
+      "bindingApproved": "Binding approved",
+      "secretCreated": "Secret created",
+      "agentFallback": "Agent",
+      "bindingFallback": "binding",
+      "proposalRejected": "Proposal rejected",
+      "approveSecretTitle": "Approve & create secret",
+      "approveBindingTitle": "Approve binding",
+      "secretDescription": "The value is created as the proposing agent recorded it. Re-folder or rename it before it lands.",
+      "bindingDescription": "Grant the target agent access to this secret. This runs with your permissions.",
+      "proposedBy": "Proposed by",
+      "folder": "Folder",
+      "name": "Name",
+      "landsAs": "Lands as",
+      "enterName": "enter a name",
+      "description": "Description",
+      "optional": "Optional",
+      "providerVault": "Provider vault",
+      "deploymentDefault": "Deployment default",
+      "approving": "Approving…",
+      "approveAndCreate": "Approve & create",
+      "approveSecretAndBind": "Approve secret & bind",
+      "cancel": "Cancel",
+      "targetAgent": "Target agent",
+      "deliveredAs": "Delivered as",
+      "secret": "Secret",
+      "alsoApproveLabel": "Also approve the proposed secret",
+      "alsoApprove": "Also approve the proposed secret",
+      "alsoApproveSuffix": " and create it in the same step. The binding can’t land without it.",
+      "rejectTitle": "Reject proposal",
+      "sentBackTo": "The reason is sent back to",
+      "dependentRejected": ". Dependent bindings are rejected too.",
+      "reason": "Reason",
+      "reasonPlaceholder": "Why is this being rejected?",
+      "rejecting": "Rejecting…",
+      "reject": "Reject",
+      "approve": "Approve",
+      "noPermission": "You don’t have permission to approve this."
+    }
   }
 }

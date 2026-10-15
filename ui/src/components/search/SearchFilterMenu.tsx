@@ -5,6 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 
 export interface FilterMenuOption {
   value: string;
@@ -47,13 +49,13 @@ interface SingleProps extends BaseProps {
 
 export type SearchFilterMenuProps = MultiProps | SingleProps;
 
-function summarizeTrigger(label: string, selected: string[], options: FilterMenuOption[]): string {
+function summarizeTrigger(label: string, selected: string[], options: FilterMenuOption[], t: TFunction): string {
   if (selected.length === 0) return label;
   if (selected.length === 1) {
     const only = options.find((option) => option.value === selected[0]);
-    return only ? `${label}: ${only.label}` : label;
+    return only ? t("ui2g1.searchFilterMenu.triggerWithOption", { label, option: only.label }) : label;
   }
-  return `${label}: ${selected.length}`;
+  return t("ui2g1.searchFilterMenu.triggerCount", { label, n: selected.length });
 }
 
 export function SearchFilterMenu(props: SearchFilterMenuProps) {
@@ -62,12 +64,15 @@ export function SearchFilterMenu(props: SearchFilterMenuProps) {
     options,
     selected,
     searchable = false,
-    searchPlaceholder = "Search…",
-    emptyMessage = "No options",
+    searchPlaceholder: searchPlaceholderProp,
+    emptyMessage: emptyMessageProp,
     triggerClassName,
     contentClassName,
     align = "start",
   } = props;
+  const { t } = useTranslation();
+  const searchPlaceholder = searchPlaceholderProp ?? t("ui2g1.searchFilterMenu.searchPlaceholder");
+  const emptyMessage = emptyMessageProp ?? t("ui2g1.searchFilterMenu.emptyMessage");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -102,9 +107,9 @@ export function SearchFilterMenu(props: SearchFilterMenuProps) {
             active && "border-primary/60 text-foreground",
             triggerClassName,
           )}
-          aria-label={`Filter by ${label}`}
+          aria-label={t("ui2g1.searchFilterMenu.filterBy", { label })}
         >
-          <span className="truncate">{summarizeTrigger(label, selected, options)}</span>
+          <span className="truncate">{summarizeTrigger(label, selected, options, t)}</span>
           {active ? (
             <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-(length:--text-nano) font-semibold tabular-nums text-primary-foreground">
               {selected.length}
@@ -123,7 +128,7 @@ export function SearchFilterMenu(props: SearchFilterMenuProps) {
               className="text-xs text-muted-foreground hover:text-foreground"
               onClick={() => props.onClear()}
             >
-              Clear
+              {t("ui2g1.searchFilterMenu.clear")}
             </button>
           ) : null}
         </div>

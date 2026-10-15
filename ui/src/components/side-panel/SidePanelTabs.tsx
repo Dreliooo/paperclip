@@ -314,6 +314,7 @@ export function SidePanelTabs({
           variant="ghost"
           size="icon-sm"
           onClick={onAddTab}
+          data-side-panel-add-tab=""
           aria-label={addLabel}
           title={addLabel}
           className={cn(

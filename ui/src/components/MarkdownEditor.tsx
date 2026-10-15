@@ -1,4 +1,5 @@
 import { AgentAvatar } from "./AgentAvatar";
+import { useTranslation } from "@/i18n";
 import {
   Component,
   type ClipboardEvent,
@@ -766,6 +767,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [richEditorError, setRichEditorError] = useState<RichEditorError | null>(null);
+  const { t } = useTranslation();
   const dragDepthRef = useRef(0);
 
   // Stable ref for imageUploadHandler so plugins don't recreate on every render
@@ -953,7 +955,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
     const imageHandler = hasImageUpload
       ? async (file: File) => {
           const handler = imageUploadHandlerRef.current;
-          if (!handler) throw new Error("No image upload handler");
+          if (!handler) throw new Error(t("ui2g1.markdownEditor.noUploadHandler"));
           try {
             const src = await handler(file);
             setUploadError(null);
@@ -980,7 +982,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
             }, 100);
             return src;
           } catch (err) {
-            const message = err instanceof Error ? err.message : "Image upload failed";
+            const message = err instanceof Error ? err.message : t("ui2g1.markdownEditor.imageUploadFailed");
             setUploadError(message);
             throw err;
           }
@@ -1009,7 +1011,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       all.push(imagePlugin({ imageUploadHandler: imageHandler, disableImageSettingsButton: true }));
     }
     return all;
-  }, [hasImageUpload]);
+  }, [hasImageUpload, t]);
 
   useEffect(() => {
     if (editorValue !== latestValueRef.current) {
@@ -1341,7 +1343,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       >
         <div className="flex items-start justify-between gap-3 px-3 pt-2 text-xs text-muted-foreground">
           <p>
-            Rich editor unavailable for this markdown. Showing raw source instead.{" "}
+            {t("ui2g1.markdownEditor.fallbackTitle")}{" "}
             <span data-testid="markdown-editor-fallback-code" className="font-mono">
               {richEditorError.code}
             </span>
@@ -1357,7 +1359,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
               setRichEditorError(null);
             }}
           >
-            Retry rich editor
+            {t("ui2g1.markdownEditor.retryRichEditor")}
           </button>
         </div>
         <textarea
@@ -1673,27 +1675,27 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
                 )}
                 {option.kind === "issue" && (
                   <span className="ml-auto text-(length:--text-nano) uppercase tracking-wide text-muted-foreground">
-                    Task
+                    {t("ui2g1.markdownEditor.kind.issue")}
                   </span>
                 )}
                 {option.kind === "project" && option.projectId && (
                   <span className="ml-auto text-(length:--text-nano) uppercase tracking-wide text-muted-foreground">
-                    Project
+                    {t("ui2g1.markdownEditor.kind.project")}
                   </span>
                 )}
                 {option.kind === "user" && (
                   <span className="ml-auto text-(length:--text-nano) uppercase tracking-wide text-muted-foreground">
-                    User
+                    {t("ui2g1.markdownEditor.kind.user")}
                   </span>
                 )}
                 {option.kind === "skill" && (
                   <span className="ml-auto text-(length:--text-nano) uppercase tracking-wide text-muted-foreground">
-                    Skill
+                    {t("ui2g1.markdownEditor.kind.skill")}
                   </span>
                 )}
                 {option.kind === "routine" && (
                   <span className="ml-auto text-(length:--text-nano) uppercase tracking-wide text-muted-foreground">
-                    Routine
+                    {t("ui2g1.markdownEditor.kind.routine")}
                   </span>
                 )}
                 {option.kind === "action" && (

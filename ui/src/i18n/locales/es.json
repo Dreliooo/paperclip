@@ -5537,5 +5537,621 @@
       "hideArchived": "Ocultar archivadas",
       "showArchived": "Mostrar archivadas ({{count}})"
     }
+  },
+  "ui2g1": {
+    "speekoPhoneLine": {
+      "heading": "Llamadas entrantes",
+      "refreshNumbers": "Actualizar números",
+      "description": "Permití que quienes llaman inicien una conversación en una nueva tarea, o exigí aprobación para discutir una tarea existente.",
+      "loadingNumbers": "Cargando números de Speko…",
+      "noNumbers": "No hay números disponibles. ",
+      "buyNumberLink": "Comprá o importá un número en Speko",
+      "noNumbersSuffix": ", completá la verificación, agregá créditos y después actualizá la lista.",
+      "companyPhoneNumber": "Número de teléfono de la empresa",
+      "selectNumber": "Elegí un número",
+      "unavailableOption": " · no disponible",
+      "completeSetup": "Completá la configuración del número en Speko antes de habilitar las llamadas entrantes.",
+      "enableIncoming": "Habilitar llamadas entrantes en este número",
+      "guestIntake": "Permitir que quienes llaman inicien nuevas tareas de baja confianza sin iniciar sesión",
+      "guestIntakeHelp": "Cada llamada tiene su propia tarea. El agente asignado puede conversar sobre ese hilo bajo una política de baja confianza, sin acceso a tareas privadas existentes ni a herramientas privadas.",
+      "executionSandbox": "Sandbox de ejecución",
+      "useAgentSandbox": "Usar el sandbox de este agente",
+      "sandboxHelp": "Solo las nuevas tareas entrantes usan esta configuración. El trabajo de baja confianza requiere un sandbox activo y espacios de trabajo aislados.",
+      "invalidNumber": "Elegí un número de teléfono de la empresa que esté disponible.",
+      "saved": "Configuración de llamadas entrantes guardada",
+      "saving": "Guardando…",
+      "saveSetting": "Guardar configuración de llamadas entrantes"
+    },
+    "taskVoiceLauncher": {
+      "loadError": "No se pudieron cargar las conexiones de voz.",
+      "retryConnections": "Reintentar conexiones de voz",
+      "loading": "Cargando conexión de voz…",
+      "unavailable": "La voz no está disponible. Revisá la conexión de Speko en Aplicaciones.",
+      "voicePersona": "Perfil de voz",
+      "talkTo": "Hablar con {{name}}",
+      "conversationLabel": "Conversación de voz de la tarea"
+    },
+    "csvPreview": {
+      "empty": "El archivo está vacío.",
+      "title": "Vista previa de CSV",
+      "rowCount_one": "{{formatted}} fila",
+      "rowCount_other": "{{formatted}} filas",
+      "columnCount_one": "{{formatted}} columna",
+      "columnCount_other": "{{formatted}} columnas",
+      "truncated": "Mostrando las primeras {{rows}} filas y {{columns}} columnas. Descargá el archivo para ver el completo.",
+      "tableLabel": "Tabla CSV de {{title}}",
+      "captionLabel": "{{title}} — se usa el primer registro como encabezados de columna",
+      "rowHeader": "Fila",
+      "columnFallback": "Columna {{number}}"
+    },
+    "sourceResolvedFoldBadge": {
+      "title": "El sistema plegó esta corrida como un falso positivo resuelto en la fuente.",
+      "ariaLabel": "Plegado del watchdog resuelto en la fuente",
+      "label": "Resuelto en la fuente"
+    },
+    "announcementWell": {
+      "dismissedLocally": "Descartado en este navegador",
+      "dismissedForVisit": "Descartado para esta visita",
+      "saveFailedBody": "No pudimos guardarlo en todos tus dispositivos. Lo volvemos a intentar cuando vuelvas a conectarte o regreses.",
+      "ariaLabel": "Anuncios de Paperclip"
+    },
+    "searchSortMenu": {
+      "sortResults": "Ordenar resultados",
+      "sortLabel": "Orden:",
+      "sortBy": "Ordenar por"
+    },
+    "companyConnections": {
+      "breadcrumbCompany": "Empresa",
+      "breadcrumbSettings": "Configuración",
+      "breadcrumbConnections": "Conexiones",
+      "noOrganization": "No hay ninguna organización seleccionada. Elegí una organización desde el selector de arriba.",
+      "title": "Conexiones"
+    },
+    "agentLifecycleStatus": {
+      "phase": {
+        "preparing": {
+          "title": "Preparando agente",
+          "description": "Se están preparando los recursos necesarios. El trabajo queda en cola."
+        },
+        "verifying": {
+          "title": "Verificando agente",
+          "description": "Se está comprobando la configuración de ejecución guardada. El trabajo queda en cola."
+        },
+        "pausing": {
+          "title": "Pausando agente",
+          "description": "Esperando a que se detengan la ejecución y los recursos necesarios."
+        },
+        "resuming": {
+          "title": "Reanudando agente",
+          "description": "Se están iniciando los recursos necesarios. El trabajo queda en cola."
+        },
+        "terminating": {
+          "title": "Terminando agente",
+          "description": "Deteniendo la ejecución antes de limpiar los recursos."
+        },
+        "cleaning_up": {
+          "title": "Limpiando agente",
+          "description": "Se están eliminando los recursos necesarios. La terminación no está completa."
+        }
+      },
+      "failed": {
+        "preparing": "Falló la preparación del agente",
+        "verifying": "Falló la verificación del agente",
+        "pausing": "Falló la pausa del agente",
+        "resuming": "Falló la reanudación del agente",
+        "terminating": "Falló la terminación del agente",
+        "cleaning_up": "Falló la limpieza del agente"
+      },
+      "refreshError": "No se pudo actualizar el estado del ciclo de vida del agente.",
+      "retrying": "Reintentando…",
+      "retryNow": "Reintentar ahora",
+      "autoRetry": "Paperclip reintenta automáticamente; Reintentar ahora vuelve a comprobarlo de inmediato."
+    },
+    "agentToolsTab": {
+      "githubIdentity": "Identidad de GitHub",
+      "checkingIdentity": "Verificando la identidad de GitHub…",
+      "identityLoadError": "No se pudo cargar la identidad de GitHub",
+      "identityLoadErrorBody": "Paperclip no pudo verificar la conexión actual de este agente. La configuración existente no se modificó.",
+      "dedicatedAccount": "Cuenta de GitHub dedicada",
+      "dedicatedHelp": "La usa solo {{agentName}}. Esta conexión dedicada tiene prioridad sobre el GitHub de la persona responsable.",
+      "useResponsibleGithub": "Usar el GitHub de la persona responsable",
+      "useResponsibleHelp": "Al iniciar una corrida, Paperclip usa la conexión personal de GitHub de la persona responsable de la tarea.",
+      "accountConnected": "Tu cuenta está conectada",
+      "connectedAs": " como @{{login}}",
+      "connectedEnd": ".",
+      "retry": "Reintentar",
+      "manageIdentity": "Administrar identidad de GitHub",
+      "manageMyGithub": "Administrar mi GitHub",
+      "connectMyGithub": "Conectar mi GitHub",
+      "useDedicated": "Usar una cuenta dedicada",
+      "installedApps": "Apps instaladas",
+      "installedAppsHelp": "Las apps instaladas cargan herramientas en el contexto de {{agentName}} en cada corrida. Las apps solo permitidas no suman costo de contexto.",
+      "accessLegend": "Tener acceso significa que la app está permitida. Instalada significa que sus herramientas se agregan al contexto de ejecución de este agente.",
+      "noPermittedApps": "Todavía no hay apps permitidas. Vinculá un perfil de acceso para que las apps estén disponibles aquí.",
+      "installAria": "Instalar {{name}} en {{agent}}",
+      "saving": "Guardando...",
+      "installedForAllHint": "Instalada desde la página de la app para todos los agentes. Quitá la instalación para todos los agentes desde allí.",
+      "loadedHint": "Cargada en el contexto de ejecución de este agente.",
+      "openPermissions": "Abrir permisos",
+      "permittedNotInstalled": "Permitida pero no instalada: las herramientas no aparecerán en las corridas.",
+      "installedForAll": "Instalada para todos",
+      "installed": "Instalada",
+      "permittedOnly": "Solo permitida",
+      "notPermitted": "No permitida",
+      "couldNotSave": "No se pudo guardar",
+      "unsavedChanges": "Cambios sin guardar",
+      "saved": "Guardado",
+      "policyEffect": {
+        "allow": "permitir",
+        "block": "bloquear",
+        "deny": "denegar",
+        "requireApproval": "requerir aprobación",
+        "redact": "redactar",
+        "rateLimit": "límite de frecuencia"
+      },
+      "resolving": "Resolviendo el acceso efectivo…",
+      "effectiveTitle": "Acceso efectivo",
+      "effectiveBody1": "Este es exactamente el conjunto de herramientas que Paperclip aceptará para",
+      "effectiveBody2": ". Los cambios en perfiles y políticas se reflejan en unos 5 segundos. El prompt del agente puede reducir esta lista, pero",
+      "cannotExpand": "no puede ampliarla",
+      "effectiveBody3": " — todo lo demás se bloquea por defecto.",
+      "allowedTools": "Herramientas permitidas",
+      "toolCount_one": "{{count}} herramienta",
+      "toolCount_other": "{{count}} herramientas",
+      "noAllowedTools": "No hay herramientas permitidas para este agente. Vinculá un perfil de herramientas para otorgar acceso.",
+      "colTool": "Herramienta",
+      "colCapability": "Capacidad",
+      "colRisk": "Riesgo",
+      "colSource": "Origen",
+      "whyTheseTools": "¿Por qué estas herramientas?",
+      "accessProfiles": "Perfiles de acceso",
+      "checkAccess": "Verificar acceso",
+      "noProfile": "Ningún perfil activo se aplica a este agente, así que no tiene herramientas permitidas.",
+      "orgDefault": "Predeterminado de la organización",
+      "activePolicies": "Políticas activas",
+      "loadingPolicies": "Cargando políticas…",
+      "noPolicies": "Ninguna política habilitada modifica actualmente la lista de permitidos de este agente.",
+      "policyTitle": "Política #{{order}}: {{name}}",
+      "policyLabel": "#{{order}} {{name}}",
+      "unavailableTools": "Herramientas no disponibles",
+      "checkingTools": "Verificando herramientas…",
+      "allAllowed": "Todas las herramientas conocidas que este agente podría nombrar están permitidas.",
+      "blockedToolsHelp": "Herramientas que el agente podría nombrar pero Paperclip bloquearía:",
+      "moreTools": "+{{n}} más"
+    },
+    "searchableSelect": {
+      "searchPlaceholder": "Buscar...",
+      "emptyMessage": "No se encontraron opciones.",
+      "loadingMessage": "Cargando...",
+      "closeSelector": "Cerrar selector"
+    },
+    "taskChatBubble": {
+      "images_one": "Imagen · {{count}}",
+      "images_other": "Imágenes · {{count}}",
+      "files_one": "Archivo · {{count}}",
+      "files_other": "Archivos · {{count}}",
+      "openNamed": "Abrir {{name}}",
+      "imageNumber": "imagen {{n}}",
+      "moreScreenshots": "Abrir {{count}} capturas más",
+      "imageFallback": "imagen",
+      "verificationCaveat": "Advertencia de verificación",
+      "queued": "En cola",
+      "sending": "Enviando…",
+      "sentFromIMessage": "Enviado desde iMessage"
+    },
+    "markdownBody": {
+      "issueLabelWithTitle": "Tarea {{identifier}}: {{title}}",
+      "issueLabel": "Tarea {{identifier}}",
+      "caseLabel": "Caso {{identifier}}",
+      "copyFailed": "No se pudo copiar",
+      "copied": "¡Copiado!",
+      "copy": "Copiar",
+      "unwrapLines": "Quitar ajuste de líneas",
+      "wrapLines": "Ajustar líneas",
+      "copyCode": "Copiar código",
+      "mermaidFailed": "No se pudo renderizar el diagrama de Mermaid.",
+      "mermaidError": "No se pudo renderizar el diagrama de Mermaid: {{error}}",
+      "mermaidRendering": "Renderizando diagrama de Mermaid...",
+      "scrollableTable": "Tabla desplazable",
+      "imageLabel": "Imagen: {{alt}}",
+      "imageSource": " ({{src}})",
+      "untitledImage": "Imagen sin título"
+    },
+    "markdownEditor": {
+      "noUploadHandler": "No hay un controlador para subir imágenes",
+      "imageUploadFailed": "Falló la subida de la imagen",
+      "fallbackTitle": "El editor enriquecido no está disponible para este markdown. Mostrando el código fuente sin formato.",
+      "retryRichEditor": "Reintentar editor enriquecido",
+      "kind": {
+        "issue": "Tarea",
+        "project": "Proyecto",
+        "user": "Usuario",
+        "skill": "Habilidad",
+        "routine": "Rutina"
+      }
+    },
+    "launchers": {
+      "unknownError": "Error desconocido",
+      "close": "Cerrar",
+      "unavailable": "Los lanzadores de plugins no están disponibles: {{message}}"
+    },
+    "connectFlowPreview": {
+      "signInTo": "Iniciar sesión en {{provider}}",
+      "instructionTailHandsOver": " ingresando el código de autorización de abajo",
+      "instructionTail": " y después volvé y escribí el código de autorización",
+      "startOver": "Empezar de nuevo",
+      "connect": "Conectar",
+      "waitingForCode": "Esperando el código",
+      "connecting": "Conectando",
+      "next": "Siguiente",
+      "connected": "Conectado",
+      "connectModel": "Conectar un modelo",
+      "ledeDone": "El paso avanza directamente a la revisión; no hay pantalla de éxito.",
+      "lede": "Paperclip funciona con tu suscripción existente o con claves de API.",
+      "modelSource": "Fuente del modelo",
+      "provideKey": "Ingresá tu clave de API de {{provider}} para conectarte",
+      "apiKeyLabel": "Clave de API",
+      "apiKeyPlaceholder": "Ingresá la clave de API aquí"
+    },
+    "financeTimelineCard": {
+      "emptyMessage": "No hay eventos financieros registrados en este período. Los eventos aparecen cuando se informan por la API, la CLI o una integración compatible.",
+      "providerCostReport": "Informe de costos del proveedor",
+      "title": "Eventos financieros recientes",
+      "description": "Cargos de proveedores, suscripciones, comisiones y créditos. Se informan por separado de las estimaciones de costo de corridas.",
+      "invoice": "factura {{id}}",
+      "region": "región {{value}}",
+      "tier": "nivel {{value}}",
+      "estimated": "estimado"
+    },
+    "routeErrorBoundary": {
+      "title": "Esta página tuvo un error",
+      "description": "Algo salió mal al mostrar esta página. Podés volver atrás y reintentar, o recargar.",
+      "goBack": "Volver",
+      "reloadPage": "Recargar página"
+    },
+    "devRestartBanner": {
+      "relative": {
+        "justNow": "hace un momento",
+        "minutesAgo": "hace {{n}} min",
+        "hoursAgo": "hace {{n}} h",
+        "daysAgo": "hace {{n}} d"
+      },
+      "reason": {
+        "backendAndMigrations": "hay archivos del backend modificados y migraciones pendientes",
+        "pendingMigrations": "las migraciones pendientes requieren un nuevo arranque",
+        "backendChanged": "hay archivos del backend modificados desde que arrancó este servidor"
+      },
+      "liveRuns_one": "{{count}} corrida activa",
+      "liveRuns_other": "{{count}} corridas activas",
+      "confirmWithRuns": "¿Reiniciar Paperclip ahora? Esto puede interrumpir {{runs}}.",
+      "confirm": "¿Reiniciar Paperclip ahora?",
+      "requestFailed": "No se pudo solicitar el reinicio",
+      "restartRequired": "Reinicio requerido",
+      "autoRestartOn": "Reinicio automático activado",
+      "updated": " · actualizado {{time}}",
+      "changed": "Cambiados: {{paths}}",
+      "morePaths": " +{{n}} más",
+      "pendingMigrations": "Migraciones pendientes: {{list}}",
+      "moreMigrations": " +{{n}} más",
+      "waitingForRuns": "Esperando a que termine {{runs}}",
+      "autoRestartIdle": "El reinicio automático se activará cuando la instancia esté inactiva",
+      "restartPrefix": "Reiniciá con ",
+      "restartSuffix": " cuando el trabajo activo se pueda interrumpir sin riesgo",
+      "restartRequested": "Reinicio solicitado",
+      "restartNow": "Reiniciar ahora"
+    },
+    "boardClaim": {
+      "invalidUrl": "La URL de reclamo del board no es válida.",
+      "loading": "Cargando el desafío de reclamo...",
+      "challengeUnavailable": "Desafío de reclamo no disponible",
+      "invalidChallenge": "El desafío no es válido o ya venció.",
+      "challengeUnavailableNoData": "Desafío de reclamo no disponible.",
+      "claimedTitle": "Propiedad del board reclamada",
+      "claimedBody": "Esta instancia ahora está vinculada a tu usuario autenticado.",
+      "openBoard": "Abrir board",
+      "signInTitle": "Se requiere iniciar sesión",
+      "signInBody": "Iniciá sesión o creá una cuenta, y después volvé a esta página para reclamar la propiedad del board.",
+      "signInLink": "Iniciar sesión / Crear cuenta",
+      "claimTitle": "Reclamar propiedad del board",
+      "claimBody": "Esto promoverá tu usuario a administrador de la instancia y migrará el acceso de propiedad de la organización desde el modo local de confianza.",
+      "claimFailed": "No se pudo reclamar la propiedad del board",
+      "claiming": "Reclamando…",
+      "claimButton": "Reclamar propiedad"
+    },
+    "costDataQualityNotice": {
+      "reasons": {
+        "unknown_billing": {
+          "label": "Categoría de facturación desconocida",
+          "description": "Esta corrida no identificó facturación por API ni por suscripción. Los cargos registrados se incluyen en el registro de inferencia. Para las próximas corridas, elegí una conexión de IA en la configuración del agente para que Paperclip pueda identificar su facturación."
+        },
+        "missing_model": {
+          "label": "Modelo no informado",
+          "description": "Se registró uso de tokens sin un modelo, así que Paperclip no puede estimar su costo. Elegí un modelo explícito en la configuración del agente para las próximas corridas. Cambiar la configuración no vuelve a calcular el precio de esta corrida pasada."
+        },
+        "missing_price": {
+          "label": "Costo no disponible",
+          "description": "El proveedor no informó un precio confiable para este uso. No hace falta ninguna acción para esta entrada pasada. Las nuevas corridas por API con uso completo y un modelo compatible se estiman automáticamente."
+        },
+        "waiting_for_receipt": {
+          "label": "Recibiendo uso",
+          "description": "Esta corrida se detuvo. Paperclip está esperando sus datos de uso finales y los registrará automáticamente. No necesitás volver a ejecutar el agente."
+        },
+        "receipt_unavailable": {
+          "label": "Uso final no disponible",
+          "description": "Esta corrida se detuvo sin datos de uso finales. Su costo sigue sin resolverse para las verificaciones de presupuesto. Paperclip registrará un comprobante tardío si llega uno; volver a ejecutar el agente no recuperará este uso."
+        },
+        "retryable": {
+          "label": "Listo para registrar",
+          "description": "Los datos de uso guardados están listos para registrarse. Paperclip reintenta automáticamente, o podés reintentar ahora. Esto solo registra costos; no vuelve a ejecutar el agente."
+        }
+      },
+      "recorded": "Costos registrados.",
+      "noNewData": "No hay datos nuevos de costos disponibles.",
+      "notRerun": "El agente no se volvió a ejecutar.",
+      "unavailableRuns_one": "{{count}} costo de corrida no disponible",
+      "unavailableRuns_other": "{{count}} costos de corrida no disponibles",
+      "unknownBilling_one": "{{count}} tipo de facturación desconocido",
+      "unknownBilling_other": "{{count}} tipos de facturación desconocidos",
+      "unknownAgent": "Agente desconocido",
+      "paperclipServices": "Servicios de Paperclip",
+      "viewRun": "Ver corrida",
+      "retryRecording": "Reintentar registro de costos",
+      "recording": "Registrando costos guardados…",
+      "recordingFailed": "No se pudo registrar el costo. Volvé a intentarlo en unos minutos.",
+      "loadingRuns": "Cargando las corridas afectadas…",
+      "detailsLoadError": "No se pudo cargar el detalle de costos.",
+      "retryLoading": "Reintentar carga",
+      "staleDetails": "Mostrando el último detalle de costos cargado. Las actualizaciones se reanudarán automáticamente.",
+      "noGaps": "No quedan faltantes de costos en este período.",
+      "detailsByAgent": "Detalle de costos por agente",
+      "groupLabel": "Detalle de costos de {{name}}",
+      "truncated": "Mostrando las 25 entradas más recientes de cada categoría. Elegí un rango de fechas más corto para ver más."
+    },
+    "issueSiblingNavigation": {
+      "navLabel": "Navegación de subtareas",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "previousSubtask": "Subtarea anterior",
+      "nextSubtask": "Subtarea siguiente",
+      "linkLabel": "{{direction}}: {{identifier}} - {{title}}"
+    },
+    "enforcementBanner": {
+      "deniedSuffix_one": " llamada de herramienta gobernada fue denegada o falló en la última hora. El acceso lo aplica el gateway de herramientas del lado del servidor; abrí el conector afectado para revisar qué se bloqueó y por qué.",
+      "deniedSuffix_other": " llamadas de herramientas gobernadas fueron denegadas o fallaron en la última hora. El acceso lo aplica el gateway de herramientas del lado del servidor; abrí el conector afectado para revisar qué se bloqueó y por qué.",
+      "defaultBody": "El acceso a las herramientas lo aplica del lado del servidor el gateway de herramientas. Estas pantallas configuran y observan esa aplicación; no la reemplazan. Los agentes ven y llaman solo las herramientas que permiten sus perfiles y políticas; todo lo demás se deniega por defecto."
+    },
+    "breadcrumb": {
+      "ariaLabel": "migas de pan",
+      "more": "Más"
+    },
+    "sidePanelMobileTabs": {
+      "switchTabs": "Cambiar pestañas, {{count}} abiertas",
+      "chooseTab": "Elegí una pestaña",
+      "openTabs": "Pestañas abiertas",
+      "closeTab": "Cerrar {{label}}"
+    },
+    "emailConnectionAccess": {
+      "loading": "Cargando acceso…",
+      "loadError": "No se pudo cargar el acceso a la conexión.",
+      "anyHuman": "Cualquier persona de la organización",
+      "justMe": "Solo yo",
+      "credentialOwner": "Solo el propietario de la credencial",
+      "accessRevoked": "Acceso revocado",
+      "humansHeading": "¿Qué personas pueden usar esta credencial?",
+      "agentsHeading": "¿Qué agentes pueden usar esta conexión?",
+      "pickAgents": "Solo los agentes que yo elija",
+      "anyAgent": "Cualquier agente",
+      "removeAgentHelp": "Quitar un agente asignado detiene la recepción y el envío de mensajes desde su bandeja de entrada."
+    },
+    "taskChatPerfHarness": {
+      "heading": "Chat de tarea: {{responses}} respuestas, {{tools}} herramientas",
+      "stop": "Detener streaming",
+      "start": "Iniciar streaming",
+      "recreate": "Recrear objetos del historial",
+      "replyLabel": "Respuesta",
+      "replyPlaceholder": "Respondé a la tarea"
+    },
+    "relationControls": {
+      "privateTask": "Tarea privada",
+      "thisPrivateTask": "esta tarea privada",
+      "removeBlockerLabel": "Quitar {{label}} como bloqueante",
+      "actionsForBlocker": "Acciones para el bloqueante {{label}}",
+      "visitTask": "Ver tarea",
+      "removeBlocker": "Quitar bloqueante",
+      "taskLinkLabel": "Tarea {{label}}: {{title}}",
+      "taskLabelOnly": "Tarea: {{title}}",
+      "removeBlockerTitle": "¿Quitar bloqueante?",
+      "removeConfirmBody": "Quitar {{label}} como bloqueante de esta tarea.",
+      "cancel": "Cancelar",
+      "showFewer": "Mostrar menos elementos",
+      "showMoreItems": "Mostrar {{count}} elementos más",
+      "showLess": "Mostrar menos",
+      "showMore": "Mostrar {{count}} más"
+    },
+    "inboxAgentPolicy": {
+      "modes": {
+        "open": {
+          "title": "Cualquiera de mis agentes",
+          "description": "Permití que cualquier agente que administrás archive tareas de tu bandeja de entrada."
+        },
+        "allowlist": {
+          "title": "Solo los agentes elegidos",
+          "description": "Restringí la limpieza de la bandeja de entrada a los agentes que elegís abajo."
+        },
+        "disabled": {
+          "title": "Desactivado",
+          "description": "Los agentes nunca pueden archivar tareas de tu bandeja de entrada."
+        }
+      },
+      "loadError": "No se pudo cargar la política de agentes de la bandeja de entrada.",
+      "loading": "Cargando la política de agentes de la bandeja de entrada…",
+      "title": "Dejar que los agentes ordenen mi bandeja de entrada",
+      "description": "Elegí si los agentes que administrás pueden archivar tareas de tu bandeja de entrada en tu nombre. Podés deshacer cualquier archivado, y cada archivado hecho por un agente se atribuye en las propiedades de la tarea.",
+      "ariaLabel": "Política de archivado de agentes en la bandeja de entrada",
+      "allowedAgents": "Agentes autorizados a ordenar mi bandeja de entrada",
+      "selectAgents": "Elegir agentes",
+      "agentsSelected_one": "{{count}} agente seleccionado",
+      "agentsSelected_other": "{{count}} agentes seleccionados",
+      "noAgents": "Todavía no administrás ningún agente.",
+      "saveError": "No se pudo guardar la política de agentes de la bandeja de entrada.",
+      "saved": "Guardado",
+      "saving": "Guardando…",
+      "save": "Guardar"
+    },
+    "issuePrivacy": {
+      "nonSetterTooltip": "Solo el responsable de la tarea o un administrador puede cambiar quién puede verla.",
+      "publicCheckFailed": "No se pudo verificar la privacidad de la tarea. Volvé a intentarlo antes de hacerla pública.",
+      "checkingPrivacy": "Verificando la privacidad de la tarea…",
+      "movePrivateParent": "Sacá esta tarea de su tarea padre privada antes de hacerla pública.",
+      "movePrivateProject": "Sacá esta tarea de su proyecto privado antes de hacerla pública.",
+      "nowPrivate": "La tarea ahora es privada",
+      "nowPublic": "La tarea ahora es pública",
+      "visibilityFailed": "No se pudo cambiar la visibilidad",
+      "share": "Compartir…",
+      "makePublic": "Hacer pública",
+      "makePrivate": "Hacer privada",
+      "retryAccess": "Reintentar verificación de acceso",
+      "makePublicTitle": "¿Hacer pública esta tarea?",
+      "publicBody": "Todas las personas de la empresa podrán leer esta tarea, sus comentarios, documentos e historial de corridas. Las subtareas privadas existentes conservan su privacidad.",
+      "publicBodyPersonal": "Esta tarea también saldrá de su proyecto personal. ",
+      "publicBodyBold": "El contenido que otras personas ya vieron no se puede retirar.",
+      "keepPrivate": "Mantener privada",
+      "makingPublic": "Haciendo pública…"
+    },
+    "liveRunWidget": {
+      "title": "Corridas en vivo",
+      "description": "Usa la superficie de corridas estilo chat compartida de la actividad de la tarea.",
+      "stopping": "Deteniendo…",
+      "stop": "Detener",
+      "openRun": "Abrir corrida"
+    },
+    "searchFilterMenu": {
+      "searchPlaceholder": "Buscar…",
+      "emptyMessage": "No hay opciones",
+      "filterBy": "Filtrar por {{label}}",
+      "clear": "Limpiar",
+      "triggerWithOption": "{{label}}: {{option}}",
+      "triggerCount": "{{label}}: {{n}}"
+    },
+    "budgetPolicyCard": {
+      "lifetime": "Presupuesto total",
+      "monthly": "Presupuesto mensual (UTC)",
+      "reserveLabel": "Reservar por corrida (USD)",
+      "reserveInvalid": "Ingresá un monto válido de cero o más.",
+      "reserveHelp": "Una estimación que se reserva antes de que empiece cada corrida. Cero desactiva la estimación. Los cargos reales del proveedor pueden superarla.",
+      "updateReservation": "Actualizar reserva",
+      "advanced": "Configuración avanzada",
+      "blockUnpriced": "Bloquear nuevo trabajo cuando el uso no tiene un precio confiable",
+      "observed": "Observado",
+      "budget": "Presupuesto",
+      "percentOfLimit": "{{percent}}% del límite",
+      "noCap": "Sin tope configurado",
+      "disabled": "Deshabilitado",
+      "softAlert": "Alerta temprana al {{percent}}%",
+      "pauseSuffix": " · pausa: {{reason}}",
+      "remaining": "Restante",
+      "unlimited": "Sin límite",
+      "pendingRuns": "{{count}} corridas completadas esperan contabilización.",
+      "unpricedEvents": "{{count}} eventos de uso no tienen precio. El gasto conocido excluye su costo desconocido.",
+      "utilization": "Utilización del presupuesto: {{percent}}% usado",
+      "pausedProject": "La ejecución está pausada para este proyecto hasta que se resuelva el bloqueo por presupuesto.",
+      "pausedScope": "Los latidos están pausados para este alcance hasta que se resuelva el bloqueo por presupuesto.",
+      "budgetUsd": "Presupuesto (USD)",
+      "saving": "Guardando...",
+      "updateBudget": "Actualizar presupuesto",
+      "setBudget": "Definir presupuesto",
+      "invalidAmount": "Ingresá un monto en dólares válido y no negativo.",
+      "paused": "Pausado",
+      "warning": "Advertencia",
+      "hardStop": "Corte forzoso",
+      "healthy": "Saludable"
+    },
+    "artifacts": {
+      "kind": {
+        "all": "Todos",
+        "image": "Imágenes",
+        "video": "Videos",
+        "document": "Documentos",
+        "text": "Texto",
+        "file": "Archivos"
+      },
+      "group": {
+        "none": "Ninguno",
+        "task": "Tarea",
+        "parentTask": "Tarea padre"
+      },
+      "breadcrumb": "Artefactos",
+      "selectOrganization": "Elegí una organización para ver los artefactos.",
+      "empty": {
+        "noStacksMatch": "No hay pilas de artefactos que coincidan con esta búsqueda.",
+        "noStacks": "Todavía no hay pilas de artefactos.",
+        "noMatch": "No hay artefactos que coincidan con esta búsqueda.",
+        "noStackMatch": "No hay artefactos en esta pila que coincidan con los filtros actuales.",
+        "none": "Todavía no hay artefactos. Los resultados adjuntos a las tareas aparecerán aquí.",
+        "noneOfType": "Todavía no hay artefactos de este tipo."
+      },
+      "searchPlaceholder": "Buscar artefactos...",
+      "searchLabel": "Buscar artefactos",
+      "clearSearch": "Limpiar búsqueda de artefactos",
+      "groupControl": "Agrupar artefactos (actualmente: {{group}})",
+      "groupTitle": "Agrupar artefactos",
+      "groupBy": "Agrupar por",
+      "filterByType": "Filtrar artefactos por tipo",
+      "allStacks": "Todas las pilas",
+      "loadingMore": "Cargando más artefactos...",
+      "updating": "Actualizando artefactos..."
+    },
+    "proposalReview": {
+      "noFingerprint": "sin huella digital",
+      "bytes_one": "{{count}} byte",
+      "bytes_other": "{{count}} bytes",
+      "fingerprintCopied": "Huella digital copiada",
+      "fingerprintCopyFailed": "No se pudo copiar la huella digital",
+      "copyDigest": "Copiar resumen completo — {{digest}}",
+      "reasonGiven": "Motivo indicado por el agente",
+      "proposed": "Propuesto",
+      "proposedSecretFallback": "secreto propuesto",
+      "secretFallback": "secreto",
+      "requestFailed": "La solicitud falló: {{status}}",
+      "genericError": "Algo salió mal. Volvé a intentarlo.",
+      "secretApproved": "Secreto aprobado",
+      "bindingApproved": "Vínculo aprobado",
+      "secretCreated": "Secreto creado",
+      "agentFallback": "Agente",
+      "bindingFallback": "vínculo",
+      "proposalRejected": "Propuesta rechazada",
+      "approveSecretTitle": "Aprobar y crear secreto",
+      "approveBindingTitle": "Aprobar vínculo",
+      "secretDescription": "El valor se crea como lo registró el agente que lo propuso. Reorganizalo o renombralo antes de que se aplique.",
+      "bindingDescription": "Dale al agente destino acceso a este secreto. Esto se ejecuta con tus permisos.",
+      "proposedBy": "Propuesto por",
+      "folder": "Carpeta",
+      "name": "Nombre",
+      "landsAs": "Se aplicará como",
+      "enterName": "ingresá un nombre",
+      "description": "Descripción",
+      "optional": "Opcional",
+      "providerVault": "Bóveda del proveedor",
+      "deploymentDefault": "Predeterminada del despliegue",
+      "approving": "Aprobando…",
+      "approveAndCreate": "Aprobar y crear",
+      "approveSecretAndBind": "Aprobar secreto y vincular",
+      "cancel": "Cancelar",
+      "targetAgent": "Agente destino",
+      "deliveredAs": "Entregado como",
+      "secret": "Secreto",
+      "alsoApproveLabel": "Aprobar también el secreto propuesto",
+      "alsoApprove": "Aprobar también el secreto propuesto",
+      "alsoApproveSuffix": " y crearlo en el mismo paso. El vínculo no se puede aplicar sin él.",
+      "rejectTitle": "Rechazar propuesta",
+      "sentBackTo": "El motivo se envía de vuelta a",
+      "dependentRejected": ". Los vínculos que dependen de esta propuesta también se rechazan.",
+      "reason": "Motivo",
+      "reasonPlaceholder": "¿Por qué se rechaza esto?",
+      "rejecting": "Rechazando…",
+      "reject": "Rechazar",
+      "approve": "Aprobar",
+      "noPermission": "No tenés permiso para aprobar esto."
+    }
   }
 }

@@ -5,20 +5,22 @@ import type { Agent, AgentLifecycleState } from "@paperclipai/shared";
 import { Loader2 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { useTranslation } from "@/i18n";
 
+// Lookup keys; translated at render time.
 const phases = {
-  preparing: ["Preparing agent", "Required resources are being prepared. Work stays queued."],
-  verifying: ["Verifying agent", "The saved execution configuration is being checked. Work stays queued."],
-  pausing: ["Pausing agent", "Waiting for execution and required resources to stop."],
-  resuming: ["Resuming agent", "Required resources are being started. Work stays queued."],
-  terminating: ["Terminating agent", "Stopping execution before resource cleanup."],
-  cleaning_up: ["Cleaning up agent", "Required resources are being removed. Termination is not complete."],
+  preparing: ["ui2g1.agentLifecycleStatus.phase.preparing.title", "ui2g1.agentLifecycleStatus.phase.preparing.description"],
+  verifying: ["ui2g1.agentLifecycleStatus.phase.verifying.title", "ui2g1.agentLifecycleStatus.phase.verifying.description"],
+  pausing: ["ui2g1.agentLifecycleStatus.phase.pausing.title", "ui2g1.agentLifecycleStatus.phase.pausing.description"],
+  resuming: ["ui2g1.agentLifecycleStatus.phase.resuming.title", "ui2g1.agentLifecycleStatus.phase.resuming.description"],
+  terminating: ["ui2g1.agentLifecycleStatus.phase.terminating.title", "ui2g1.agentLifecycleStatus.phase.terminating.description"],
+  cleaning_up: ["ui2g1.agentLifecycleStatus.phase.cleaning_up.title", "ui2g1.agentLifecycleStatus.phase.cleaning_up.description"],
 } satisfies Partial<Record<AgentLifecycleState, [string, string]>>;
 
 const failedPhases = {
-  preparing: "Agent preparation failed", verifying: "Agent verification failed",
-  pausing: "Agent pause failed", resuming: "Agent resume failed",
-  terminating: "Agent termination failed", cleaning_up: "Agent cleanup failed",
+  preparing: "ui2g1.agentLifecycleStatus.failed.preparing", verifying: "ui2g1.agentLifecycleStatus.failed.verifying",
+  pausing: "ui2g1.agentLifecycleStatus.failed.pausing", resuming: "ui2g1.agentLifecycleStatus.failed.resuming",
+  terminating: "ui2g1.agentLifecycleStatus.failed.terminating", cleaning_up: "ui2g1.agentLifecycleStatus.failed.cleaning_up",
 };
 
 function pendingPhase(state?: AgentLifecycleState) {
@@ -47,23 +49,24 @@ export function AgentLifecycleStatus({ agent, onRetry, retryPending, refreshErro
   retryPending: boolean;
   refreshError?: boolean;
 }) {
+  const { t } = useTranslation();
   const phase = pendingPhase(agent.lifecycleState);
   if (!phase && !refreshError) return null;
   return <div role="status" aria-live="polite" className="space-y-2 text-sm">
-    {refreshError && <p className="text-destructive">Could not refresh agent lifecycle status.</p>}
+    {refreshError && <p className="text-destructive">{t("ui2g1.agentLifecycleStatus.refreshError")}</p>}
     {phase && <div className="flex flex-wrap items-center gap-2">
       <Badge variant={agent.lifecycleError ? "destructive" : "secondary"}>
         {!agent.lifecycleError && <Loader2 aria-hidden="true" className="mr-1 size-3 animate-spin motion-reduce:animate-none" />}
-        {agent.lifecycleError ? failedPhases[agent.lifecycleState as keyof typeof failedPhases] : phase[0]}
+        {agent.lifecycleError ? t(failedPhases[agent.lifecycleState as keyof typeof failedPhases]) : t(phase[0])}
       </Badge>
-      {!agent.lifecycleError && <span className="text-muted-foreground">{phase[1]}</span>}
+      {!agent.lifecycleError && <span className="text-muted-foreground">{t(phase[1])}</span>}
     </div>}
     {phase && agent.lifecycleError && <div className="flex flex-wrap items-center gap-2 text-destructive">
       <span>{agent.lifecycleError}</span>
       <Button variant="outline" size="sm" disabled={retryPending} onClick={onRetry}>
-        {retryPending ? "Retrying…" : "Retry now"}
+        {retryPending ? t("ui2g1.agentLifecycleStatus.retrying") : t("ui2g1.agentLifecycleStatus.retryNow")}
       </Button>
     </div>}
-    {phase && agent.lifecycleError && <p className="text-muted-foreground">Paperclip retries automatically; Retry now checks again immediately.</p>}
+    {phase && agent.lifecycleError && <p className="text-muted-foreground">{t("ui2g1.agentLifecycleStatus.autoRetry")}</p>}
   </div>;
 }
