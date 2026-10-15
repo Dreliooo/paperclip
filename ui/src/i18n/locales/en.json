@@ -167,5 +167,19 @@
     "autoReadOn": "Reading new replies aloud",
     "autoReadHint": "New agent replies in this conversation will be read aloud, one at a time.",
     "onlineVoice": "online: text is sent to the browser vendor"
+  },
+  "taskChat": {
+    "run": {
+      "working": "Working",
+      "worked": "Worked",
+      "stopped": "Stopped",
+      "forDuration": "for {{duration}}",
+      "commands_one": "ran {{count}} command",
+      "commands_other": "ran {{count}} commands",
+      "tools_one": "called {{count}} tool",
+      "tools_other": "called {{count}} tools",
+      "whoIsWorking": "{{name}} is running this turn",
+      "forDurationDone": "for {{duration}}"
+    }
   }
 }

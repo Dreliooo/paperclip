@@ -167,5 +167,19 @@
     "autoReadOn": "Leyendo respuestas nuevas",
     "autoReadHint": "Las respuestas nuevas del agente en esta conversación se leerán en voz alta, de a una.",
     "onlineVoice": "en línea: el texto se envía al proveedor del navegador"
+  },
+  "taskChat": {
+    "run": {
+      "working": "Trabajando",
+      "worked": "Trabajó",
+      "stopped": "Se detuvo",
+      "forDuration": "hace {{duration}}",
+      "commands_one": "ejecutó {{count}} comando",
+      "commands_other": "ejecutó {{count}} comandos",
+      "tools_one": "usó {{count}} herramienta",
+      "tools_other": "usó {{count}} herramientas",
+      "whoIsWorking": "{{name}} está a cargo de este turno",
+      "forDurationDone": "durante {{duration}}"
+    }
   }
 }

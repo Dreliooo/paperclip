@@ -63,6 +63,7 @@ import {
 import { TaskChatDescriptionBubble } from "@/components/task-chat/TaskChatDescriptionBubble";
 import {
   TaskChatLiveRunPill,
+  toolCountsFromEntries,
   toolCountSummaryFromEntries,
 } from "@/components/task-chat/TaskChatLiveRunPill";
 import type {
@@ -2352,6 +2353,12 @@ export function TaskChatThread(props: TaskChatThreadProps) {
     : settlingFinishedAt
       ? toMs(settlingFinishedAt)
       : null;
+  const tailToolCounts = useMemo(
+    () => (tailRunId ? toolCountsFromEntries(tailEntries) : null),
+    // tailEntries is a fresh array each render; tailContentKey tracks its content.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tailRunId, tailContentKey],
+  );
   const tailToolSummary = useMemo(
     () => (tailRunId ? toolCountSummaryFromEntries(tailEntries) : null),
     // tailEntries is a fresh array each render; tailContentKey tracks its content.
@@ -3157,6 +3164,10 @@ export function TaskChatThread(props: TaskChatThreadProps) {
                                     startedAtMs={tailStartedAtMs}
                                     finishedAtMs={tailFinishedAtMs}
                                     toolSummary={tailToolSummary}
+                                    toolCounts={tailToolCounts}
+                                    agentName={visibleTailAgentName}
+                                    agentIcon={visibleTailAgentIcon}
+                                    agent={tailAgent ?? (tailAgentId ? { id: tailAgentId } : undefined)}
                                   />
                                   <TaskChatLiveTail
                                     items={tailItems}
