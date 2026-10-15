@@ -167,7 +167,16 @@
       "topLevel": "Top-level agents",
       "noReports": "No direct reports.",
       "viewTeam_one": "View team ({{count}})",
-      "viewTeam_other": "View team ({{count}})"
+      "viewTeam_other": "View team ({{count}})",
+      "chartTitle": "Org Chart",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit to screen",
+      "fitChart": "Fit chart to screen",
+      "selectOrg": "Select an organization to view the org chart.",
+      "noHierarchy": "No organizational hierarchy defined.",
+      "importOrg": "Import organization",
+      "exportOrg": "Export organization"
     },
     "status": {
       "running": "running",

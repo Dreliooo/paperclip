@@ -15,6 +15,7 @@ import { Download, Maximize2, Minus, Network, Plus, Upload } from "lucide-react"
 import { AGENT_ROLE_LABELS, type Agent } from "@paperclipai/shared";
 import { useCloudInstance } from "@/hooks/useCloudInstance";
 import { useHiddenSettings } from "@/hooks/useHiddenSettings";
+import { useTranslation } from "@/i18n";
 
 // Layout constants
 const CARD_W = 200;
@@ -208,6 +209,7 @@ export interface OrgChartProps {
 export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, embedded = false }: OrgChartProps = {}) {
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // Import is floored server-side on cloud-managed instances (403 cloud_managed), so the
   // button is hidden rather than dead-ending. Export stays available. Both
@@ -238,8 +240,8 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
   }, [agents]);
 
   useEffect(() => {
-    if (!embedded) setBreadcrumbs([{ label: "Org Chart" }]);
-  }, [embedded, setBreadcrumbs]);
+    if (!embedded) setBreadcrumbs([{ label: t("agents.org.chartTitle") }]);
+  }, [embedded, setBreadcrumbs, t]);
 
   // Layout computation
   const layout = useMemo(() => layoutForest(orgTree ?? []), [orgTree]);
@@ -465,7 +467,7 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
   }, [pan, zoom]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Network} message="Select an organization to view the org chart." />;
+    return <EmptyState icon={Network} message={t("agents.org.selectOrg")} />;
   }
 
   if (providedOrgTree === undefined && isLoading) {
@@ -473,7 +475,7 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
   }
 
   if (orgTree && orgTree.length === 0) {
-    return <EmptyState icon={Network} message="No organizational hierarchy defined." />;
+    return <EmptyState icon={Network} message={t("agents.org.noHierarchy")} />;
   }
 
   return (
@@ -488,7 +490,7 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
           <Link to="/company/import">
             <Button variant="outline" size="sm">
               <Upload className="mr-1.5 h-3.5 w-3.5" />
-              Import organization
+              {t("agents.org.importOrg")}
             </Button>
           </Link>
         ) : null}
@@ -496,7 +498,7 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
           <Link to="/company/export">
             <Button variant="outline" size="sm">
               <Download className="mr-1.5 h-3.5 w-3.5" />
-              Export organization
+              {t("agents.org.exportOrg")}
             </Button>
           </Link>
         ) : null}
@@ -534,8 +536,8 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
                 });
               }
             }}
-            title="Zoom in"
-            aria-label="Zoom in"
+            title={t("agents.org.zoomIn")}
+            aria-label={t("agents.org.zoomIn")}
           >
             <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           </button>
@@ -550,16 +552,16 @@ export function OrgChart({ orgTree: providedOrgTree, agents: providedAgents, emb
                 });
               }
             }}
-            title="Zoom out"
-            aria-label="Zoom out"
+            title={t("agents.org.zoomOut")}
+            aria-label={t("agents.org.zoomOut")}
           >
             <Minus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           </button>
           <button
             className="flex size-9 items-center justify-center rounded border border-border bg-background text-(length:--text-nano) transition-colors hover:bg-accent sm:size-7"
             onClick={fitToScreen}
-            title="Fit to screen"
-            aria-label="Fit chart to screen"
+            title={t("agents.org.fit")}
+            aria-label={t("agents.org.fitChart")}
           >
             <Maximize2 className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           </button>

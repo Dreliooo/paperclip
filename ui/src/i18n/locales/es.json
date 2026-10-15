@@ -167,7 +167,16 @@
       "topLevel": "Agentes de nivel superior",
       "noReports": "Sin reportes directos.",
       "viewTeam_one": "Ver equipo ({{count}})",
-      "viewTeam_other": "Ver equipo ({{count}})"
+      "viewTeam_other": "Ver equipo ({{count}})",
+      "chartTitle": "Organigrama",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "fit": "Ajustar a la pantalla",
+      "fitChart": "Ajustar el diagrama a la pantalla",
+      "selectOrg": "Seleccioná una organización para ver el organigrama.",
+      "noHierarchy": "No hay una jerarquía definida.",
+      "importOrg": "Importar organización",
+      "exportOrg": "Exportar organización"
     },
     "status": {
       "running": "en ejecución",
