@@ -132,6 +132,13 @@ export {
   type UpsertSidebarOrderPreference,
 } from "./sidebar-preferences.js";
 export {
+  USAGE_DISPLAY_MODES,
+  USER_PREFERENCE_LOCALES,
+  usageDisplayModeSchema,
+  updateUserPreferencesSchema,
+  type UpdateUserPreferences,
+} from "./user-preferences.js";
+export {
   resourceMembershipStateSchema,
   updateDocumentResourceMembershipSchema,
   updateResourceMembershipSchema,

@@ -953,6 +953,7 @@ export type {
 } from "./user-profile.js";
 export type { SidebarBadges } from "./sidebar-badges.js";
 export type { SidebarOrderPreference } from "./sidebar-preferences.js";
+export type { UsageDisplayMode, UserPreferences } from "./user-preferences.js";
 export type {
   ResourceMembershipResourceType,
   ResourceMembershipState,

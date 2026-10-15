@@ -64,5 +64,29 @@
       "terminated": "dado de baja",
       "archived": "archivado"
     }
+  },
+  "common": {
+    "saving": "Guardando…"
+  },
+  "usage": {
+    "display": {
+      "tokens": "Tokens",
+      "costs": "Costos",
+      "both": "Ambos"
+    }
+  },
+  "profile": {
+    "display": {
+      "title": "Preferencias de visualización",
+      "language": "Idioma",
+      "languageHint": "Se aplica a menús, botones y mensajes. Los nombres que les diste a agentes, proyectos y tareas nunca se traducen.",
+      "usage": "Métricas de uso",
+      "usageHint": {
+        "tokens": "Prioriza la cantidad de tokens por modelo; los importes en dinero se ocultan cuando es posible.",
+        "costs": "Prioriza el dinero: gasto real y costo equivalente de API.",
+        "both": "Muestra tokens y dinero lado a lado."
+      },
+      "saveFailed": "No se pudo guardar tu preferencia: {{message}}"
+    }
   }
 }

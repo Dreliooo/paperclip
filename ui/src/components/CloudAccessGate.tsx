@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CloudSignIn } from "@/components/CloudSignIn";
 import { clearCloudSignInAttempt } from "@/lib/cloud-sign-in";
+import { LocalePreferenceSync } from "@/hooks/useUserPreferences";
 
 const RECONNECT_INTERVAL_MS = 5_000;
 
@@ -217,6 +218,7 @@ export function CloudAccessGate({ allowMembershipRequest = false }: { allowMembe
           Connection interrupted. Reconnecting automatically…
         </div>
       )}
+      <LocalePreferenceSync />
       <Outlet />
     </>
   );

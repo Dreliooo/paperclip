@@ -1743,6 +1743,14 @@ export {
   type UpsertSidebarOrderPreference,
 } from "./validators/sidebar-preferences.js";
 export {
+  USAGE_DISPLAY_MODES,
+  USER_PREFERENCE_LOCALES,
+  usageDisplayModeSchema,
+  updateUserPreferencesSchema,
+  type UpdateUserPreferences,
+} from "./validators/user-preferences.js";
+export type { UsageDisplayMode, UserPreferences } from "./types/user-preferences.js";
+export {
   resourceMembershipStateSchema,
   updateDocumentResourceMembershipSchema,
   updateResourceMembershipSchema,

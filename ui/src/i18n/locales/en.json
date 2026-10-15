@@ -64,5 +64,29 @@
       "terminated": "terminated",
       "archived": "archived"
     }
+  },
+  "common": {
+    "saving": "Saving…"
+  },
+  "usage": {
+    "display": {
+      "tokens": "Tokens",
+      "costs": "Costs",
+      "both": "Both"
+    }
+  },
+  "profile": {
+    "display": {
+      "title": "Display preferences",
+      "language": "Language",
+      "languageHint": "Applies to menus, buttons and messages. Names you gave to agents, projects and tasks are never translated.",
+      "usage": "Usage metrics",
+      "usageHint": {
+        "tokens": "Lead with token counts by model; money amounts are hidden where possible.",
+        "costs": "Lead with money: real spend and API-equivalent cost.",
+        "both": "Show token counts and money side by side."
+      },
+      "saveFailed": "Could not save your preference: {{message}}"
+    }
   }
 }

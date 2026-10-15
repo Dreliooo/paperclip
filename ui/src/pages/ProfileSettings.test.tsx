@@ -23,6 +23,15 @@ const mockAssetsApi = vi.hoisted(() => ({
 
 const mockSetBreadcrumbs = vi.hoisted(() => vi.fn());
 
+const mockUserPreferencesApi = vi.hoisted(() => ({
+  get: vi.fn(),
+  update: vi.fn(),
+}));
+
+vi.mock("@/api/userPreferences", () => ({
+  userPreferencesApi: mockUserPreferencesApi,
+}));
+
 vi.mock("@/api/auth", () => ({
   authApi: mockAuthApi,
 }));
@@ -74,6 +83,13 @@ describe("ProfileSettings", () => {
       assetId: "asset-1",
       contentPath: "/api/assets/asset-1/content",
     });
+    mockUserPreferencesApi.get.mockResolvedValue({ locale: null, usageDisplay: null, updatedAt: null });
+    mockUserPreferencesApi.update.mockImplementation(async (patch: Record<string, unknown>) => ({
+      locale: null,
+      usageDisplay: null,
+      updatedAt: null,
+      ...patch,
+    }));
     mockAuthApi.updateProfile.mockImplementation(async (input: { name: string; image: string | null }) => ({
       id: "user-1",
       name: input.name,
@@ -98,6 +114,43 @@ describe("ProfileSettings", () => {
     expect(container.textContent).toContain("Jane Example");
     expect(container.textContent).not.toContain("Keyboard shortcuts");
     expect(container.querySelector('[aria-label="Toggle keyboard shortcuts"]')).toBeNull();
+    await act(async () => root.unmount());
+  });
+
+  it("saves the language and usage display preferences per user", async () => {
+    const root = createRoot(container);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    await act(async () => {
+      root.render(<QueryClientProvider client={queryClient}><ProfileSettings /></QueryClientProvider>);
+    });
+    await flushReact();
+
+    const card = container.querySelector('[data-testid="display-preferences"]');
+    expect(card).not.toBeNull();
+    const language = card!.querySelector("select")!;
+    expect(Array.from(language.options).map((option) => option.value)).toEqual(["en", "es"]);
+
+    await act(async () => {
+      language.value = "es";
+      language.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await flushReact();
+    expect(mockUserPreferencesApi.update).toHaveBeenCalledWith({ locale: "es" });
+    // The UI switches immediately, before the server round-trip.
+    expect(document.documentElement.lang).toBe("es");
+
+    const tokens = Array.from(card!.querySelectorAll<HTMLButtonElement>('[role="radio"]'))[0]!;
+    await act(async () => {
+      tokens.click();
+    });
+    await flushReact();
+    expect(mockUserPreferencesApi.update).toHaveBeenCalledWith({ usageDisplay: "tokens" });
+    expect(tokens.getAttribute("aria-checked")).toBe("true");
+
+    // Restore English for the other tests in this file.
+    const { setLocale } = await import("../i18n");
+    setLocale("en");
+    window.localStorage.clear();
     await act(async () => root.unmount());
   });
 
