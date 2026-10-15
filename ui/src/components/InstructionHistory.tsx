@@ -3,6 +3,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import type { AgentInstructionsFileDetail } from "@paperclipai/shared";
 import { agentsApi } from "../api/agents";
 import { Button } from "./ui/button";
+import { useTranslation } from "@/i18n";
 
 export function InstructionHistory({
   agentId,
@@ -19,6 +20,7 @@ export function InstructionHistory({
   disabled: boolean;
   onRestored: (file: AgentInstructionsFileDetail) => void;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const history = useInfiniteQuery({
@@ -63,12 +65,12 @@ export function InstructionHistory({
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        History
+        {t("ui2g6.instructionHistory.history")}
       </Button>
       {open && (
         <div className="space-y-3">
           {history.isLoading && (
-            <p className="text-sm text-muted-foreground">Loading revisions…</p>
+            <p className="text-sm text-muted-foreground">{t("ui2g6.instructionHistory.loadingRevisions")}</p>
           )}
           {error && (
             <p role="alert" className="text-sm text-destructive">
@@ -90,7 +92,7 @@ export function InstructionHistory({
                 <span className="text-sm text-muted-foreground">
                   {revision.source} ·{" "}
                   {new Date(revision.createdAt).toLocaleString()}
-                  {revision.id === currentRevisionId ? " · Current" : ""}
+                  {revision.id === currentRevisionId ? ` · ${t("ui2g6.instructionHistory.current")}` : ""}
                 </span>
               </div>
             ))}
@@ -101,24 +103,24 @@ export function InstructionHistory({
               disabled={history.isFetchingNextPage}
               onClick={() => void history.fetchNextPage()}
             >
-              Older revisions
+              {t("ui2g6.instructionHistory.olderRevisions")}
             </Button>
           )}
           {diff.data && (
             <>
-              <p className="text-sm text-muted-foreground">Selected revision</p>
+              <p className="text-sm text-muted-foreground">{t("ui2g6.instructionHistory.selectedRevision")}</p>
               <pre className="whitespace-pre-wrap break-words rounded-md border border-border p-3 font-mono text-sm">
                 {diff.data.from.content}
               </pre>
               <p className="text-sm text-muted-foreground">
-                Changes from selected revision to current
+                {t("ui2g6.instructionHistory.changesFromSelected")}
               </p>
               <pre className="whitespace-pre-wrap break-words rounded-md border border-border p-3 font-mono text-sm">
-                {diff.data.removed && `Removed:\n${diff.data.removed}\n`}
-                {diff.data.added && `Added:\n${diff.data.added}`}
+                {diff.data.removed && `${t("ui2g6.instructionHistory.removed")}\n${diff.data.removed}\n`}
+                {diff.data.added && `${t("ui2g6.instructionHistory.added")}\n${diff.data.added}`}
                 {!diff.data.removed &&
                   !diff.data.added &&
-                  "No content changes."}
+                  t("ui2g6.instructionHistory.noChanges")}
               </pre>
               <Button
                 type="button"
@@ -129,11 +131,11 @@ export function InstructionHistory({
                 }
                 onClick={() => restore.mutate()}
               >
-                Restore as new revision
+                {t("ui2g6.instructionHistory.restore")}
               </Button>
               {disabled && (
                 <p className="text-sm text-muted-foreground">
-                  Save or cancel your edits before restoring.
+                  {t("ui2g6.instructionHistory.saveOrCancel")}
                 </p>
               )}
             </>
