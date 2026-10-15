@@ -61,7 +61,7 @@ Manual: Change a disposable user’s display details, reload, and inspect an att
 
 Scope: ui
 Storybook: Mount Sidebar using real preference boundary with stars/order/collapse/recents state. Clearly distinguish in-memory section collapse, browser-local recents and server-saved stars/order.
-Production: GET/PUT /sidebar-preferences/me and /companies/{id}/sidebar-preferences/me plus stars must retain intended user/company isolation across reload and switch. Section collapse reopens after reload; global collapse is disabled.
+Production: GET/PUT /sidebar-preferences/me and /companies/{id}/sidebar-preferences/me plus stars must retain intended user/company isolation across reload and switch. GET/PATCH /user-preferences/me stores the user's UI language and usage display (tokens/costs/both); the language is applied on sign-in. Section collapse reopens after reload; global collapse is disabled.
 Sources: Source: [Sidebar.tsx](../../ui/src/components/Sidebar.tsx), [sidebar-preferences.ts](../../server/src/routes/sidebar-preferences.ts), [sidebar-preferences.ts](../../server/src/services/sidebar-preferences.ts). Tests: [Sidebar.test.tsx](../../ui/src/components/Sidebar.test.tsx), [sidebar-preferences-routes.test.ts](../../server/src/__tests__/sidebar-preferences-routes.test.ts)
 
 #### `fallbacks`
