@@ -17,6 +17,7 @@ import {
 import { agentsApi } from "@/api/agents";
 import { useCompany } from "@/context/CompanyContext";
 import { queryKeys } from "@/lib/queryKeys";
+import { useTranslation } from "@/i18n";
 import { ContextualSidebarFrame } from "./ContextualSidebarFrame";
 import { SidebarNavItem } from "./SidebarNavItem";
 import { contextualSidebarStyles } from "./contextual-sidebar-styles";
@@ -41,23 +42,25 @@ const localIcons = {
 } satisfies Record<AgentLocalDetailView, typeof Sparkles>;
 
 const auditItems = [
-  { section: "activity", label: "Activity", icon: Activity },
-  { section: "runs", label: "Runs", icon: PlayCircle },
-  { section: "costs", label: "Costs", icon: ReceiptText },
-  { section: "budgets", label: "Budgets", icon: BadgeDollarSign },
+  { section: "activity", label: "ui2g3.agentSidebar.activity", icon: Activity },
+  { section: "runs", label: "ui2g3.agentSidebar.runs", icon: PlayCircle },
+  { section: "costs", label: "ui2g3.agentSidebar.costs", icon: ReceiptText },
+  { section: "budgets", label: "ui2g3.agentSidebar.budgets", icon: BadgeDollarSign },
 ] as const;
 
 export function AgentContextualSidebar({
   agentRef,
   agentId,
   agentName,
-  labels = { secrets: "Secrets & variables" },
+  labels,
 }: {
   agentRef: string;
   agentId?: string;
   agentName?: string;
   labels?: Partial<Record<AgentLocalDetailView, string>>;
 }) {
+  const { t } = useTranslation();
+  const navLabels: Partial<Record<AgentLocalDetailView, string>> = labels ?? { secrets: t("ui2g3.agentSidebar.secretsAndVariables") };
   const { selectedCompanyId } = useCompany();
   const shouldResolveAgent = !agentId || !agentName;
   const { data: resolvedAgent } = useQuery({
@@ -66,7 +69,7 @@ export function AgentContextualSidebar({
     enabled: shouldResolveAgent && Boolean(agentRef && selectedCompanyId),
   });
   const resolvedId = agentId ?? resolvedAgent?.id;
-  const resolvedName = agentName ?? resolvedAgent?.name ?? "Agent";
+  const resolvedName = agentName ?? resolvedAgent?.name ?? t("ui2g3.agentSidebar.agentFallback");
 
   return (
     <ContextualSidebarFrame
@@ -77,7 +80,7 @@ export function AgentContextualSidebar({
       className="border-r border-border bg-background"
     >
       <nav
-        aria-label={`${resolvedName} navigation`}
+        aria-label={t("ui2g3.agentSidebar.navLabel", { name: resolvedName })}
         data-slot="contextual-sidebar-nav"
         className={contextualSidebarStyles.nav}
       >
@@ -101,7 +104,7 @@ export function AgentContextualSidebar({
                     <SidebarNavItem
                       key={item.value}
                       to={href}
-                      label={labels?.[item.value] ?? item.label}
+                      label={navLabels[item.value] ?? item.label}
                       icon={localIcons[item.value]}
                     />
                   );
@@ -115,18 +118,18 @@ export function AgentContextualSidebar({
             data-slot="contextual-sidebar-section-label"
             className={contextualSidebarStyles.sectionLabel}
           >
-            Audit
+            {t("ui2g3.agentSidebar.audit")}
           </p>
           <div data-slot="contextual-sidebar-group" className={contextualSidebarStyles.group}>
             {resolvedId ? auditItems.map((item) => (
               <SidebarNavItem
                 key={item.section}
                 to={agentScopedAuditHref(resolvedId, item.section)}
-                label={item.label}
+                label={t(item.label)}
                 icon={item.icon}
               />
             )) : (
-              <p className="px-2 py-1.5 text-xs text-muted-foreground">Loading audit links…</p>
+              <p className="px-2 py-1.5 text-xs text-muted-foreground">{t("ui2g3.agentSidebar.loadingAudit")}</p>
             )}
           </div>
         </div>

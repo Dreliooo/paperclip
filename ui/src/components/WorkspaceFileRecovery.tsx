@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
+import { useTranslation } from "@/i18n";
 
 export function WorkspaceFileRecovery({ issueId, issueStatus, blocker, canManage, onRecorded }: {
   issueId: string;
@@ -14,6 +15,7 @@ export function WorkspaceFileRecovery({ issueId, issueStatus, blocker, canManage
   canManage: boolean;
   onRecorded: () => void;
 }) {
+  const { t } = useTranslation();
   const noteId = useId();
   const confirmationId = useId();
   const [evidence, setEvidence] = useState("");
@@ -33,24 +35,24 @@ export function WorkspaceFileRecovery({ issueId, issueStatus, blocker, canManage
   if (!blocker.workspaceRepairRequired || !blocker.canRecordWorkspaceRepair ||
     !["legacy_execution_requires_reconciliation", "native_continuation_requires_reconciliation"].includes(blocker.cause)
     || !blocker.recoveryActionId || !blocker.runId) return null;
-  return <section aria-label="Record workspace file recovery" className="flex w-full flex-col gap-2">
-    {record.isSuccess ? <p role="status">File recovery recorded. The task status is unchanged. Continue the task when it is ready.</p>
+  return <section aria-label={t("ui2g3.workspaceFileRecovery.sectionLabel")} className="flex w-full flex-col gap-2">
+    {record.isSuccess ? <p role="status">{t("ui2g3.workspaceFileRecovery.recorded")}</p>
       : canManage ? <>
-        <Label htmlFor={noteId}>Recovered files and verification</Label>
+        <Label htmlFor={noteId}>{t("ui2g3.workspaceFileRecovery.evidenceLabel")}</Label>
         <Textarea id={noteId} value={evidence} onChange={event => setEvidence(event.target.value)} maxLength={12_000}
-          placeholder="Describe how you recovered and verified the files from the original workspace. Include the backup or artifact link."
+          placeholder={t("ui2g3.workspaceFileRecovery.evidencePlaceholder")}
           disabled={record.isPending} />
         <div className="flex items-center gap-2">
           <Checkbox id={confirmationId} checked={confirmed} onCheckedChange={value => setConfirmed(value === true)} disabled={record.isPending} />
-          <Label htmlFor={confirmationId}>I recovered and verified the original workspace files.</Label>
+          <Label htmlFor={confirmationId}>{t("ui2g3.workspaceFileRecovery.confirmation")}</Label>
         </div>
-        <p className="text-muted-foreground">This records file recovery. It keeps the current task status and does not start a run. Paperclip verifies that the original execution stopped.</p>
+        <p className="text-muted-foreground">{t("ui2g3.workspaceFileRecovery.explanation")}</p>
         <div className="flex justify-end">
           <Button disabled={record.isPending || !confirmed || evidence.trim().length < 20} onClick={() => record.mutate()}>
-            {record.isPending ? "Recording…" : "Record file recovery"}
+            {record.isPending ? t("ui2g3.workspaceFileRecovery.recording") : t("ui2g3.workspaceFileRecovery.record")}
           </Button>
         </div>
         {record.isError && <p role="alert" className="text-destructive">{record.error.message}</p>}
-      </> : <p className="text-muted-foreground">A board member with runtime access can record verified file recovery here.</p>}
+      </> : <p className="text-muted-foreground">{t("ui2g3.workspaceFileRecovery.noAccess")}</p>}
   </section>;
 }
