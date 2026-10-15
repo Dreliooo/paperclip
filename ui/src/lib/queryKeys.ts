@@ -698,6 +698,7 @@ export const queryKeys = {
   activity: (companyId: string) => ["activity", companyId] as const,
   costs: (companyId: string, from?: string, to?: string) =>
     ["costs", companyId, from, to] as const,
+  cacheReuse: (scope: "agent" | "issue", id: string) => ["cache-reuse", scope, id] as const,
   usageBreakdown: (companyId: string, groupBy: string, provider: string | null, from?: string, to?: string) =>
     ["usage-breakdown", companyId, groupBy, provider, from, to] as const,
   usageByProvider: (companyId: string, from?: string, to?: string) =>

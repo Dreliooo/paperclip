@@ -1,4 +1,5 @@
 import { useConnectionModels } from "./ai-connections/useConnectionModels";
+import { useTranslation } from "../i18n";
 import { agentHarnessType, agentRunner, type AgentRunnerChoice } from "@paperclipai/shared";
 import { adaptersApi } from "../api/adapters";
 import { CodexRunnerSelect } from "./CodexRunnerSelect";
@@ -343,6 +344,7 @@ function ConfigSections({ order, className, children }: {
 export function AgentConfigForm(props: AgentConfigFormProps) {
   const { mode, adapterModels: externalModels } = props;
   const isCreate = mode === "create";
+  const { t } = useTranslation();
   const cards = props.sectionLayout === "cards";
   const showAdapterTypeField = props.showAdapterTypeField ?? true;
   const showInlineAdapterTestEnvironmentFeedback = !props.onTestFeedbackChange;
@@ -1814,6 +1816,11 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                 detectModelLabel="Detect model"
                 emptyDetectHint="No model detected. Select or enter one manually."
               />
+              {!isCreate && currentModelId !== String(config.model ?? "") ? (
+                <p className="text-xs text-amber-600 dark:text-amber-400" role="note" data-testid="model-change-cache-warning">
+                  {t("cache.modelChangeWarning")}
+                </p>
+              ) : null}
               {(refreshModelsError || modelError) && (
                 <p className="text-xs text-destructive">
                   {refreshModelsError

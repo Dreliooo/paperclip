@@ -34,6 +34,7 @@ import {
 import { assertBoard, assertCompanyAccess, getAccessibleResource, getActorInfo } from "./authz.js";
 import { fetchCompanyQuotaWindows } from "../services/quota-windows.js";
 import { usageBreakdownService } from "../services/usage-breakdown.js";
+import { cacheReuseService } from "../services/cache-reuse.js";
 import { badRequest, forbidden } from "../errors.js";
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
@@ -243,6 +244,24 @@ export function costRoutes(
     const excludeRoot = req.query.excludeRoot === "true" || req.query.excludeRoot === "1";
     const summary = await costs.issueTreeSummary(issue.companyId, issue.id, { excludeRoot });
     res.json(summary);
+  });
+
+  // Prompt-cache reuse for one agent's latest runs. Counters only.
+  router.get("/companies/:companyId/agents/:agentId/cache-reuse", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
+    const agentId = z.string().uuid().safeParse(req.params.agentId);
+    if (!agentId.success) throw badRequest("Invalid agent id");
+    res.json(await cacheReuseService(db).assess(companyId, { agentId: agentId.data }));
+  });
+
+  // Prompt-cache reuse for one conversation/task, behind the task's cost read check.
+  router.get("/issues/:id/cache-reuse", async (req, res) => {
+    const issue = await getAccessibleResource(req, res, resolveIssueByRef(req.params.id as string), "Issue not found");
+    if (!issue) return;
+    if (!(await assertIssueCostReadAllowed(req, res, issue))) return;
+    res.json(await cacheReuseService(db).assess(issue.companyId, { issueId: issue.id }));
   });
 
   router.get("/companies/:companyId/costs/by-user", async (req, res) => {

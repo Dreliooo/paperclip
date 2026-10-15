@@ -5,8 +5,9 @@ import type { Db } from "@paperclipai/db";
 import { costRoutes } from "../routes/costs.js";
 import { errorHandler } from "../middleware/error-handler.js";
 
-const mocks = vi.hoisted(() => ({ report: vi.fn(), decide: vi.fn() }));
+const mocks = vi.hoisted(() => ({ report: vi.fn(), decide: vi.fn(), assess: vi.fn() }));
 vi.mock("../services/usage-breakdown.js", () => ({ usageBreakdownService: () => ({ report: mocks.report }) }));
+vi.mock("../services/cache-reuse.js", () => ({ cacheReuseService: () => ({ assess: mocks.assess }) }));
 vi.mock("../services/index.js", () => ({
   heartbeatService: () => ({}), costService: () => ({}), financeService: () => ({}), budgetService: () => ({}),
   companyService: () => ({}), agentService: () => ({}), issueService: () => ({}), accessService: () => ({ decide: mocks.decide }),
@@ -55,5 +56,24 @@ describe("usage breakdown route", () => {
     mocks.decide.mockResolvedValue({ allowed: false });
     expect((await request(app()).get(path)).status).toBe(403);
     expect(mocks.report).not.toHaveBeenCalled();
+  });
+});
+
+describe("agent cache reuse route", () => {
+  const agentId = "33333333-3333-4333-8333-333333333333";
+  it("assesses the agent's runs inside the company", async () => {
+    mocks.assess.mockResolvedValue({ status: "high", runs: [] });
+    const response = await request(app()).get(`/api/companies/${companyId}/agents/${agentId}/cache-reuse`);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: "high", runs: [] });
+    expect(mocks.assess).toHaveBeenCalledWith(companyId, { agentId });
+  });
+
+  it("rejects malformed ids, other companies and denied cost visibility", async () => {
+    expect((await request(app()).get(`/api/companies/${companyId}/agents/not-a-uuid/cache-reuse`)).status).toBe(400);
+    expect((await request(app()).get(`/api/companies/other/agents/${agentId}/cache-reuse`)).status).toBe(403);
+    mocks.decide.mockResolvedValue({ allowed: false });
+    expect((await request(app()).get(`/api/companies/${companyId}/agents/${agentId}/cache-reuse`)).status).toBe(403);
+    expect(mocks.assess).not.toHaveBeenCalled();
   });
 });

@@ -2916,3 +2916,13 @@ export {
   type UsageModelSlice,
   type UsageTokenBreakdown,
 } from "./usage-breakdown.js";
+export {
+  assessCacheReuse,
+  DEFAULT_CACHE_TTL_MS,
+  MIN_MEASURABLE_PROMPT_TOKENS,
+  type CacheChangeCause,
+  type CacheReuseAssessment,
+  type CacheReuseStatus,
+  type CacheRunAssessment,
+  type CacheRunSample,
+} from "./cache-reuse.js";

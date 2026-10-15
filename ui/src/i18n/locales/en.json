@@ -181,5 +181,41 @@
       "whoIsWorking": "{{name}} is running this turn",
       "forDurationDone": "for {{duration}}"
     }
+  },
+  "cache": {
+    "title": "Prompt cache reuse",
+    "indicatorLabel": "Prompt cache: {{status}}",
+    "status": {
+      "high": "High reuse",
+      "moderate": "Partial reuse",
+      "low": "Low reuse",
+      "dropped": "Reuse dropped",
+      "insufficient": "Not enough data"
+    },
+    "statusHint": {
+      "high": "Most context is being served from the cache (latest run {{latest}}).",
+      "moderate": "Some context is reused from the cache (latest run {{latest}}).",
+      "low": "Little context is reused from the cache (latest run {{latest}}).",
+      "dropped": "The latest run reused {{latest}} of its context, versus {{baseline}} usually. One low run is not proof the cache was lost; check the causes below.",
+      "insufficient": "Paperclip needs a few measurable runs before judging cache reuse."
+    },
+    "insufficient": {
+      "few_runs": "Fewer than three runs with enough context to measure.",
+      "not_reported": "This integration does not report cache counters, so reuse cannot be measured."
+    },
+    "reused": "Reused",
+    "written": "Written to cache",
+    "notReused": "Not reused",
+    "savings": "≈ {{amount}} API-equivalent saved by the cache over the last {{runs}} runs.",
+    "recentRuns": "Recent runs",
+    "possibleCauses": "Visible changes on the latest run",
+    "cause": {
+      "new_session": "It started a new session, so earlier context had to be sent again.",
+      "model_changed": "The model changed; each model has its own cache.",
+      "long_gap": "It started {{minutes}} min after the previous run; the default cache lasts 5 minutes.",
+      "unknown": "No change is visible in the run records. The provider may have evicted the cache, or the start of the context changed."
+    },
+    "tip": "Switching models or editing the beginning of an agent's instructions makes the next runs start without cache. The cache lives on the provider side for a limited time; Paperclip does not send keep-alive calls.",
+    "modelChangeWarning": "Changing the model starts a new prompt cache: the next runs will process the full context again at the uncached input price."
   }
 }

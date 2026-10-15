@@ -181,5 +181,41 @@
       "whoIsWorking": "{{name}} está a cargo de este turno",
       "forDurationDone": "durante {{duration}}"
     }
+  },
+  "cache": {
+    "title": "Reutilización de la caché de prompts",
+    "indicatorLabel": "Caché de prompts: {{status}}",
+    "status": {
+      "high": "Reutilización alta",
+      "moderate": "Reutilización parcial",
+      "low": "Reutilización baja",
+      "dropped": "Bajó la reutilización",
+      "insufficient": "Sin datos suficientes"
+    },
+    "statusHint": {
+      "high": "La mayor parte del contexto se sirve desde la caché (última corrida {{latest}}).",
+      "moderate": "Parte del contexto se reutiliza desde la caché (última corrida {{latest}}).",
+      "low": "Se reutiliza poco contexto desde la caché (última corrida {{latest}}).",
+      "dropped": "La última corrida reutilizó {{latest}} de su contexto, frente a {{baseline}} habitual. Una corrida baja no prueba que se haya perdido la caché; revisá las causas debajo.",
+      "insufficient": "Paperclip necesita algunas corridas medibles antes de evaluar la reutilización."
+    },
+    "insufficient": {
+      "few_runs": "Hay menos de tres corridas con contexto suficiente para medir.",
+      "not_reported": "Esta integración no informa contadores de caché, así que no se puede medir la reutilización."
+    },
+    "reused": "Reutilizado",
+    "written": "Escrito en caché",
+    "notReused": "Sin reutilizar",
+    "savings": "≈ {{amount}} de ahorro equivalente de API gracias a la caché en las últimas {{runs}} corridas.",
+    "recentRuns": "Corridas recientes",
+    "possibleCauses": "Cambios visibles en la última corrida",
+    "cause": {
+      "new_session": "Empezó una sesión nueva, así que hubo que volver a enviar el contexto anterior.",
+      "model_changed": "Cambió el modelo; cada modelo tiene su propia caché.",
+      "long_gap": "Empezó {{minutes}} min después de la corrida anterior; la caché por defecto dura 5 minutos.",
+      "unknown": "No se ve ningún cambio en los registros de la corrida. Puede que el proveedor haya descartado la caché o que haya cambiado el inicio del contexto."
+    },
+    "tip": "Cambiar de modelo o editar el comienzo de las instrucciones de un agente hace que las corridas siguientes empiecen sin caché. La caché vive del lado del proveedor por tiempo limitado; Paperclip no envía llamadas para mantenerla activa.",
+    "modelChangeWarning": "Cambiar el modelo inicia una caché de prompts nueva: las próximas corridas volverán a procesar todo el contexto al precio de entrada sin caché."
   }
 }

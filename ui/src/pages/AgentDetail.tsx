@@ -57,6 +57,7 @@ import { StarToggle } from "../components/StarToggle";
 import { Identity } from "../components/Identity";
 import { PageSkeleton } from "../components/PageSkeleton";
 import { AgentActionButtons } from "../components/AgentActionButtons";
+import { CacheReuseIndicator } from "../components/usage/CacheReuseIndicator";
 import { InlineBanner } from "../components/InlineBanner";
 import { BuiltInBundlePanel } from "../components/BuiltInBundlePanel";
 import { ConfigureBuiltInAgentModal } from "../components/ConfigureBuiltInAgentModal";
@@ -1273,6 +1274,7 @@ export function AgentDetail() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {resolvedCompanyId ? <CacheReuseIndicator scope="agent" companyId={resolvedCompanyId} agentId={agent.id} /> : null}
           <StarToggle
             size="button"
             starred={agentStarred}
