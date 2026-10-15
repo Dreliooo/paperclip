@@ -25,6 +25,121 @@
         "approval": "Open the full approval request",
         "source": "Open the source of this item"
       }
+    },
+    "queue": {
+      "title": "Decisions",
+      "selectOrg": "Select an organization first.",
+      "source": {
+        "approval": "Approval",
+        "decision": "Decision",
+        "issueThreadInteraction": "Decision requested",
+        "joinRequest": "Join request",
+        "recoveryAction": "Recovery",
+        "productivityReview": "Task",
+        "blockerAttention": "Blocked dependency",
+        "review": "Review",
+        "failedRun": "Failed run",
+        "budgetAlert": "Budget",
+        "agentErrorAlert": "Agent error"
+      },
+      "bundle": {
+        "proposed_one": "{{agent}} proposed {{count}} decision",
+        "proposed_other": "{{agent}} proposed {{count}} decisions",
+        "pending_one": "{{count}} pending",
+        "pending_other": "{{count}} pending",
+        "anAgent": "An agent",
+        "from": "· from "
+      },
+      "curtains": {
+        "snoozed": "Snoozed",
+        "dismissed": "Dismissed",
+        "aging": "Aging",
+        "decided": "Decided",
+        "expired": "Expired"
+      },
+      "agingNote": "Idle past {{days}} days — kept off the desk. Keep any you still want surfaced.",
+      "history": {
+        "loadingDecided": "Loading decided decisions…",
+        "noDecided": "No decided decisions.",
+        "loadingExpired": "Loading expired decisions…",
+        "noExpired": "No expired decisions."
+      },
+      "empty": {
+        "noMatches": "No decisions match your filters.",
+        "caughtUp": "You're all caught up.",
+        "adjustFilters": "Adjust or clear the filters to see the rest.",
+        "zeroTitle": "You're all caught up",
+        "zeroBody": "Nothing needs a decision from you right now."
+      },
+      "toast": {
+        "dismissed": "Dismissed",
+        "undo": "Undo",
+        "approvalOutcome": "Approval {{outcome}}",
+        "joinRequestOutcome": "Join request {{outcome}}",
+        "confirmationAccepted": "Confirmation accepted",
+        "confirmationDeclined": "Confirmation declined",
+        "couldNot": "Could not {{action}}"
+      },
+      "outcome": {
+        "sentForRevision": "sent for revision",
+        "approved": "approved",
+        "rejected": "rejected"
+      },
+      "attempt": {
+        "sentForRevision": "sent for revision",
+        "approved": "approved",
+        "rejected": "rejected"
+      },
+      "actions": {
+        "open": "Open",
+        "restore": "Restore",
+        "dismiss": "Dismiss",
+        "openSource": "Open source",
+        "requestRevision": "Request revision",
+        "reject": "Reject",
+        "approve": "Approve",
+        "seeMore": "See more",
+        "seeLess": "See less",
+        "expandDecision": "Expand decision",
+        "collapseDecision": "Collapse decision",
+        "rowActions": "Row actions",
+        "decisionActions": "Decision actions",
+        "viewIssue": "View issue"
+      },
+      "snooze": {
+        "submenu": "Snooze",
+        "custom": "Custom",
+        "until": "Snooze until…",
+        "presets": {
+          "oneHour": "1 hour",
+          "fourHours": "4 hours",
+          "tomorrowMorning": "Tomorrow morning",
+          "nextWeek": "Next week"
+        },
+        "reappears": "Reappears {{when}}",
+        "reappearsTitle": "Reappears {{time}}",
+        "soon": "soon",
+        "minutes": "in {{n}}m",
+        "hours": "in {{n}}h",
+        "days": "in {{n}}d"
+      },
+      "decideBy": {
+        "today": "Today",
+        "thisWeek": "This week",
+        "whenever": "Whenever",
+        "setBy": "Set by {{name}}",
+        "setByInline": "· set by {{name}}",
+        "you": "you",
+        "anAgent": "an agent"
+      },
+      "notePlaceholder": "Optional decision note…",
+      "errors": {
+        "missingIssue": "Missing issue reference for this decision.",
+        "completeInDetail": "This decision must be completed from its detail view."
+      },
+      "images": {
+        "more": "{{n}} more"
+      }
     }
   },
   "agents": {
@@ -151,6 +266,31 @@
         "both": "Show token counts and money side by side."
       },
       "saveFailed": "Could not save your preference: {{message}}"
+    },
+    "page": {
+      "settings": "Settings",
+      "title": "Profile",
+      "loading": "Loading profile...",
+      "loadFailed": "Failed to load profile.",
+      "updateFailed": "Failed to update profile.",
+      "avatarUploadFailed": "Failed to upload avatar.",
+      "avatarRemoveFailed": "Failed to remove avatar.",
+      "selectOrgForAvatar": "Select an organization before uploading a profile avatar.",
+      "description": "Control how your account appears in the sidebar and other board surfaces.",
+      "changePhoto": "Change photo",
+      "uploadPhoto": "Upload photo",
+      "remove": "Remove",
+      "noEmail": "No email",
+      "avatarHelp": "Click the avatar to upload a new image. {{hint}}",
+      "uploadHintCompany": "Stored in Paperclip file storage for {{company}}.",
+      "uploadHintNoCompany": "Select an organization to upload an avatar into Paperclip storage.",
+      "displayName": "Display name",
+      "namePlaceholder": "Board",
+      "nameHint": "Shown in the sidebar account footer and comment author surfaces.",
+      "email": "Email",
+      "emailHint": "Email is managed by your auth session and is read-only here.",
+      "saving": "Saving...",
+      "saveProfile": "Save profile"
     }
   },
   "speech": {
@@ -218,5 +358,206 @@
     },
     "tip": "Switching models or editing the beginning of an agent's instructions makes the next runs start without cache. The cache lives on the provider side for a limited time; Paperclip does not send keep-alive calls.",
     "modelChangeWarning": "Changing the model starts a new prompt cache: the next runs will process the full context again at the uncached input price."
+  },
+  "nav": {
+    "newTask": "New Task",
+    "search": "Search",
+    "dashboard": "Dashboard",
+    "inbox": "Inbox",
+    "decisions": "Decisions",
+    "chat": "Chat",
+    "status": "Status",
+    "conferenceRoom": "Conference Room",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "routines": "Routines",
+    "artifacts": "Artifacts",
+    "cases": "Cases",
+    "pipelines": "Pipelines",
+    "goals": "Goals",
+    "workspaces": "Workspaces",
+    "agents": "Agents",
+    "skills": "Skills",
+    "connectors": "Connectors",
+    "audit": "Audit",
+    "org": "Org",
+    "timeline": "Timeline",
+    "costs": "Costs",
+    "activity": "Activity",
+    "settings": "Settings",
+    "beta": "beta",
+    "idle": "Idle",
+    "leaving": "Leaving...",
+    "seeAllAgents": "See all agents",
+    "badges": {
+      "unread": "unread",
+      "decisions": "decisions"
+    },
+    "sort": {
+      "top": "Top",
+      "alphabetical": "Alphabetical",
+      "recent": "Recent"
+    },
+    "sections": {
+      "work": "Work",
+      "org": "Org",
+      "organization": "Organization",
+      "projects": "Projects",
+      "agents": "Agents",
+      "recentTasks": "Recent Tasks",
+      "projectsActions": "Projects section actions",
+      "agentsActions": "Agents section actions",
+      "newProject": "New project",
+      "newAgent": "New agent",
+      "collapse": "Collapse {{label}}",
+      "expand": "Expand {{label}}",
+      "actions": "{{label}} actions",
+      "browseProjects": "Browse projects",
+      "browseAgents": "Browse agents",
+      "projectSortLabel": "Project sort",
+      "agentSortLabel": "Agent sort"
+    },
+    "projectItem": {
+      "openActions": "Open actions for {{name}}",
+      "leave": "Leave project",
+      "private": "Private project",
+      "pausedByBudget": "Project paused by budget"
+    },
+    "agentItem": {
+      "openActions": "Open actions for {{name}}",
+      "star": "Star agent",
+      "unstar": "Remove from starred",
+      "edit": "Edit agent",
+      "pause": "Pause agent",
+      "resume": "Resume agent",
+      "updating": "Updating...",
+      "budgetPaused": "Budget paused",
+      "invalidOrgChain": "Invalid org chain",
+      "invalidReportingChain": "Invalid reporting chain",
+      "builtInNeedsSetup": "Built-in agent needs setup",
+      "builtInPendingApproval": "Built-in agent pending approval",
+      "budgetPausedTitle": "Agent was paused by budget limits",
+      "pausedByBudget": "Agent paused by budget",
+      "leave": "Leave agent"
+    },
+    "agentToast": {
+      "paused": "Agent paused",
+      "resumed": "Agent resumed",
+      "pauseFailed": "Could not pause agent",
+      "resumeFailed": "Could not resume agent"
+    },
+    "companyMenu": {
+      "switcherAria": "Open organization switcher",
+      "switcherAriaNamed": "Open {{name}} organization switcher",
+      "selectOrganization": "Select organization",
+      "organizations": "Organizations",
+      "done": "Done",
+      "edit": "Edit",
+      "reorder": "Reorder {{name}}",
+      "couldNotLoad": "Couldn't load organizations",
+      "tryAgain": "Try again",
+      "noOrganizations": "No organizations",
+      "createOrganization": "Create organization",
+      "invitePeopleTo": "Invite people to {{name}}",
+      "invitePeople": "Invite people"
+    },
+    "accountMenu": {
+      "open": "Open account menu",
+      "viewProfile": "View profile",
+      "board": "Board",
+      "signedIn": "Signed in",
+      "localWorkspaceBoard": "Local workspace board",
+      "commitSha": "SHA {{sha}}",
+      "viewCommit": "View commit {{sha}} on GitHub",
+      "settings": "Settings",
+      "invite": "Invite",
+      "documentation": "Documentation",
+      "signingOut": "Signing out...",
+      "signOut": "Sign out",
+      "shareFeedback": "Share feedback"
+    },
+    "recentTasks": {
+      "moreActions": "More actions for {{title}}",
+      "rename": "Rename",
+      "archive": "Archive",
+      "pauseRestart": "Pause/Restart",
+      "renameTitle": "Rename task",
+      "renameDescription": "Choose a short, clear name for this task.",
+      "taskName": "Task name",
+      "saving": "Saving...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "toastRenamed": "Task renamed",
+      "toastRenameFailed": "Task rename failed",
+      "renameFailedBody": "Unable to rename this task.",
+      "toastArchived": "Task archived from inbox",
+      "toastArchiveFailed": "Task archive failed",
+      "archiveFailedBody": "Unable to archive this task from the inbox.",
+      "toastRestarted": "Task restarted",
+      "toastPaused": "Task paused",
+      "toastPauseFailed": "Task pause update failed",
+      "pauseFailedBody": "Unable to pause or restart this task.",
+      "pausedByParent": "This task is paused by a parent task. Restart it from the pause root.",
+      "wakeSkipped": "The assignee wake was skipped."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to Paperclip. Set up your first organization and agent to get started.",
+    "getStarted": "Get Started",
+    "selectOrgToView": "Create or select an organization to view the dashboard.",
+    "importedAgentsPaused_one": "{{count}} imported agent is paused and will not run.",
+    "importedAgentsPaused_other": "{{count}} imported agents are paused and will not run.",
+    "resuming": "Resuming…",
+    "resumeAll": "Resume all",
+    "importedAgentsHint": "Agents from an organization import arrive paused as a safety default. Resume them so assigned tasks can start.",
+    "allAgentsPaused": "All agents in this organization are paused — nothing will run.",
+    "reviewAgents": "Review agents",
+    "allPausedHint": "Resume at least one agent to let assigned tasks start.",
+    "noAgents": "You have no agents.",
+    "createOneHere": "Create one here",
+    "budgetIncidents_one": "{{count}} active budget incident",
+    "budgetIncidents_other": "{{count}} active budget incidents",
+    "budgetSummary": "{{pausedAgents}} agents paused · {{pausedProjects}} projects paused · {{pendingApprovals}} pending budget approvals",
+    "openBudgets": "Open budgets",
+    "agentsEnabled": "Agents Enabled",
+    "agentsStatus": "{{running}} running, {{paused}} paused, {{errors}} errors",
+    "tasksInProgress": "Tasks In Progress",
+    "tasksStatus": "{{open}} open, {{blocked}} blocked",
+    "pendingApprovals": "Pending Approvals",
+    "budgetOverrides_one": "{{count}} budget overrides awaiting board review",
+    "budgetOverrides_other": "{{count}} budget overrides awaiting board review",
+    "awaitingBoardReview": "Awaiting board review",
+    "runActivity": "Run Activity",
+    "last14Days": "Last 14 days",
+    "tasksByPriority": "Tasks by Priority",
+    "tasksByStatus": "Tasks by Status",
+    "successRate": "Success Rate",
+    "recentActivity": "Recent Activity",
+    "recentTasks": "Recent Tasks",
+    "noTasks": "No tasks yet."
+  },
+  "projects": {
+    "title": "Projects",
+    "selectOrg": "Select an organization to view projects.",
+    "sort": "Sort: {{label}}",
+    "sortTitle": "Sort",
+    "sortOption": {
+      "name": "Name",
+      "updated": "Updated",
+      "created": "Created",
+      "targetDate": "Target date"
+    },
+    "sortAsc": "Asc",
+    "sortDesc": "Desc",
+    "addProject": "Add Project",
+    "empty": "No projects yet.",
+    "mine": "My Projects",
+    "other": "Other Projects",
+    "count_one": "{{count}} project",
+    "count_other": "{{count}} projects",
+    "taskCount_one": "{{formattedCount}} task",
+    "taskCount_other": "{{formattedCount}} tasks",
+    "privateProject": "Private project"
   }
 }

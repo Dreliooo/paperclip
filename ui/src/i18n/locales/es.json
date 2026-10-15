@@ -1,7 +1,7 @@
 {
   "app": {
     "noCompanies": {
-      "title": "Crea tu primera empresa",
+      "title": "Creá tu primera empresa",
       "description": "Comienza creando una empresa.",
       "newCompany": "Nueva empresa"
     }
@@ -24,6 +24,121 @@
         "task": "Abrir la tarea de la que proviene",
         "approval": "Abrir la solicitud de aprobación completa",
         "source": "Abrir el origen de este elemento"
+      }
+    },
+    "queue": {
+      "title": "Decisiones",
+      "selectOrg": "Primero seleccioná una organización.",
+      "source": {
+        "approval": "Aprobación",
+        "decision": "Decisión",
+        "issueThreadInteraction": "Decisión solicitada",
+        "joinRequest": "Solicitud de ingreso",
+        "recoveryAction": "Recuperación",
+        "productivityReview": "Tarea",
+        "blockerAttention": "Dependencia bloqueada",
+        "review": "Revisión",
+        "failedRun": "Corrida fallida",
+        "budgetAlert": "Presupuesto",
+        "agentErrorAlert": "Error del agente"
+      },
+      "bundle": {
+        "proposed_one": "{{agent}} propuso {{count}} decisión",
+        "proposed_other": "{{agent}} propuso {{count}} decisiones",
+        "pending_one": "{{count}} pendiente",
+        "pending_other": "{{count}} pendientes",
+        "anAgent": "Un agente",
+        "from": "· desde "
+      },
+      "curtains": {
+        "snoozed": "Pospuestas",
+        "dismissed": "Descartadas",
+        "aging": "Antiguas",
+        "decided": "Decididas",
+        "expired": "Vencidas"
+      },
+      "agingNote": "Sin actividad hace más de {{days}} días: fuera del panel. Conservá las que todavía quieras ver.",
+      "history": {
+        "loadingDecided": "Cargando decisiones tomadas…",
+        "noDecided": "No hay decisiones tomadas.",
+        "loadingExpired": "Cargando decisiones vencidas…",
+        "noExpired": "No hay decisiones vencidas."
+      },
+      "empty": {
+        "noMatches": "No hay decisiones que coincidan con tus filtros.",
+        "caughtUp": "Estás al día.",
+        "adjustFilters": "Ajustá o quitá los filtros para ver el resto.",
+        "zeroTitle": "Estás al día",
+        "zeroBody": "Ahora mismo no hay nada que requiera una decisión tuya."
+      },
+      "toast": {
+        "dismissed": "Descartada",
+        "undo": "Deshacer",
+        "approvalOutcome": "Aprobación {{outcome}}",
+        "joinRequestOutcome": "Solicitud de ingreso {{outcome}}",
+        "confirmationAccepted": "Confirmación aceptada",
+        "confirmationDeclined": "Confirmación rechazada",
+        "couldNot": "No se pudo {{action}}"
+      },
+      "outcome": {
+        "sentForRevision": "enviada a revisión",
+        "approved": "aprobada",
+        "rejected": "rechazada"
+      },
+      "attempt": {
+        "sentForRevision": "enviar a revisión",
+        "approved": "aprobar",
+        "rejected": "rechazar"
+      },
+      "actions": {
+        "open": "Abrir",
+        "restore": "Restaurar",
+        "dismiss": "Descartar",
+        "openSource": "Abrir origen",
+        "requestRevision": "Solicitar revisión",
+        "reject": "Rechazar",
+        "approve": "Aprobar",
+        "seeMore": "Ver más",
+        "seeLess": "Ver menos",
+        "expandDecision": "Expandir decisión",
+        "collapseDecision": "Contraer decisión",
+        "rowActions": "Acciones de la fila",
+        "decisionActions": "Acciones de la decisión",
+        "viewIssue": "Ver tarea"
+      },
+      "snooze": {
+        "submenu": "Posponer",
+        "custom": "Personalizado",
+        "until": "Posponer hasta…",
+        "presets": {
+          "oneHour": "1 hora",
+          "fourHours": "4 horas",
+          "tomorrowMorning": "Mañana por la mañana",
+          "nextWeek": "Próxima semana"
+        },
+        "reappears": "Reaparece {{when}}",
+        "reappearsTitle": "Reaparece {{time}}",
+        "soon": "pronto",
+        "minutes": "en {{n}} min",
+        "hours": "en {{n}} h",
+        "days": "en {{n}} d"
+      },
+      "decideBy": {
+        "today": "Hoy",
+        "thisWeek": "Esta semana",
+        "whenever": "Cuando se pueda",
+        "setBy": "Definida por {{name}}",
+        "setByInline": "· definida por {{name}}",
+        "you": "vos",
+        "anAgent": "un agente"
+      },
+      "notePlaceholder": "Nota opcional sobre la decisión…",
+      "errors": {
+        "missingIssue": "Falta la referencia a la tarea de esta decisión.",
+        "completeInDetail": "Esta decisión debe completarse desde su vista de detalle."
+      },
+      "images": {
+        "more": "{{n}} más"
       }
     }
   },
@@ -151,6 +266,31 @@
         "both": "Muestra tokens y dinero lado a lado."
       },
       "saveFailed": "No se pudo guardar tu preferencia: {{message}}"
+    },
+    "page": {
+      "settings": "Configuración",
+      "title": "Perfil",
+      "loading": "Cargando perfil...",
+      "loadFailed": "No se pudo cargar el perfil.",
+      "updateFailed": "No se pudo actualizar el perfil.",
+      "avatarUploadFailed": "No se pudo subir el avatar.",
+      "avatarRemoveFailed": "No se pudo quitar el avatar.",
+      "selectOrgForAvatar": "Seleccioná una organización antes de subir un avatar de perfil.",
+      "description": "Controla cómo aparece tu cuenta en la barra lateral y en otras superficies del board.",
+      "changePhoto": "Cambiar foto",
+      "uploadPhoto": "Subir foto",
+      "remove": "Quitar",
+      "noEmail": "Sin correo electrónico",
+      "avatarHelp": "Hacé clic en el avatar para subir una imagen nueva. {{hint}}",
+      "uploadHintCompany": "Se guarda en el almacenamiento de archivos de Paperclip de {{company}}.",
+      "uploadHintNoCompany": "Seleccioná una organización para subir un avatar al almacenamiento de Paperclip.",
+      "displayName": "Nombre para mostrar",
+      "namePlaceholder": "Board",
+      "nameHint": "Se muestra en el pie de la cuenta de la barra lateral y en los autores de los comentarios.",
+      "email": "Correo electrónico",
+      "emailHint": "El correo lo administra tu sesión de autenticación y aquí es de solo lectura.",
+      "saving": "Guardando...",
+      "saveProfile": "Guardar perfil"
     }
   },
   "speech": {
@@ -218,5 +358,206 @@
     },
     "tip": "Cambiar de modelo o editar el comienzo de las instrucciones de un agente hace que las corridas siguientes empiecen sin caché. La caché vive del lado del proveedor por tiempo limitado; Paperclip no envía llamadas para mantenerla activa.",
     "modelChangeWarning": "Cambiar el modelo inicia una caché de prompts nueva: las próximas corridas volverán a procesar todo el contexto al precio de entrada sin caché."
+  },
+  "nav": {
+    "newTask": "Nueva tarea",
+    "search": "Buscar",
+    "dashboard": "Panel",
+    "inbox": "Bandeja de entrada",
+    "decisions": "Decisiones",
+    "chat": "Chat",
+    "status": "Estado",
+    "conferenceRoom": "Sala de reuniones",
+    "tasks": "Tareas",
+    "projects": "Proyectos",
+    "routines": "Rutinas",
+    "artifacts": "Artefactos",
+    "cases": "Casos",
+    "pipelines": "Pipelines",
+    "goals": "Objetivos",
+    "workspaces": "Espacios de trabajo",
+    "agents": "Agentes",
+    "skills": "Habilidades",
+    "connectors": "Conectores",
+    "audit": "Auditoría",
+    "org": "Organigrama",
+    "timeline": "Cronología",
+    "costs": "Costos",
+    "activity": "Actividad",
+    "settings": "Configuración",
+    "beta": "beta",
+    "idle": "Inactiva",
+    "leaving": "Saliendo...",
+    "seeAllAgents": "Ver todos los agentes",
+    "badges": {
+      "unread": "sin leer",
+      "decisions": "decisiones"
+    },
+    "sort": {
+      "top": "Manual",
+      "alphabetical": "Alfabético",
+      "recent": "Recientes"
+    },
+    "sections": {
+      "work": "Trabajo",
+      "org": "Organización",
+      "organization": "Organización",
+      "projects": "Proyectos",
+      "agents": "Agentes",
+      "recentTasks": "Tareas recientes",
+      "projectsActions": "Acciones de la sección Proyectos",
+      "agentsActions": "Acciones de la sección Agentes",
+      "newProject": "Nuevo proyecto",
+      "newAgent": "Nuevo agente",
+      "collapse": "Contraer {{label}}",
+      "expand": "Expandir {{label}}",
+      "actions": "Acciones de {{label}}",
+      "browseProjects": "Explorar proyectos",
+      "browseAgents": "Explorar agentes",
+      "projectSortLabel": "Orden de proyectos",
+      "agentSortLabel": "Orden de agentes"
+    },
+    "projectItem": {
+      "openActions": "Abrir acciones de {{name}}",
+      "leave": "Salir del proyecto",
+      "private": "Proyecto privado",
+      "pausedByBudget": "Proyecto pausado por presupuesto"
+    },
+    "agentItem": {
+      "openActions": "Abrir acciones de {{name}}",
+      "star": "Destacar agente",
+      "unstar": "Quitar de destacados",
+      "edit": "Editar agente",
+      "pause": "Pausar agente",
+      "resume": "Reanudar agente",
+      "updating": "Actualizando...",
+      "budgetPaused": "Pausado por presupuesto",
+      "invalidOrgChain": "Cadena organizativa inválida",
+      "invalidReportingChain": "Cadena de reporte inválida",
+      "builtInNeedsSetup": "El agente integrado requiere configuración",
+      "builtInPendingApproval": "El agente integrado está pendiente de aprobación",
+      "budgetPausedTitle": "El agente fue pausado por límites de presupuesto",
+      "pausedByBudget": "Agente pausado por presupuesto",
+      "leave": "Salir del agente"
+    },
+    "agentToast": {
+      "paused": "Agente pausado",
+      "resumed": "Agente reanudado",
+      "pauseFailed": "No se pudo pausar el agente",
+      "resumeFailed": "No se pudo reanudar el agente"
+    },
+    "companyMenu": {
+      "switcherAria": "Abrir selector de organización",
+      "switcherAriaNamed": "Abrir selector de organización de {{name}}",
+      "selectOrganization": "Seleccionar organización",
+      "organizations": "Organizaciones",
+      "done": "Listo",
+      "edit": "Editar",
+      "reorder": "Reordenar {{name}}",
+      "couldNotLoad": "No se pudieron cargar las organizaciones",
+      "tryAgain": "Intentar de nuevo",
+      "noOrganizations": "No hay organizaciones",
+      "createOrganization": "Crear organización",
+      "invitePeopleTo": "Invitar personas a {{name}}",
+      "invitePeople": "Invitar personas"
+    },
+    "accountMenu": {
+      "open": "Abrir menú de cuenta",
+      "viewProfile": "Ver perfil",
+      "board": "Board",
+      "signedIn": "Sesión iniciada",
+      "localWorkspaceBoard": "Board del espacio de trabajo local",
+      "commitSha": "SHA {{sha}}",
+      "viewCommit": "Ver commit {{sha}} en GitHub",
+      "settings": "Configuración",
+      "invite": "Invitar",
+      "documentation": "Documentación",
+      "signingOut": "Cerrando sesión...",
+      "signOut": "Cerrar sesión",
+      "shareFeedback": "Compartir comentarios"
+    },
+    "recentTasks": {
+      "moreActions": "Más acciones para {{title}}",
+      "rename": "Renombrar",
+      "archive": "Archivar",
+      "pauseRestart": "Pausar/Reiniciar",
+      "renameTitle": "Renombrar tarea",
+      "renameDescription": "Define un nombre corto y claro para esta tarea.",
+      "taskName": "Nombre de la tarea",
+      "saving": "Guardando...",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "toastRenamed": "Tarea renombrada",
+      "toastRenameFailed": "No se pudo renombrar la tarea",
+      "renameFailedBody": "No se pudo renombrar esta tarea.",
+      "toastArchived": "Tarea archivada de la bandeja de entrada",
+      "toastArchiveFailed": "No se pudo archivar la tarea",
+      "archiveFailedBody": "No se pudo archivar esta tarea desde la bandeja de entrada.",
+      "toastRestarted": "Tarea reiniciada",
+      "toastPaused": "Tarea pausada",
+      "toastPauseFailed": "No se pudo actualizar la pausa de la tarea",
+      "pauseFailedBody": "No se pudo pausar ni reiniciar esta tarea.",
+      "pausedByParent": "Esta tarea está pausada por una tarea padre. Reiníciala desde la raíz de la pausa.",
+      "wakeSkipped": "Se omitió la activación del responsable asignado."
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Te damos la bienvenida a Paperclip. Creá tu primera organización y tu primer agente para empezar.",
+    "getStarted": "Empezar",
+    "selectOrgToView": "Creá o seleccioná una organización para ver el panel.",
+    "importedAgentsPaused_one": "{{count}} agente importado está pausado y no se ejecutará.",
+    "importedAgentsPaused_other": "{{count}} agentes importados están pausados y no se ejecutarán.",
+    "resuming": "Reanudando…",
+    "resumeAll": "Reanudar todos",
+    "importedAgentsHint": "Los agentes de una importación de organización llegan pausados por seguridad. Reanúdalos para que puedan empezar las tareas asignadas.",
+    "allAgentsPaused": "Todos los agentes de esta organización están pausados: no se ejecutará nada.",
+    "reviewAgents": "Revisar agentes",
+    "allPausedHint": "Reanuda al menos un agente para que puedan empezar las tareas asignadas.",
+    "noAgents": "No tenés agentes.",
+    "createOneHere": "Crear uno aquí",
+    "budgetIncidents_one": "{{count}} incidente de presupuesto activo",
+    "budgetIncidents_other": "{{count}} incidentes de presupuesto activos",
+    "budgetSummary": "{{pausedAgents}} agentes pausados · {{pausedProjects}} proyectos pausados · {{pendingApprovals}} aprobaciones de presupuesto pendientes",
+    "openBudgets": "Abrir presupuestos",
+    "agentsEnabled": "Agentes habilitados",
+    "agentsStatus": "{{running}} en ejecución, {{paused}} pausados, {{errors}} con errores",
+    "tasksInProgress": "Tareas en curso",
+    "tasksStatus": "{{open}} abiertas, {{blocked}} bloqueadas",
+    "pendingApprovals": "Aprobaciones pendientes",
+    "budgetOverrides_one": "{{count}} excepción de presupuesto pendiente de revisión por el board",
+    "budgetOverrides_other": "{{count}} excepciones de presupuesto pendientes de revisión por el board",
+    "awaitingBoardReview": "Pendiente de revisión por el board",
+    "runActivity": "Actividad de corridas",
+    "last14Days": "Últimos 14 días",
+    "tasksByPriority": "Tareas por prioridad",
+    "tasksByStatus": "Tareas por estado",
+    "successRate": "Tasa de éxito",
+    "recentActivity": "Actividad reciente",
+    "recentTasks": "Tareas recientes",
+    "noTasks": "Todavía no hay tareas."
+  },
+  "projects": {
+    "title": "Proyectos",
+    "selectOrg": "Seleccioná una organización para ver los proyectos.",
+    "sort": "Orden: {{label}}",
+    "sortTitle": "Ordenar",
+    "sortOption": {
+      "name": "Nombre",
+      "updated": "Actualizado",
+      "created": "Creado",
+      "targetDate": "Fecha objetivo"
+    },
+    "sortAsc": "Asc",
+    "sortDesc": "Desc",
+    "addProject": "Agregar proyecto",
+    "empty": "Todavía no hay proyectos.",
+    "mine": "Mis proyectos",
+    "other": "Otros proyectos",
+    "count_one": "{{count}} proyecto",
+    "count_other": "{{count}} proyectos",
+    "taskCount_one": "{{formattedCount}} tarea",
+    "taskCount_other": "{{formattedCount}} tareas",
+    "privateProject": "Proyecto privado"
   }
 }
