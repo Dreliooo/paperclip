@@ -66,13 +66,76 @@
     }
   },
   "common": {
-    "saving": "Guardando…"
+    "saving": "Guardando…",
+    "loading": "Cargando…"
   },
   "usage": {
     "display": {
       "tokens": "Tokens",
       "costs": "Costos",
       "both": "Ambos"
+    },
+    "tab": "Uso",
+    "groupBy": "Agrupar uso por",
+    "groupByOption": {
+      "model": "Modelo",
+      "agent": "Agente",
+      "user": "Persona"
+    },
+    "provider": "Proveedor",
+    "allProviders": "Todos los proveedores",
+    "loadFailed": "No se pudo cargar el uso. Probá de nuevo en un rato.",
+    "empty": "No hay uso registrado en este período.",
+    "unpriced": "Sin precio disponible",
+    "incomplete": "incompleto",
+    "incompleteHint": "No hay precio de API publicado para: {{models}}. Sus tokens no se incluyen en esta estimación.",
+    "cacheWritesEstimatedHint": "Algunas escrituras en caché no se informaron y se valuaron como entrada común.",
+    "cacheWritesNotReported": "Las escrituras en caché no se informaron por separado para este uso.",
+    "tokenSplit": "{{input}} de entrada · {{cached}} desde caché · {{output}} de salida",
+    "showModels": "Ver modelos",
+    "hideModels": "Ocultar modelos",
+    "groups": {
+      "automatic": "Automático (sin persona solicitante)",
+      "unattributed": "Sin atribuir",
+      "system": "Paperclip (decisiones y respuestas rápidas)",
+      "formerUser": "Ex integrante",
+      "deletedAgent": "Agente eliminado"
+    },
+    "totals": {
+      "tokens": "Tokens consumidos",
+      "reportedSpend": "Gasto informado por el proveedor",
+      "reportedSpendHint": "Dinero efectivamente cobrado, según los proveedores.",
+      "estimatedSpend": "Más {{amount}} estimados por Paperclip para uso de API sin precio del proveedor.",
+      "apiEquivalent": "Costo equivalente de API",
+      "apiEquivalentHint": "Lo que costaría este uso con tarifas de API. No es un cobro ni consumo de la suscripción.",
+      "cacheSavings": "Ahorro por caché",
+      "cacheSavingsHint": "Ahorro equivalente de API por lecturas desde caché.",
+      "cacheReadHint": "Tokens servidos desde la caché de prompts."
+    },
+    "columns": {
+      "input": "Entrada (sin caché)",
+      "cacheWrite": "Escritura en caché",
+      "cacheRead": "Lectura de caché",
+      "output": "Salida",
+      "total": "Tokens totales",
+      "reportedSpend": "Gasto informado",
+      "apiEquivalent": "Equivalente API"
+    },
+    "notes": {
+      "apiEquivalent": "El costo equivalente de API es una estimación con tarifas públicas de pago por uso. No es dinero cobrado ni mide cuánto de una suscripción se consumió.",
+      "attribution": "Persona = el usuario responsable registrado en cada corrida (quien despertó o pidió el trabajo, o el responsable de la tarea). El trabajo que Paperclip asignó a la persona por defecto de la empresa, o las corridas programadas sin nadie detrás, figuran como Automático.",
+      "tokens": "Tokens totales = entrada + lecturas de caché + salida; las escrituras en caché son parte de la entrada, así que nada se cuenta dos veces.",
+      "rates": "Tarifas y fechas de verificación:"
+    },
+    "dashboard": {
+      "tokensLabel": "Tokens este mes",
+      "spendLabel": "Gasto informado este mes",
+      "budget": "{{percent}}% de un presupuesto de {{budget}}",
+      "unlimited": "Presupuesto ilimitado",
+      "topModel": "Más usado: {{model}}",
+      "noUsage": "Todavía no hay uso",
+      "tokensShort": "{{tokens}} tokens",
+      "apiEquivalentShort": "≈ {{amount}} equivalente de API"
     }
   },
   "profile": {

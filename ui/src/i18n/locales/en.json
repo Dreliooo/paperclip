@@ -66,13 +66,76 @@
     }
   },
   "common": {
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "loading": "Loading…"
   },
   "usage": {
     "display": {
       "tokens": "Tokens",
       "costs": "Costs",
       "both": "Both"
+    },
+    "tab": "Usage",
+    "groupBy": "Group usage by",
+    "groupByOption": {
+      "model": "Model",
+      "agent": "Agent",
+      "user": "Person"
+    },
+    "provider": "Provider",
+    "allProviders": "All providers",
+    "loadFailed": "Usage could not be loaded. Please try again shortly.",
+    "empty": "No usage recorded in this period.",
+    "unpriced": "No price available",
+    "incomplete": "incomplete",
+    "incompleteHint": "No published API price for: {{models}}. Their tokens are excluded from this estimate.",
+    "cacheWritesEstimatedHint": "Some cache writes were not reported and were priced as regular input.",
+    "cacheWritesNotReported": "Cache writes were not reported separately for this usage.",
+    "tokenSplit": "{{input}} input · {{cached}} from cache · {{output}} output",
+    "showModels": "Show models",
+    "hideModels": "Hide models",
+    "groups": {
+      "automatic": "Automatic (no requesting person)",
+      "unattributed": "Unattributed",
+      "system": "Paperclip (decisions & fast responses)",
+      "formerUser": "Former member",
+      "deletedAgent": "Deleted agent"
+    },
+    "totals": {
+      "tokens": "Tokens used",
+      "reportedSpend": "Spend reported by provider",
+      "reportedSpendHint": "Money actually charged, as reported by providers.",
+      "estimatedSpend": "Plus {{amount}} estimated by Paperclip for API usage without a provider price.",
+      "apiEquivalent": "API-equivalent cost",
+      "apiEquivalentHint": "What this usage would cost at API list prices. Not a charge, not subscription use.",
+      "cacheSavings": "Saved by prompt cache",
+      "cacheSavingsHint": "API-equivalent saving from cache reads.",
+      "cacheReadHint": "Tokens served from the prompt cache."
+    },
+    "columns": {
+      "input": "Input (no cache)",
+      "cacheWrite": "Cache write",
+      "cacheRead": "Cache read",
+      "output": "Output",
+      "total": "Total tokens",
+      "reportedSpend": "Reported spend",
+      "apiEquivalent": "API equivalent"
+    },
+    "notes": {
+      "apiEquivalent": "API-equivalent cost is an estimate at published pay-as-you-go prices. It is not money charged and does not measure how much of a subscription allowance was used.",
+      "attribution": "Person = the responsible user recorded on each run (who woke or requested the work, or the task's responsible person). Work Paperclip assigned to the company's default person, or scheduled runs with nobody behind them, are shown as Automatic.",
+      "tokens": "Total tokens = input + cache reads + output; cache writes are part of input, so nothing is counted twice.",
+      "rates": "Rates and verification dates:"
+    },
+    "dashboard": {
+      "tokensLabel": "Tokens this month",
+      "spendLabel": "Spend reported this month",
+      "budget": "{{percent}}% of {{budget}} budget",
+      "unlimited": "Unlimited budget",
+      "topModel": "Most used: {{model}}",
+      "noUsage": "No usage yet",
+      "tokensShort": "{{tokens}} tokens",
+      "apiEquivalentShort": "≈ {{amount}} API equivalent"
     }
   },
   "profile": {

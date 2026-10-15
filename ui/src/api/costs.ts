@@ -13,6 +13,8 @@ import type {
   FinanceByKind,
   FinanceEvent,
   ProviderQuotaResult,
+  UsageBreakdownReport,
+  UsageGroupBy,
 } from "@paperclipai/shared";
 import { api } from "./client";
 
@@ -26,6 +28,12 @@ function dateParams(from?: string, to?: string): string {
 }
 
 export const costsApi = {
+  usageBreakdown: (companyId: string, groupBy: UsageGroupBy, provider: string | null, from?: string, to?: string) => {
+    const params = new URLSearchParams(dateParams(from, to).replace(/^\?/, ""));
+    params.set("groupBy", groupBy);
+    if (provider) params.set("provider", provider);
+    return api.get<UsageBreakdownReport>(`/companies/${companyId}/costs/usage-breakdown?${params.toString()}`);
+  },
   dataQuality: (companyId: string, from?: string, to?: string) =>
     api.get<CostDataQualityReport>(`/companies/${companyId}/costs/data-quality${dateParams(from, to)}`),
   retryAccounting: (companyId: string, runId: string) =>

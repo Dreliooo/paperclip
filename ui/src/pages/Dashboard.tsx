@@ -20,15 +20,16 @@ import { useDialogActions } from "../context/DialogContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { queryKeys } from "../lib/queryKeys";
 import { MetricCard } from "../components/MetricCard";
+import { DashboardUsageCard } from "../components/usage/DashboardUsageCard";
 import { EmptyState } from "../components/EmptyState";
 import { StatusIcon } from "../components/StatusIcon";
 import { usePublishSharedQueryData, useSharedPollingQuery } from "../hooks/useSharedPolling";
 
 import { ActivityRow } from "../components/ActivityRow";
 import { timeAgo } from "../lib/timeAgo";
-import { cn, formatCents } from "../lib/utils";
+import { cn } from "../lib/utils";
 import { SHOW_TASK_PRIORITY_UI } from "../lib/ui-flags";
-import { Bot, CircleDot, DollarSign, ShieldCheck, LayoutDashboard, PauseCircle } from "lucide-react";
+import { Bot, CircleDot, ShieldCheck, LayoutDashboard, PauseCircle } from "lucide-react";
 import { ActiveAgentsPanel } from "../components/ActiveAgentsPanel";
 import { ChartCard, RunActivityChart, PriorityChart, IssueStatusChart, SuccessRateChart } from "../components/ActivityCharts";
 import { PageSkeleton } from "../components/PageSkeleton";
@@ -423,18 +424,11 @@ export function Dashboard() {
                 </span>
               }
             />
-            <MetricCard
-              icon={DollarSign}
-              value={formatCents(data.costs.monthSpendCents)}
-              label="Month Spend"
-              to="/costs"
-              description={
-                <span>
-                  {data.costs.monthBudgetCents > 0
-                    ? `${data.costs.monthUtilizationPercent}% of ${formatCents(data.costs.monthBudgetCents)} budget`
-                    : "Unlimited budget"}
-                </span>
-              }
+            <DashboardUsageCard
+              companyId={selectedCompanyId!}
+              monthSpendCents={data.costs.monthSpendCents}
+              monthBudgetCents={data.costs.monthBudgetCents}
+              monthUtilizationPercent={data.costs.monthUtilizationPercent}
             />
             <MetricCard
               icon={ShieldCheck}
