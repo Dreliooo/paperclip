@@ -1,5 +1,5 @@
 import { usdToUnits, unitsToCents } from "@paperclipai/shared";
-import { and, asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { accountingRuntimeBaselines, budgetReservations, agentRuntimeState, agents, costEvents, heartbeatRuns, nativeRunFinalizations, issues, projects, type Db } from "@paperclipai/db";
 import { withAccountingTransaction } from "./accounting-transaction.js";
 import { conflict } from "../errors.js";
@@ -13,6 +13,22 @@ const terminalStatuses = ["succeeded", "failed", "timed_out", "cancelled", "inte
 const object = (value: unknown): Record<string, unknown> => value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 const text = (value: unknown) => typeof value === "string" && value.length > 0 ? value : null;
 const amount = (value: unknown) => typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+
+/**
+ * Record the cache-write share of a receipt's input tokens on its ledger row.
+ * Kept outside the immutable receipt fingerprint so replays of receipts that
+ * were accounted before this column existed still match. Only fills a value
+ * the provider actually reported; absent stays null ("not reported").
+ */
+async function recordCacheWrites(tx: Db, companyId: string, idempotencyKey: string, usage: Record<string, unknown>) {
+  const writes = amount(usage.cacheWriteTokens);
+  if (writes === null) return;
+  await tx.update(costEvents).set({ cacheWriteInputTokens: Math.round(writes) }).where(and(
+    eq(costEvents.companyId, companyId),
+    eq(costEvents.idempotencyKey, idempotencyKey),
+    isNull(costEvents.cacheWriteInputTokens),
+  ));
+}
 
 /** The run's persisted usage is a durable receipt. Ledger, runtime totals, and
  * acknowledgement commit together, including after a restart or failed run. */
@@ -122,9 +138,11 @@ export async function accountRunCost(db: Db, runId: string, hooks: BudgetService
           inputTokens: amount(partUsage.inputTokens) ?? 0, cachedInputTokens: amount(partUsage.cachedInputTokens) ?? 0,
           outputTokens: amount(partUsage.outputTokens) ?? 0, costCents: partCents,
         }, publications);
+        await recordCacheWrites(tx, run.companyId, `heartbeat:${run.id}:model:${index}`, partUsage);
       }
     } else {
       await createCostEventInTransaction(tx, run.companyId, receipt, publications);
+      await recordCacheWrites(tx, run.companyId, receipt.idempotencyKey, usage);
     }
     const [event] = await tx.select({
       inputTokens: sql<string>`coalesce(sum(${costEvents.inputTokens}),0)::text`,

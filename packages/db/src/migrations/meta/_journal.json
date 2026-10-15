@@ -2423,6 +2423,13 @@
       "when": 1792085136268,
       "tag": "0347_user_preferences",
       "breakpoints": true
+    },
+    {
+      "idx": 348,
+      "version": "7",
+      "when": 1792085571792,
+      "tag": "0348_cost_event_cache_writes",
+      "breakpoints": true
     }
   ]
 }

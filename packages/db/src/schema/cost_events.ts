@@ -34,6 +34,12 @@ export const costEvents = pgTable(
     model: text("model").notNull(),
     inputTokens: integer("input_tokens").notNull().default(0),
     cachedInputTokens: integer("cached_input_tokens").notNull().default(0),
+    /**
+     * Portion of input_tokens written to the prompt cache, when the provider
+     * reported it. Null means "not reported" (historical rows, providers that
+     * fold writes into input), which is different from zero.
+     */
+    cacheWriteInputTokens: integer("cache_write_input_tokens"),
     outputTokens: integer("output_tokens").notNull().default(0),
     costCents: numeric("cost_cents", { precision: 24, scale: 7, mode: "number" }).notNull(),
     occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),

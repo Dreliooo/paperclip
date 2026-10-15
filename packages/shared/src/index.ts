@@ -2895,3 +2895,24 @@ export * from "./fast-response.js";
 export { HUMAN_TASK_ORIGIN_KINDS, isAgentCreatedIssue, type IssueCreationSourceFields } from "./issue-creation-source.js";
 
 export * from "./grok-bot.js";
+export {
+  API_RATE_CARDS,
+  estimateApiEquivalent,
+  findApiRateCard,
+  normalizeModelForPricing,
+  type ApiEquivalentEstimate,
+  type ApiRateCard,
+  type TokenUsageCounts,
+} from "./api-equivalent-pricing.js";
+export {
+  rollupUsageRows,
+  type CacheWriteCoverage,
+  type UsageAggregateRow,
+  type UsageApiEquivalent,
+  type UsageBreakdownReport,
+  type UsageBreakdownRow,
+  type UsageGroupBy,
+  type UsageGroupKind,
+  type UsageModelSlice,
+  type UsageTokenBreakdown,
+} from "./usage-breakdown.js";

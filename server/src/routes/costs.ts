@@ -33,10 +33,16 @@ import {
 } from "../services/index.js";
 import { assertBoard, assertCompanyAccess, getAccessibleResource, getActorInfo } from "./authz.js";
 import { fetchCompanyQuotaWindows } from "../services/quota-windows.js";
+import { usageBreakdownService } from "../services/usage-breakdown.js";
 import { badRequest, forbidden } from "../errors.js";
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
 const reportDateSchema = z.union([z.iso.datetime({ offset: true }), z.iso.date()]);
+
+const usageBreakdownQuerySchema = z.object({
+  groupBy: z.enum(["model", "agent", "user"]).default("model"),
+  provider: z.string().trim().min(1).max(120).optional(),
+}).passthrough();
 
 export function parseCostDateRange(query: Record<string, unknown>) {
   if (query.period !== undefined && query.period !== "all" && query.period !== "month") throw badRequest("invalid 'period'");
@@ -245,6 +251,21 @@ export function costRoutes(
     if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
     const range = parseCostDateRange(req.query);
     res.json(await costs.byUser(companyId, range));
+  });
+
+  // Tokens, provider-reported spend and API-equivalent cost by model, agent or
+  // person. Aggregate figures only; no task or project names are returned.
+  router.get("/companies/:companyId/costs/usage-breakdown", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
+    const query = usageBreakdownQuerySchema.safeParse(req.query);
+    if (!query.success) throw badRequest("Invalid usage breakdown query");
+    res.json(await usageBreakdownService(db).report(companyId, {
+      groupBy: query.data.groupBy,
+      provider: query.data.provider ?? null,
+      range: parseCostDateRange(req.query),
+    }));
   });
 
   router.get("/companies/:companyId/costs/by-agent", async (req, res) => {
