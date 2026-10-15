@@ -20,6 +20,8 @@ import {
   saveStructuredDraft,
 } from "@/lib/composer-draft";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 import {
   TaskChatComposerTakeoverControls,
   useTaskChatComposerTakeoverActions,
@@ -69,29 +71,30 @@ function answerHasValue(answer: Answer | undefined): boolean {
 function answerError(
   question: Question,
   answer: Answer | undefined,
+  t: TFunction,
 ): string | null {
   if (question.required && !answerHasValue(answer))
-    return "This question is required.";
+    return t("taskChat.questions.required");
   if (
     question.answerMode !== "text" &&
     answer?.customText !== undefined &&
     !answer.customText.trim()
   ) {
-    return "Enter a custom answer.";
+    return t("taskChat.questions.customRequired");
   }
   const value =
     question.answerMode === "text" ? answer?.text : answer?.customText;
   if (value == null || value.length === 0) return null;
   const validation = question.textValidation;
   if (validation?.minLength != null && value.length < validation.minLength)
-    return `Enter at least ${validation.minLength} characters.`;
+    return t("taskChat.questions.minLength", { min: validation.minLength });
   if (validation?.maxLength != null && value.length > validation.maxLength)
-    return `Enter no more than ${validation.maxLength} characters.`;
+    return t("taskChat.questions.maxLength", { max: validation.maxLength });
   if (validation?.pattern) {
     const result = matchSafeQuestionValidationPattern(validation.pattern, value);
     if (result === "unsupported")
-      return "This question has an unsupported validation pattern.";
-    if (result === "no_match") return "Use the requested format.";
+      return t("taskChat.questions.unsupportedPattern");
+    if (result === "no_match") return t("taskChat.questions.formatRequired");
   }
   if (
     validation?.inputType === "number" ||
@@ -102,12 +105,14 @@ function answerError(
       !Number.isFinite(numeric) ||
       (validation.inputType === "integer" && !Number.isInteger(numeric))
     ) {
-      return `Enter a valid ${validation.inputType}.`;
+      return validation.inputType === "integer"
+        ? t("taskChat.questions.invalidInteger")
+        : t("taskChat.questions.invalidNumber");
     }
     if (validation.minimum != null && numeric < validation.minimum)
-      return `Enter a value of at least ${validation.minimum}.`;
+      return t("taskChat.questions.minimum", { min: validation.minimum });
     if (validation.maximum != null && numeric > validation.maximum)
-      return `Enter a value no greater than ${validation.maximum}.`;
+      return t("taskChat.questions.maximum", { max: validation.maximum });
   }
   return null;
 }
@@ -131,6 +136,7 @@ function SelectOption({
   disabled: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -173,7 +179,7 @@ function SelectOption({
           <span>{label}</span>
           {recommended ? (
             <span className="rounded-sm bg-background/70 px-1.5 py-0.5 text-(length:--text-micro) font-medium text-muted-foreground">
-              Recommended
+              {t("taskChat.questions.recommended")}
             </span>
           ) : null}
         </span>
@@ -194,6 +200,7 @@ export function QuestionResponseSummary({
   questionSet: PaperclipQuestionSet;
   response: PaperclipQuestionResponse;
 }) {
+  const { t } = useTranslation();
   return (
     <dl className="grid gap-2 text-sm">
       {questionSet.questions.map((question) => {
@@ -221,7 +228,7 @@ export function QuestionResponseSummary({
               </span>
             </dt>
             <dd className="mt-0.5 text-foreground">
-              {values.length > 0 ? values.join(", ") : "No answer"}
+              {values.length > 0 ? values.join(", ") : t("taskChat.questions.noAnswer")}
             </dd>
           </div>
         );
@@ -248,6 +255,7 @@ function QuestionFormForRequest({
   onSubmit,
   onCancel,
 }: QuestionFormProps) {
+  const { t } = useTranslation();
   const takeoverActions = useTaskChatComposerTakeoverActions();
   // A provider default is an editable draft only. An existing response or
   // saved draft, including an explicitly cleared value, always wins. State
@@ -317,10 +325,10 @@ function QuestionFormForRequest({
       Object.fromEntries(
         questionSet.questions.map((candidate) => [
           candidate.id,
-          answerError(candidate, answers[candidate.id]),
+          answerError(candidate, answers[candidate.id], t),
         ]),
       ),
-    [answers, questionSet.questions],
+    [answers, questionSet.questions, t],
   );
   const allValid = Object.values(validationErrors).every(
     (value) => value == null,
@@ -328,7 +336,7 @@ function QuestionFormForRequest({
   if (!question)
     return (
       <p className="text-sm text-muted-foreground">
-        No answerable questions were provided.
+        {t("taskChat.questions.noQuestions")}
       </p>
     );
   const answer = answers[question.id] ?? {};
@@ -392,7 +400,7 @@ function QuestionFormForRequest({
     if (disabled || working || inputUploading) return;
     const invalidIndex = questionSet.questions.findIndex(
       (candidate) =>
-        answerError(candidate, responseAnswers[candidate.id]) != null,
+        answerError(candidate, responseAnswers[candidate.id], t) != null,
     );
     if (invalidIndex >= 0) {
       // A required answer is missing: the pagination arrows browse without
@@ -400,7 +408,7 @@ function QuestionFormForRequest({
       // question and say so rather than dropping the send.
       setPage(invalidIndex);
       setError({
-        message: `Question ${invalidIndex + 1} needs an answer before you can send.`,
+        message: t("taskChat.questions.answerNeeded", { number: invalidIndex + 1 }),
         fromMissingAnswer: true,
       });
       return;
@@ -418,7 +426,7 @@ function QuestionFormForRequest({
         message:
           cause instanceof Error
             ? cause.message
-            : "The answers could not be submitted.",
+            : t("taskChat.questions.submitFailed"),
       });
     } finally {
       setWorking(null);
@@ -437,7 +445,7 @@ function QuestionFormForRequest({
         message:
           cause instanceof Error
             ? cause.message
-            : "The questions could not be cancelled.",
+            : t("taskChat.questions.cancelFailed"),
       });
     } finally {
       setWorking(null);
@@ -466,26 +474,26 @@ function QuestionFormForRequest({
     questionSet.questions.length > 1 ? (
       <nav
         className="flex shrink-0 items-center gap-1"
-        aria-label="Question pagination"
+        aria-label={t("taskChat.questions.pagination")}
       >
         <Button
           type="button"
           size="icon-xs"
           variant="ghost"
-          aria-label="Previous question"
+          aria-label={t("taskChat.questions.previousQuestion")}
           disabled={disabled || working != null || page === 0}
           onClick={() => setPage((current) => current - 1)}
         >
           <ChevronLeft aria-hidden />
         </Button>
         <span className="min-w-10 text-center tabular-nums">
-          {page + 1} of {questionSet.questions.length}
+          {t("taskChat.questions.pageOf", { current: page + 1, total: questionSet.questions.length })}
         </span>
         <Button
           type="button"
           size="icon-xs"
           variant="ghost"
-          aria-label="Next question"
+          aria-label={t("taskChat.questions.nextQuestion")}
           // The arrows browse; they do not validate. A send that finds an
           // earlier answer missing returns to that question (see submit).
           disabled={disabled || working != null || isLastPage}
@@ -532,7 +540,7 @@ function QuestionFormForRequest({
       {questionSet.description ? (
         <div
           role="region"
-          aria-label="Question context"
+          aria-label={t("taskChat.questions.context")}
           tabIndex={0}
           className="mb-3 max-h-96 overflow-auto text-sm text-muted-foreground"
         >
@@ -541,7 +549,7 @@ function QuestionFormForRequest({
       ) : null}
       {question.answerMode === "text" ? (
         <div className="mb-2 flex items-center gap-3 text-xs text-muted-foreground">
-          {question.answerMode === "text" ? <span>Write an answer</span> : null}
+          {question.answerMode === "text" ? <span>{t("taskChat.questions.writeAnswer")}</span> : null}
         </div>
       ) : null}
       {pagination ? (
@@ -583,7 +591,7 @@ function QuestionFormForRequest({
             value={answer.text ?? ""}
             disabled={disabled || working != null}
             onChange={(value) => updateAnswer({ text: value })}
-            placeholder="Write your answer"
+            placeholder={t("taskChat.questions.writeYourAnswer")}
             imageUploadHandler={imageUploadHandler}
             mentions={mentions}
             autoFocus
@@ -591,7 +599,7 @@ function QuestionFormForRequest({
             onSubmit={() => {
               if (!inputUploading && currentError == null) progressOrSubmit();
             }}
-            attachAriaLabel={`Attach image to answer for ${question.prompt}`}
+            attachAriaLabel={t("taskChat.questions.attachAnswer", { prompt: question.prompt })}
           />
         </div>
       ) : (
@@ -614,8 +622,8 @@ function QuestionFormForRequest({
                     [question.id]: event.target.value,
                   }))
                 }
-                placeholder="Filter choices"
-                aria-label={`Filter choices for ${question.prompt}`}
+                placeholder={t("taskChat.questions.filterChoices")}
+                aria-label={t("taskChat.questions.filterChoicesFor", { prompt: question.prompt })}
                 className="pl-8"
               />
             </label>
@@ -637,7 +645,7 @@ function QuestionFormForRequest({
             <div className="space-y-1.5">
               <SelectOption
                 id={`${id}-${question.id}-custom`}
-                label={question.customAnswer?.label ?? "Other"}
+                label={question.customAnswer?.label ?? t("taskChat.questions.other")}
                 selected={isCustomActive}
                 multiple={multiple}
                 disabled={disabled || working != null}
@@ -649,7 +657,7 @@ function QuestionFormForRequest({
                   testId="question-other-answer-composer"
                   value={answer.customText ?? ""}
                   placeholder={
-                    question.customAnswer?.placeholder ?? "Type your answer"
+                    question.customAnswer?.placeholder ?? t("taskChat.questions.typeYourAnswer")
                   }
                   disabled={disabled || working != null}
                   onChange={(value) =>
@@ -663,7 +671,7 @@ function QuestionFormForRequest({
                     if (!inputUploading && currentError == null)
                       progressOrSubmit();
                   }}
-                  attachAriaLabel={`Attach image to other answer for ${question.prompt}`}
+                  attachAriaLabel={t("taskChat.questions.attachOtherAnswer", { prompt: question.prompt })}
                 />
               ) : null}
             </div>
@@ -692,7 +700,7 @@ function QuestionFormForRequest({
             {working === "cancel" ? (
               <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
             ) : null}{" "}
-            Cancel
+            {t("taskChat.questions.cancel")}
           </Button>
         ) : null}
         {!question.required ? (
@@ -703,7 +711,7 @@ function QuestionFormForRequest({
             disabled={busy}
             onClick={skipQuestion}
           >
-            Skip
+            {t("taskChat.questions.skip")}
           </Button>
         ) : null}
         <Button
@@ -715,7 +723,7 @@ function QuestionFormForRequest({
           {working === "submit" ? (
             <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
           ) : null}
-          {isLastPage ? (questionSet.submitLabel ?? "Submit answers") : "Next"}
+          {isLastPage ? (questionSet.submitLabel ?? t("taskChat.questions.submitAnswers")) : t("taskChat.questions.next")}
         </Button>
       </div>
     </div>
