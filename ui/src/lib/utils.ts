@@ -53,7 +53,7 @@ export function formatNumber(n: number, options?: Intl.NumberFormatOptions): str
  */
 export function formatProjectBudget(budget: { amountCents: number; windowKind: string }): string {
   const amount = formatCents(budget.amountCents);
-  return budget.windowKind === "calendar_month_utc" ? `${amount}/mo` : amount;
+  return budget.windowKind === "calendar_month_utc" ? t("ui4.utils.monthlyAmount", { amount }) : amount;
 }
 
 /** Intl locale for dates shown in the UI language; English keeps en-US formatting. */
@@ -146,12 +146,12 @@ export function providerDisplayName(provider: string): string {
 
 export function billingTypeDisplayName(billingType: BillingType): string {
   const map: Record<BillingType, string> = {
-    metered_api: "Metered API",
-    subscription_included: "Subscription",
-    subscription_overage: "Subscription overage",
-    credits: "Credits",
-    fixed: "Fixed",
-    unknown: "Unknown",
+    metered_api: t("ui4.utils.billingType.meteredApi"),
+    subscription_included: t("ui4.utils.billingType.subscription"),
+    subscription_overage: t("ui4.utils.billingType.subscriptionOverage"),
+    credits: t("ui4.utils.billingType.credits"),
+    fixed: t("ui4.utils.billingType.fixed"),
+    unknown: t("ui4.utils.billingType.unknown"),
   };
   return map[billingType];
 }
@@ -230,26 +230,26 @@ export function visibleRunCostUsd(
 
 export function financeEventKindDisplayName(eventKind: FinanceEventKind): string {
   const map: Record<FinanceEventKind, string> = {
-    inference_charge: "Inference charge",
-    platform_fee: "Platform fee",
-    credit_purchase: "Credit purchase",
-    credit_refund: "Credit refund",
-    credit_expiry: "Credit expiry",
-    byok_fee: "BYOK fee",
-    gateway_overhead: "Gateway overhead",
-    log_storage_charge: "Log storage",
-    logpush_charge: "Logpush",
-    provisioned_capacity_charge: "Provisioned capacity",
-    training_charge: "Training",
-    custom_model_import_charge: "Custom model import",
-    custom_model_storage_charge: "Custom model storage",
-    manual_adjustment: "Manual adjustment",
+    inference_charge: t("ui4.utils.financeEventKind.inferenceCharge"),
+    platform_fee: t("ui4.utils.financeEventKind.platformFee"),
+    credit_purchase: t("ui4.utils.financeEventKind.creditPurchase"),
+    credit_refund: t("ui4.utils.financeEventKind.creditRefund"),
+    credit_expiry: t("ui4.utils.financeEventKind.creditExpiry"),
+    byok_fee: t("ui4.utils.financeEventKind.byokFee"),
+    gateway_overhead: t("ui4.utils.financeEventKind.gatewayOverhead"),
+    log_storage_charge: t("ui4.utils.financeEventKind.logStorage"),
+    logpush_charge: t("ui4.utils.financeEventKind.logpushCharge"),
+    provisioned_capacity_charge: t("ui4.utils.financeEventKind.provisionedCapacity"),
+    training_charge: t("ui4.utils.financeEventKind.training"),
+    custom_model_import_charge: t("ui4.utils.financeEventKind.customModelImport"),
+    custom_model_storage_charge: t("ui4.utils.financeEventKind.customModelStorage"),
+    manual_adjustment: t("ui4.utils.financeEventKind.manualAdjustment"),
   };
   return map[eventKind];
 }
 
 export function financeDirectionDisplayName(direction: FinanceDirection): string {
-  return direction === "credit" ? "Credit" : "Debit";
+  return direction === "credit" ? t("ui4.utils.financeDirection.credit") : t("ui4.utils.financeDirection.debit");
 }
 
 /** Build an issue URL using the human-readable identifier when available. */

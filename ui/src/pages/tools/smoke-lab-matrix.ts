@@ -5,6 +5,7 @@ import {
   type SmokeRunStepPath,
   type SmokeRunStepStatus,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * Pure matrix/health helpers for the Smoke Lab tab (PAP-13347 / S2, plan §D3).
@@ -19,13 +20,34 @@ import {
  */
 
 export const SMOKE_PATH_LABELS: Record<SmokeRunStepPath, { title: string; detail: string }> = {
-  P1: { title: "Remote HTTP · OAuth", detail: "HTTP MCP fixture behind the fake OAuth provider" },
-  P2: { title: "Remote HTTP · API key", detail: "HTTP MCP fixture with a static bearer key" },
-  P3: { title: "Local stdio (template)", detail: "stdio fixture via the runtime supervisor" },
-  P4: { title: "Plugin integration", detail: "plugin-provided catalog entry + install flow" },
-  P5: { title: "Paste-a-config import", detail: "prosumer import via Advanced setup" },
-  P6: { title: "Token broker / gateway", detail: "run-scoped connection token, TTL + scope checks" },
-  P7: { title: "Governance surfaces", detail: "profiles, ask-first rules, quarantine" },
+  P1: {
+    get title() { return t("ui4.smokeLab.paths.P1.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P1.detail"); },
+  },
+  P2: {
+    get title() { return t("ui4.smokeLab.paths.P2.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P2.detail"); },
+  },
+  P3: {
+    get title() { return t("ui4.smokeLab.paths.P3.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P3.detail"); },
+  },
+  P4: {
+    get title() { return t("ui4.smokeLab.paths.P4.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P4.detail"); },
+  },
+  P5: {
+    get title() { return t("ui4.smokeLab.paths.P5.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P5.detail"); },
+  },
+  P6: {
+    get title() { return t("ui4.smokeLab.paths.P6.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P6.detail"); },
+  },
+  P7: {
+    get title() { return t("ui4.smokeLab.paths.P7.title"); },
+    get detail() { return t("ui4.smokeLab.paths.P7.detail"); },
+  },
 };
 
 export interface LifecycleStage {
@@ -37,14 +59,14 @@ export interface LifecycleStage {
 
 /** The PAP-12373 governed lifecycle, in order (plan §3). */
 export const LIFECYCLE_STAGES: LifecycleStage[] = [
-  { key: "connect", label: "Connect", match: ["connect", "oauth", "login", "auth"] },
-  { key: "discover", label: "Discover catalog", match: ["discover", "catalog", "list-tools"] },
-  { key: "read", label: "Allowed read", match: ["read", "allowed"] },
-  { key: "write", label: "Ask-first write", match: ["write", "approve", "ask-first", "askfirst", "review"] },
-  { key: "deny", label: "Denied call", match: ["deny", "denied", "block", "forbidden"] },
-  { key: "quarantine", label: "Schema-change quarantine", match: ["quarantine", "schema"] },
-  { key: "revoke", label: "Revoke", match: ["revoke"] },
-  { key: "audit", label: "Audit evidence", match: ["audit", "activity", "evidence"] },
+  { key: "connect", get label() { return t("ui4.smokeLab.stages.connect"); }, match: ["connect", "oauth", "login", "auth"] },
+  { key: "discover", get label() { return t("ui4.smokeLab.stages.discover"); }, match: ["discover", "catalog", "list-tools"] },
+  { key: "read", get label() { return t("ui4.smokeLab.stages.read"); }, match: ["read", "allowed"] },
+  { key: "write", get label() { return t("ui4.smokeLab.stages.write"); }, match: ["write", "approve", "ask-first", "askfirst", "review"] },
+  { key: "deny", get label() { return t("ui4.smokeLab.stages.deny"); }, match: ["deny", "denied", "block", "forbidden"] },
+  { key: "quarantine", get label() { return t("ui4.smokeLab.stages.quarantine"); }, match: ["quarantine", "schema"] },
+  { key: "revoke", get label() { return t("ui4.smokeLab.stages.revoke"); }, match: ["revoke"] },
+  { key: "audit", get label() { return t("ui4.smokeLab.stages.audit"); }, match: ["audit", "activity", "evidence"] },
 ];
 
 /** Fold a free-form scenario step onto a canonical lifecycle stage, or null. */

@@ -20238,5 +20238,321 @@
       "notSet_one": "· {{count}} sin cargar",
       "notSet_other": "· {{count}} sin cargar"
     }
+  },
+  "ui4": {
+    "fileTree": {
+      "frontmatter": {
+        "name": "Nombre",
+        "title": "Título",
+        "kind": "Tipo",
+        "reportsTo": "Reporta a",
+        "skills": "Habilidades",
+        "status": "Estado",
+        "description": "Descripción",
+        "priority": "Prioridad",
+        "assignee": "Responsable asignado",
+        "project": "Proyecto",
+        "recurring": "Recurrente",
+        "targetDate": "Fecha objetivo"
+      }
+    },
+    "utils": {
+      "billingType": {
+        "meteredApi": "API medida",
+        "subscription": "Suscripción",
+        "subscriptionOverage": "Excedente de suscripción",
+        "credits": "Créditos",
+        "fixed": "Fijo",
+        "unknown": "Desconocido"
+      },
+      "financeEventKind": {
+        "inferenceCharge": "Cargo por inferencia",
+        "platformFee": "Tarifa de la plataforma",
+        "creditPurchase": "Compra de créditos",
+        "creditRefund": "Reembolso de créditos",
+        "creditExpiry": "Vencimiento de créditos",
+        "byokFee": "Tarifa BYOK",
+        "gatewayOverhead": "Costo adicional del gateway",
+        "logStorage": "Almacenamiento de logs",
+        "logpushCharge": "Logpush",
+        "provisionedCapacity": "Capacidad aprovisionada",
+        "training": "Entrenamiento",
+        "customModelImport": "Importación de modelo personalizado",
+        "customModelStorage": "Almacenamiento de modelo personalizado",
+        "manualAdjustment": "Ajuste manual"
+      },
+      "financeDirection": {
+        "credit": "Crédito",
+        "debit": "Débito"
+      },
+      "monthlyAmount": "{{amount}}/mes"
+    },
+    "appGallery": {
+      "credentialKey": "Tu clave de {{app}}",
+      "generic": "Dar a tus agentes acceso a esta app.",
+      "apps": {
+        "zapier": {
+          "tagline": "Llega a más de 9.000 apps que tu equipo ya usa.",
+          "short": "Llega a más de 9.000 apps desde tus agentes."
+        },
+        "github": {
+          "tagline": "Lee código y pull requests, y comenta en issues.",
+          "short": "Lee código y pull requests, y comenta en issues."
+        },
+        "slack": {
+          "tagline": "Envía y lee mensajes en los canales de tu equipo.",
+          "short": "Envía y lee mensajes en tus canales."
+        },
+        "notion": {
+          "tagline": "Lee y actualiza páginas en tu espacio de trabajo.",
+          "short": "Lee y actualiza páginas en tu espacio de trabajo."
+        },
+        "railway": {
+          "tagline": "Revisa servicios, lee logs y administra despliegues.",
+          "short": "Conectar Railway para despliegues, logs y acceso a contenedores."
+        },
+        "posthog": {
+          "tagline": "Explora el uso del producto, errores, flags y experimentos.",
+          "short": "Inicia sesión con PostHog. Fijar proyecto y controles de acceso son opcionales."
+        },
+        "gauge": {
+          "tagline": "Sigue tu marca en las respuestas de IA y ejecuta flujos de contenido.",
+          "short": "Inicia sesión con Gauge y elige una organización. Las claves de API son opcionales."
+        },
+        "neon": {
+          "tagline": "Administra proyectos, ramas y consultas de Postgres.",
+          "short": "Inicia sesión con Neon. Fijar proyecto y el modo solo lectura son opcionales."
+        },
+        "superagent": {
+          "tagline": "Revisa hallazgos de seguridad y ejecuta controles de red team.",
+          "short": "Conecta con una clave de API de Superagent. Las herramientas facturables y destructivas quedan bajo políticas de acción."
+        },
+        "linear": {
+          "tagline": "Crea, actualiza y lee tickets.",
+          "short": "Crea, actualiza y lee tickets."
+        },
+        "googleSheets": {
+          "tagline": "Lee y actualiza planillas seleccionadas.",
+          "short": "Lee planillas o actualiza los archivos que elijas."
+        },
+        "gmail": {
+          "tagline": "Lee correos y crea borradores para tu revisión.",
+          "short": "Lee correos y crea borradores para tu revisión."
+        },
+        "googleDrive": {
+          "tagline": "Busca, lee y crea archivos en Drive.",
+          "short": "Busca, lee y crea archivos en Drive."
+        },
+        "googleDocs": {
+          "tagline": "Lee y actualiza documentos.",
+          "short": "Lee y actualiza documentos."
+        },
+        "googleSlides": {
+          "tagline": "Lee y actualiza presentaciones.",
+          "short": "Lee y actualiza presentaciones."
+        },
+        "googleCalendar": {
+          "tagline": "Revisa calendarios y administra eventos.",
+          "short": "Revisa calendarios y administra eventos."
+        },
+        "googleChat": {
+          "tagline": "Lee conversaciones y envía mensajes.",
+          "short": "Lee conversaciones y envía mensajes."
+        },
+        "googlePeople": {
+          "tagline": "Busca contactos y personas en tu directorio.",
+          "short": "Busca contactos y personas en tu directorio."
+        },
+        "googleWorkspaceSearch": {
+          "tagline": "Busca en tu espacio de Google Workspace.",
+          "short": "Busca en tu espacio de Google Workspace."
+        },
+        "hubspot": {
+          "tagline": "Busca contactos y actualiza las etapas de negocio.",
+          "short": "Busca contactos y actualiza las etapas de negocio."
+        },
+        "intercom": {
+          "tagline": "Lee y responde conversaciones con clientes.",
+          "short": "Lee y responde conversaciones con clientes."
+        },
+        "figma": {
+          "tagline": "Lee archivos y publica comentarios en frames.",
+          "short": "Lee archivos y publica comentarios en frames."
+        },
+        "stripe": {
+          "tagline": "Lee clientes, facturas y pagos salientes.",
+          "short": "Lee clientes, facturas y pagos salientes."
+        },
+        "context7": {
+          "tagline": "Consulta documentación actualizada de tus librerías.",
+          "short": "Consulta documentación actualizada de tus librerías."
+        }
+      }
+    },
+    "exportCategories": {
+      "agents": "Agentes",
+      "projects": "Proyectos",
+      "skills": "Habilidades",
+      "routines": "Rutinas",
+      "tasks": "Tareas",
+      "attachments": "Adjuntos"
+    },
+    "cronFires": {
+      "queued": "en cola",
+      "coalesced": "se agruparía",
+      "skipped": "se omitiría",
+      "runsImmediately": "se ejecuta de inmediato",
+      "ifPreviousActive": "si la corrida anterior sigue activa"
+    },
+    "pipelineBreakdown": {
+      "summaryCreate": "Paperclip creará 1 {{noun}} por cada elemento en {{target}} → {{entry}}",
+      "summaryCarryOver": "trasladará {{fields}}",
+      "summaryAdvance": "moverá este caso a {{name}}",
+      "summaryWait": ", esperará a que termine cada {{noun}} antes de moverlo a {{name}}",
+      "joinPair": "{{a}} y {{b}}",
+      "joinLast": "{{rest}} y {{last}}",
+      "mechanicsCreate": "Crea 1 {{noun}} por cada elemento que devuelve el agente, en {{target}} → {{entry}}.",
+      "mechanicsLink": "Vincula cada {{noun}} con este caso para que el progreso se vea aquí.",
+      "mechanicsCarryOver": "Traslada {{fields}} de este caso a cada {{noun}}.",
+      "mechanicsAdvance": "Mueve este caso a {{name}} en cuanto se creen todos los elementos.",
+      "mechanicsWait": "Espera a que termine cada {{noun}} y luego mueve este caso a {{name}}.",
+      "mechanicsEmpty": "Si el agente devuelve una lista vacía, este caso pasa directamente a {{name}}.",
+      "destinationPipeline": "el pipeline de destino",
+      "entryStep": "su etapa de entrada"
+    },
+    "skillFork": {
+      "source": {
+        "url": "una URL",
+        "catalog": "el catálogo",
+        "localPath": "una ruta local",
+        "fallback": "su origen"
+      },
+      "noAgentUsage": "Ningún agente usa actualmente esta habilidad",
+      "agentUsage_one": "{{count}} agente usa actualmente esta habilidad",
+      "agentUsage_other": "{{count}} agentes usan actualmente esta habilidad"
+    },
+    "connectionIdentity": {
+      "status": {
+        "connected": "Conectado",
+        "needsAttention": "Requiere atención",
+        "expired": "Vencido",
+        "revoked": "Revocado",
+        "notConnected": "No conectado"
+      },
+      "account": {
+        "connected": "Cuenta conectada",
+        "dedicated": "Cuenta dedicada",
+        "shared": "Credencial compartida"
+      },
+      "audience": {
+        "allMembers": "Todos los miembros de la organización",
+        "selectedMembers_one": "{{count}} miembro seleccionado",
+        "selectedMembers_other": "{{count}} miembros seleccionados"
+      }
+    },
+    "gatewayTabs": {
+      "overview": "Resumen",
+      "appsAndTools": "Apps y herramientas",
+      "tokens": "Tokens",
+      "activity": "Actividad",
+      "advanced": "Avanzado"
+    },
+    "toolTabs": {
+      "pasteConfig": "Pegar una configuración",
+      "profiles": "Perfiles"
+    },
+    "profileSummary": {
+      "allTools": "Todas las herramientas",
+      "allExcept_one": "Todas menos {{count}} herramienta",
+      "allExcept_other": "Todas menos {{count}} herramientas",
+      "tools_one": "{{count}} herramienta",
+      "tools_other": "{{count}} herramientas",
+      "apps_one": "{{count}} app",
+      "apps_other": "{{count}} apps",
+      "agents_one": "{{count}} agente",
+      "agents_other": "{{count}} agentes",
+      "assignments_one": "{{count}} asignación",
+      "assignments_other": "{{count}} asignaciones",
+      "organizationDefault": "Predeterminado de la organización",
+      "notAssignedYet": "Sin asignar todavía",
+      "status": {
+        "draft": "Borrador",
+        "active": "Activo",
+        "disabled": "Desactivado",
+        "archived": "Archivado"
+      }
+    },
+    "profileModel": {
+      "capability": {
+        "read": "Solo lectura",
+        "write": "Hace cambios",
+        "destructive": "Destructiva"
+      },
+      "toolsFallback": "Herramientas",
+      "noneSelected": "Ninguna seleccionada",
+      "allAppTools": "Todas las herramientas de {{name}} ({{total}})",
+      "allAppExcept": "{{name}}: todas excepto {{n}}",
+      "someAppTools": "{{n}} de {{total}} herramientas de {{name}}",
+      "template": {
+        "readOnlyTitle": "Solo lectura",
+        "readOnlyDescription": "Ver y consultar, pero sin cambiar nada.",
+        "everydayTitle": "Trabajo diario",
+        "everydayDescription": "Leer y hacer cambios rutinarios, sin herramientas destructivas.",
+        "fullAccessTitle": "Acceso completo",
+        "fullAccessDescription": "Todo lo que ofrece cada app conectada.",
+        "scratchTitle": "Empezar desde cero",
+        "scratchDescription": "Un perfil vacío que se arma herramienta por herramienta.",
+        "copyTitle": "Copiar un perfil existente",
+        "copyDescription": "Empezar desde un perfil que ya existe."
+      }
+    },
+    "smokeLab": {
+      "paths": {
+        "P1": {
+          "title": "HTTP remoto · OAuth",
+          "detail": "Fixture HTTP MCP detrás del proveedor OAuth simulado"
+        },
+        "P2": {
+          "title": "HTTP remoto · clave de API",
+          "detail": "Fixture HTTP MCP con un token bearer estático"
+        },
+        "P3": {
+          "title": "stdio local (plantilla)",
+          "detail": "Fixture stdio a través del supervisor de runtime"
+        },
+        "P4": {
+          "title": "Integración de plugin",
+          "detail": "Entrada de catálogo provista por un plugin y flujo de instalación"
+        },
+        "P5": {
+          "title": "Importación pegando una configuración",
+          "detail": "Importación de nivel avanzado desde la configuración avanzada"
+        },
+        "P6": {
+          "title": "Broker de tokens / gateway",
+          "detail": "Token de conexión por corrida, controles de TTL y alcance"
+        },
+        "P7": {
+          "title": "Superficies de gobernanza",
+          "detail": "perfiles, reglas de consulta previa, cuarentena"
+        }
+      },
+      "stages": {
+        "connect": "Conectar",
+        "discover": "Descubrir catálogo",
+        "read": "Lectura permitida",
+        "write": "Escritura con aprobación previa",
+        "deny": "Llamada denegada",
+        "quarantine": "Cuarentena por cambio de esquema",
+        "revoke": "Revocar",
+        "audit": "Evidencia de auditoría"
+      }
+    },
+    "skillFolderTree": {
+      "mySkills": "Mis habilidades",
+      "projects": "Proyectos",
+      "bundled": "Incluidas",
+      "organization": "Organización"
+    }
   }
 }

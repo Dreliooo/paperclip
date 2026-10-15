@@ -20239,5 +20239,321 @@
       "notSet_one": "· {{count}} not set",
       "notSet_other": "· {{count}} not set"
     }
+  },
+  "ui4": {
+    "fileTree": {
+      "frontmatter": {
+        "name": "Name",
+        "title": "Title",
+        "kind": "Kind",
+        "reportsTo": "Reports to",
+        "skills": "Skills",
+        "status": "Status",
+        "description": "Description",
+        "priority": "Priority",
+        "assignee": "Responsible",
+        "project": "Project",
+        "recurring": "Recurring",
+        "targetDate": "Target date"
+      }
+    },
+    "utils": {
+      "billingType": {
+        "meteredApi": "Metered API",
+        "subscription": "Subscription",
+        "subscriptionOverage": "Subscription overage",
+        "credits": "Credits",
+        "fixed": "Fixed",
+        "unknown": "Unknown"
+      },
+      "financeEventKind": {
+        "inferenceCharge": "Inference charge",
+        "platformFee": "Platform fee",
+        "creditPurchase": "Credit purchase",
+        "creditRefund": "Credit refund",
+        "creditExpiry": "Credit expiry",
+        "byokFee": "BYOK fee",
+        "gatewayOverhead": "Gateway overhead",
+        "logStorage": "Log storage",
+        "logpushCharge": "Logpush",
+        "provisionedCapacity": "Provisioned capacity",
+        "training": "Training",
+        "customModelImport": "Custom model import",
+        "customModelStorage": "Custom model storage",
+        "manualAdjustment": "Manual adjustment"
+      },
+      "financeDirection": {
+        "credit": "Credit",
+        "debit": "Debit"
+      },
+      "monthlyAmount": "{{amount}}/mo"
+    },
+    "appGallery": {
+      "credentialKey": "Your {{app}} key",
+      "generic": "Give your agents access to this app.",
+      "apps": {
+        "zapier": {
+          "tagline": "Reach 9,000+ apps your team already uses.",
+          "short": "Reach 9,000+ apps from your agents."
+        },
+        "github": {
+          "tagline": "Read code and pull requests, comment on issues.",
+          "short": "Read code and pull requests, comment on issues."
+        },
+        "slack": {
+          "tagline": "Send and read messages in your team's channels.",
+          "short": "Send and read messages in your channels."
+        },
+        "notion": {
+          "tagline": "Read and update pages in your workspace.",
+          "short": "Read and update pages in your workspace."
+        },
+        "railway": {
+          "tagline": "Inspect services, read logs, and manage deployments.",
+          "short": "Connect Railway for deployments, logs, and container access."
+        },
+        "posthog": {
+          "tagline": "Explore product usage, errors, flags, and experiments.",
+          "short": "Sign in with PostHog. Project pinning and access controls are optional."
+        },
+        "gauge": {
+          "tagline": "Track your brand in AI answers and run content workflows.",
+          "short": "Sign in with Gauge and pick an organization. API keys are optional."
+        },
+        "neon": {
+          "tagline": "Manage Postgres projects, branches, and queries.",
+          "short": "Sign in with Neon. Project pinning and read-only mode are optional."
+        },
+        "superagent": {
+          "tagline": "Review security findings and run red-team checks.",
+          "short": "Connect with a Superagent API key. Billable and destructive tools stay under action policies."
+        },
+        "linear": {
+          "tagline": "Create, update and read tickets.",
+          "short": "Create, update and read tickets."
+        },
+        "googleSheets": {
+          "tagline": "Read and update selected spreadsheets.",
+          "short": "Read spreadsheets or update the files you choose."
+        },
+        "gmail": {
+          "tagline": "Read mail and create drafts for your review.",
+          "short": "Read mail and create drafts for your review."
+        },
+        "googleDrive": {
+          "tagline": "Find, read, and create files in Drive.",
+          "short": "Find, read, and create files in Drive."
+        },
+        "googleDocs": {
+          "tagline": "Read and update documents.",
+          "short": "Read and update documents."
+        },
+        "googleSlides": {
+          "tagline": "Read and update presentations.",
+          "short": "Read and update presentations."
+        },
+        "googleCalendar": {
+          "tagline": "Review calendars and manage events.",
+          "short": "Review calendars and manage events."
+        },
+        "googleChat": {
+          "tagline": "Read conversations and send messages.",
+          "short": "Read conversations and send messages."
+        },
+        "googlePeople": {
+          "tagline": "Look up contacts and people in your directory.",
+          "short": "Look up contacts and people in your directory."
+        },
+        "googleWorkspaceSearch": {
+          "tagline": "Search across your Google workspace.",
+          "short": "Search across your Google workspace."
+        },
+        "hubspot": {
+          "tagline": "Look up contacts and update deal stages.",
+          "short": "Look up contacts and update deal stages."
+        },
+        "intercom": {
+          "tagline": "Read and reply to customer conversations.",
+          "short": "Read and reply to customer conversations."
+        },
+        "figma": {
+          "tagline": "Read files and post comments on frames.",
+          "short": "Read files and post comments on frames."
+        },
+        "stripe": {
+          "tagline": "Read customers, invoices, and payouts.",
+          "short": "Read customers, invoices, and payouts."
+        },
+        "context7": {
+          "tagline": "Look up up-to-date docs for your libraries.",
+          "short": "Look up up-to-date docs for your libraries."
+        }
+      }
+    },
+    "exportCategories": {
+      "agents": "Agents",
+      "projects": "Projects",
+      "skills": "Skills",
+      "routines": "Routines",
+      "tasks": "Tasks",
+      "attachments": "Attachments"
+    },
+    "cronFires": {
+      "queued": "queued",
+      "coalesced": "would be coalesced",
+      "skipped": "would be skipped",
+      "runsImmediately": "runs immediately",
+      "ifPreviousActive": "if the previous run is still active"
+    },
+    "pipelineBreakdown": {
+      "summaryCreate": "Paperclip will create one {{noun}} per item in {{target}} → {{entry}}",
+      "summaryCarryOver": "carry over {{fields}}",
+      "summaryAdvance": "move this case to {{name}}",
+      "summaryWait": ", then wait until every {{noun}} is finished before moving it to {{name}}",
+      "joinPair": "{{a}} and {{b}}",
+      "joinLast": "{{rest}} and {{last}}",
+      "mechanicsCreate": "Creates one {{noun}} per item the agent returns, in {{target}} → {{entry}}.",
+      "mechanicsLink": "Links every {{noun}} to this case so progress rolls up here.",
+      "mechanicsCarryOver": "Carries over {{fields}} from this case onto each {{noun}}.",
+      "mechanicsAdvance": "Moves this case to {{name}} as soon as the pieces are created.",
+      "mechanicsWait": "Waits until every {{noun}} is finished, then moves this case to {{name}}.",
+      "mechanicsEmpty": "If the agent returns an empty list, this case skips ahead to {{name}}.",
+      "destinationPipeline": "the destination pipeline",
+      "entryStep": "its entry step"
+    },
+    "skillFork": {
+      "source": {
+        "url": "a URL",
+        "catalog": "the catalog",
+        "localPath": "a local path",
+        "fallback": "its source"
+      },
+      "noAgentUsage": "No agents currently use this skill",
+      "agentUsage_one": "{{count}} agent currently uses this skill",
+      "agentUsage_other": "{{count}} agents currently use this skill"
+    },
+    "connectionIdentity": {
+      "status": {
+        "connected": "Connected",
+        "needsAttention": "Needs attention",
+        "expired": "Expired",
+        "revoked": "Revoked",
+        "notConnected": "Not connected"
+      },
+      "account": {
+        "connected": "Connected account",
+        "dedicated": "Dedicated account",
+        "shared": "Shared credential"
+      },
+      "audience": {
+        "allMembers": "All organization members",
+        "selectedMembers_one": "{{count}} selected member",
+        "selectedMembers_other": "{{count}} selected members"
+      }
+    },
+    "gatewayTabs": {
+      "overview": "Overview",
+      "appsAndTools": "Apps & tools",
+      "tokens": "Tokens",
+      "activity": "Activity",
+      "advanced": "Advanced"
+    },
+    "toolTabs": {
+      "pasteConfig": "Paste a config",
+      "profiles": "Profiles"
+    },
+    "profileSummary": {
+      "allTools": "All tools",
+      "allExcept_one": "All except {{count}} tool",
+      "allExcept_other": "All except {{count}} tools",
+      "tools_one": "{{count}} tool",
+      "tools_other": "{{count}} tools",
+      "apps_one": "{{count}} app",
+      "apps_other": "{{count}} apps",
+      "agents_one": "{{count}} agent",
+      "agents_other": "{{count}} agents",
+      "assignments_one": "{{count}} assignment",
+      "assignments_other": "{{count}} assignments",
+      "organizationDefault": "Organization default",
+      "notAssignedYet": "Not assigned yet",
+      "status": {
+        "draft": "Draft",
+        "active": "Active",
+        "disabled": "Off",
+        "archived": "Archived"
+      }
+    },
+    "profileModel": {
+      "capability": {
+        "read": "Read-only",
+        "write": "Makes changes",
+        "destructive": "Destructive"
+      },
+      "toolsFallback": "Tools",
+      "noneSelected": "None selected",
+      "allAppTools": "All {{name}} tools ({{total}})",
+      "allAppExcept": "All {{name}} except {{n}}",
+      "someAppTools": "{{n}} of {{total}} {{name}} tools",
+      "template": {
+        "readOnlyTitle": "Read-only",
+        "readOnlyDescription": "See and fetch, but never change anything.",
+        "everydayTitle": "Everyday work",
+        "everydayDescription": "Read and make routine changes — no destructive tools.",
+        "fullAccessTitle": "Full access",
+        "fullAccessDescription": "Everything every connected app offers.",
+        "scratchTitle": "Start from scratch",
+        "scratchDescription": "An empty profile you build up tool by tool.",
+        "copyTitle": "Copy an existing profile",
+        "copyDescription": "Start from a profile you already have."
+      }
+    },
+    "smokeLab": {
+      "paths": {
+        "P1": {
+          "title": "Remote HTTP · OAuth",
+          "detail": "HTTP MCP fixture behind the fake OAuth provider"
+        },
+        "P2": {
+          "title": "Remote HTTP · API key",
+          "detail": "HTTP MCP fixture with a static bearer key"
+        },
+        "P3": {
+          "title": "Local stdio (template)",
+          "detail": "stdio fixture via the runtime supervisor"
+        },
+        "P4": {
+          "title": "Plugin integration",
+          "detail": "plugin-provided catalog entry + install flow"
+        },
+        "P5": {
+          "title": "Paste-a-config import",
+          "detail": "prosumer import via Advanced setup"
+        },
+        "P6": {
+          "title": "Token broker / gateway",
+          "detail": "run-scoped connection token, TTL + scope checks"
+        },
+        "P7": {
+          "title": "Governance surfaces",
+          "detail": "profiles, ask-first rules, quarantine"
+        }
+      },
+      "stages": {
+        "connect": "Connect",
+        "discover": "Discover catalog",
+        "read": "Allowed read",
+        "write": "Ask-first write",
+        "deny": "Denied call",
+        "quarantine": "Schema-change quarantine",
+        "revoke": "Revoke",
+        "audit": "Audit evidence"
+      }
+    },
+    "skillFolderTree": {
+      "mySkills": "My Skills",
+      "projects": "Projects",
+      "bundled": "Bundled",
+      "organization": "Organization"
+    }
   }
 }

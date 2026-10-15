@@ -1,3 +1,5 @@
+import { t } from "@/i18n";
+
 /**
  * Client-side "next N schedule fires" helper for the routine Delivery preview (§3.5).
  *
@@ -223,11 +225,15 @@ export interface FirePreviewEntry {
   note: string | null;
 }
 
-const DISPOSITION_LABEL: Record<FireDisposition, string> = {
-  queued: "queued",
-  coalesced: "would be coalesced",
-  skipped: "would be skipped",
+const DISPOSITION_LABEL_KEYS: Record<FireDisposition, string> = {
+  queued: "ui4.cronFires.queued",
+  coalesced: "ui4.cronFires.coalesced",
+  skipped: "ui4.cronFires.skipped",
 };
+
+function fireDispositionLabel(disposition: FireDisposition): string {
+  return t(DISPOSITION_LABEL_KEYS[disposition]);
+}
 
 /**
  * Annotate a list of upcoming fires with how the chosen concurrency policy would
@@ -245,8 +251,8 @@ export function previewFirePolicies(
       return {
         at,
         disposition: "queued",
-        label: DISPOSITION_LABEL.queued,
-        note: "runs immediately",
+        get label() { return fireDispositionLabel("queued"); },
+        get note() { return t("ui4.cronFires.runsImmediately"); },
       };
     }
     let disposition: FireDisposition;
@@ -265,8 +271,8 @@ export function previewFirePolicies(
     return {
       at,
       disposition,
-      label: DISPOSITION_LABEL[disposition],
-      note: disposition === "queued" ? null : "if the previous run is still active",
+      get label() { return fireDispositionLabel(disposition); },
+      get note() { return disposition === "queued" ? null : t("ui4.cronFires.ifPreviousActive"); },
     };
   });
 }

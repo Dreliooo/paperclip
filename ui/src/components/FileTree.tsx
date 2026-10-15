@@ -13,7 +13,7 @@ import { statusBadge, statusBadgeDefault } from "../lib/status-colors";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "@/i18n";
+import { t, useTranslation } from "@/i18n";
 
 // -- Tree types --------------------------------------------------------------
 
@@ -216,18 +216,18 @@ export function parseFrontmatter(content: string): { data: FrontmatterData; body
 }
 
 export const FRONTMATTER_FIELD_LABELS: Record<string, string> = {
-  name: "Name",
-  title: "Title",
-  kind: "Kind",
-  reportsTo: "Reports to",
-  skills: "Skills",
-  status: "Status",
-  description: "Description",
-  priority: "Priority",
-  assignee: "Responsible",
-  project: "Project",
-  recurring: "Recurring",
-  targetDate: "Target date",
+  get name() { return t("ui4.fileTree.frontmatter.name"); },
+  get title() { return t("ui4.fileTree.frontmatter.title"); },
+  get kind() { return t("ui4.fileTree.frontmatter.kind"); },
+  get reportsTo() { return t("ui4.fileTree.frontmatter.reportsTo"); },
+  get skills() { return t("ui4.fileTree.frontmatter.skills"); },
+  get status() { return t("ui4.fileTree.frontmatter.status"); },
+  get description() { return t("ui4.fileTree.frontmatter.description"); },
+  get priority() { return t("ui4.fileTree.frontmatter.priority"); },
+  get assignee() { return t("ui4.fileTree.frontmatter.assignee"); },
+  get project() { return t("ui4.fileTree.frontmatter.project"); },
+  get recurring() { return t("ui4.fileTree.frontmatter.recurring"); },
+  get targetDate() { return t("ui4.fileTree.frontmatter.targetDate"); },
 };
 
 // -- File tree component -----------------------------------------------------
