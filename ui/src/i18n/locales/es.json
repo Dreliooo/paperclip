@@ -307,7 +307,9 @@
     "autoRead": "Leer respuestas nuevas en voz alta",
     "autoReadOn": "Leyendo respuestas nuevas",
     "autoReadHint": "Las respuestas nuevas del agente en esta conversación se leerán en voz alta, de a una.",
-    "onlineVoice": "en línea: el texto se envía al proveedor del navegador"
+    "onlineVoice": "en línea: el texto se envía al proveedor del navegador",
+    "autoReadAgent": "Leer a este agente en voz alta",
+    "autoReadAgentHint": "Las respuestas nuevas de este agente se leerán en voz alta en cualquier conversación que tengas abierta, de a una."
   },
   "taskChat": {
     "run": {

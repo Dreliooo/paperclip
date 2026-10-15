@@ -307,7 +307,9 @@
     "autoRead": "Read new replies aloud",
     "autoReadOn": "Reading new replies aloud",
     "autoReadHint": "New agent replies in this conversation will be read aloud, one at a time.",
-    "onlineVoice": "online: text is sent to the browser vendor"
+    "onlineVoice": "online: text is sent to the browser vendor",
+    "autoReadAgent": "Read this agent aloud",
+    "autoReadAgentHint": "New replies from this agent will be read aloud in any conversation you have open, one at a time."
   },
   "taskChat": {
     "run": {

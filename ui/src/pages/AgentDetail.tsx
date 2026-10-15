@@ -58,6 +58,7 @@ import { Identity } from "../components/Identity";
 import { PageSkeleton } from "../components/PageSkeleton";
 import { AgentActionButtons } from "../components/AgentActionButtons";
 import { CacheReuseIndicator } from "../components/usage/CacheReuseIndicator";
+import { AutoReadToggle, agentAutoReadKey } from "../components/speech/AutoReadToggle";
 import { InlineBanner } from "../components/InlineBanner";
 import { BuiltInBundlePanel } from "../components/BuiltInBundlePanel";
 import { ConfigureBuiltInAgentModal } from "../components/ConfigureBuiltInAgentModal";
@@ -1275,6 +1276,7 @@ export function AgentDetail() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {resolvedCompanyId ? <CacheReuseIndicator scope="agent" companyId={resolvedCompanyId} agentId={agent.id} /> : null}
+          <AutoReadToggle autoReadKey={agentAutoReadKey(agent.id)} scope="agent" />
           <StarToggle
             size="button"
             starred={agentStarred}

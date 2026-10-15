@@ -6,6 +6,7 @@ import {
   type SpeechController,
 } from "@/lib/speech/speech-controller";
 import { cn } from "@/lib/utils";
+import { markdownToSpeechText } from "@/lib/speech/speech-text";
 
 /** Message ids already handed to the speech queue. Module-level so remounts never repeat a reply. */
 const enqueuedMessageIds = new Set<string>();
@@ -25,7 +26,14 @@ function useAutoReadEnabled(controller: SpeechController | null, autoReadKey: st
 }
 
 /** Toggle for reading new agent replies in one conversation. Renders nothing without Web Speech. */
-export function AutoReadToggle({ autoReadKey }: { autoReadKey: string }) {
+export function AutoReadToggle({
+  autoReadKey,
+  scope = "conversation",
+}: {
+  autoReadKey: string;
+  /** "agent" labels the toggle for one agent across all its conversations. */
+  scope?: "conversation" | "agent";
+}) {
   const { t } = useTranslation();
   const controller = getSpeechController();
   const enabled = useAutoReadEnabled(controller, autoReadKey);
@@ -36,7 +44,7 @@ export function AutoReadToggle({ autoReadKey }: { autoReadKey: string }) {
     <button
       type="button"
       aria-pressed={enabled}
-      title={t("speech.autoReadHint")}
+      title={t(scope === "agent" ? "speech.autoReadAgentHint" : "speech.autoReadHint")}
       onClick={() => controller.setAutoRead(autoReadKey, !enabled)}
       className={cn(
         "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs transition-colors hover:bg-accent hover:text-foreground",
@@ -44,7 +52,7 @@ export function AutoReadToggle({ autoReadKey }: { autoReadKey: string }) {
       )}
     >
       <AudioLines className="h-3.5 w-3.5" />
-      <span>{enabled ? t("speech.autoReadOn") : t("speech.autoRead")}</span>
+      <span>{enabled ? t("speech.autoReadOn") : t(scope === "agent" ? "speech.autoReadAgent" : "speech.autoRead")}</span>
     </button>
   );
 }
@@ -54,11 +62,19 @@ export interface AutoReadMessage {
   text: string;
   /** Epoch ms the reply arrived; null when unknown (never auto-read). */
   atMs: number | null;
+  /** Authoring agent, so "read this agent aloud" works in any conversation. */
+  agentId?: string | null;
+}
+
+/** Auto-read key for one agent across every conversation it replies in. */
+export function agentAutoReadKey(agentId: string) {
+  return `agent:${agentId}`;
 }
 
 /**
- * While auto-read is on for `autoReadKey`, queues each message that arrived
- * after it was enabled, once. Callers pass only final agent replies.
+ * While auto-read is on for the conversation (`autoReadKey`) or for the
+ * message's agent, queues each reply that arrived after it was enabled, once.
+ * Callers pass only final agent replies. Replies are read one at a time.
  */
 export function useAutoReadReplies({
   autoReadKey,
@@ -67,19 +83,29 @@ export function useAutoReadReplies({
   autoReadKey: string;
   messages: AutoReadMessage[];
 }): void {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const controller = getSpeechController();
-  const enabled = useAutoReadEnabled(controller, autoReadKey);
+  const subscribe = useCallback(
+    (listener: () => void) => (controller ? controller.subscribe(listener) : noopUnsubscribe),
+    [controller],
+  );
+  const getSnapshot = useCallback(() => controller?.getState() ?? null, [controller]);
+  // Re-run whenever any auto-read switch (conversation or agent) changes.
+  const speechState = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   useEffect(() => {
-    if (!controller || !enabled) return;
-    const since = controller.autoReadEnabledAt(autoReadKey);
-    if (since === null) return;
+    if (!controller) return;
     for (const message of messages) {
-      if (message.atMs === null || message.atMs < since) continue;
-      if (enqueuedMessageIds.has(message.id)) continue;
+      if (message.atMs === null || enqueuedMessageIds.has(message.id)) continue;
+      const keys = [autoReadKey, message.agentId ? agentAutoReadKey(message.agentId) : null];
+      const since = keys
+        .map((key) => (key ? controller.autoReadEnabledAt(key) : null))
+        .filter((value): value is number => value !== null);
+      if (since.length === 0 || message.atMs < Math.min(...since)) continue;
       enqueuedMessageIds.add(message.id);
-      controller.enqueue(message.id, message.text, { lang: i18n.language });
+      // Same speakable text as the Listen button: no code blocks or URLs.
+      const spoken = markdownToSpeechText(message.text, { codePlaceholder: t("speech.codeOmitted") });
+      if (spoken) controller.enqueue(message.id, spoken, { lang: i18n.language });
     }
-  }, [controller, enabled, autoReadKey, messages, i18n.language]);
+  }, [controller, speechState, autoReadKey, messages, i18n.language, t]);
 }

@@ -2717,6 +2717,7 @@ export function TaskChatThread(props: TaskChatThreadProps) {
               id: message.id,
               text: message.text,
               atMs: message.atMs ?? (toMs(message.timestamp) || null),
+              agentId: message.agent?.id ?? null,
             },
           ]
         : [],
