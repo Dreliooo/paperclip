@@ -3058,6 +3058,53 @@ describe("IssueDetail", () => {
     directToolbarContainer.remove();
   });
 
+  it("leads the header breadcrumbs with the task's project and parent, even on a direct link", async () => {
+    mockLocation.state = null;
+    mockIssuesApi.get.mockResolvedValue(
+      createIssue({
+        projectId: "project-1",
+        ancestors: [
+          { id: "parent-1", identifier: "PAP-0", title: "Parent task" },
+        ] as Issue["ancestors"],
+      }),
+    );
+    mockProjectsApi.list.mockResolvedValue([
+      { id: "project-1", urlKey: "core-product", name: "Core Product", color: "#2563eb", icon: null },
+    ]);
+
+    await act(async () => {
+      renderIssueView();
+    });
+    await flushReact();
+    await flushReact();
+
+    await waitForAssertion(() => {
+      const [breadcrumbs] = mockSetBreadcrumbs.mock.calls.at(-1)!;
+      expect(breadcrumbs.map((crumb: { label: string }) => crumb.label)).toEqual([
+        "Core Product",
+        "Parent task",
+        "Issue detail smoke",
+      ]);
+      expect(breadcrumbs[0].href).toBe("/projects/core-product");
+      expect(breadcrumbs[1]).toMatchObject({ href: "/issues/PAP-0", identifier: "PAP-0" });
+    });
+  });
+
+  it("falls back to the task list when the task has no project", async () => {
+    mockLocation.state = null;
+    mockIssuesApi.get.mockResolvedValue(createIssue({ projectId: null }));
+
+    await act(async () => {
+      renderIssueView();
+    });
+    await flushReact();
+
+    await waitForAssertion(() => {
+      const [breadcrumbs] = mockSetBreadcrumbs.mock.calls.at(-1)!;
+      expect(breadcrumbs[0]).toMatchObject({ label: "Tasks", href: "/issues" });
+    });
+  });
+
   it("shows assignee and originating avatars in the issue header metadata", async () => {
     mockIssuesApi.get.mockResolvedValue(
       createIssue({

@@ -79,7 +79,7 @@ import { useDialogActions } from "../context/DialogContext";
 import { usePanel } from "../context/PanelContext";
 import { useSidebar } from "../context/SidebarContext";
 import { useToastActions } from "../context/ToastContext";
-import { useBreadcrumbs } from "../context/BreadcrumbContext";
+import { useBreadcrumbs, type Breadcrumb } from "../context/BreadcrumbContext";
 import {
   assigneeValueFromSelection,
   formatAssigneeUserLabel,
@@ -181,7 +181,9 @@ import {
   formatTokens,
   visibleRunCostUsd,
   visibleRunTokenTotal,
+  projectUrl,
 } from "../lib/utils";
+import { buildIssueContextBreadcrumbs } from "../lib/issueContextBreadcrumbs";
 import { liveBlueBadge } from "../lib/status-colors";
 import { ApprovalCard } from "../components/ApprovalCard";
 import { ProjectTile } from "../components/ProjectTile";
@@ -5644,6 +5646,46 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
     },
   });
 
+  // Header trail is derived from the task itself (project › parent task),
+  // not from browser history, so direct links show the same path. The
+  // navigation source (Inbox, filtered list…) is only a fallback for tasks
+  // without a readable project; Escape/back still use `sourceBreadcrumb`.
+  const breadcrumbParent = issue?.ancestors?.[0] ?? null;
+  const breadcrumbProject = resolvedProject?.name ? resolvedProject : null;
+  const contextBreadcrumbs = useMemo<Breadcrumb[]>(
+    () =>
+      buildIssueContextBreadcrumbs({
+        project: breadcrumbProject
+          ? { id: breadcrumbProject.id, name: breadcrumbProject.name, href: projectUrl(breadcrumbProject) }
+          : null,
+        parent: breadcrumbParent
+          ? { id: breadcrumbParent.id, identifier: breadcrumbParent.identifier, title: breadcrumbParent.title }
+          : null,
+        fallback: sourceBreadcrumb,
+      }).map((crumb) =>
+        crumb.kind === "project" && breadcrumbProject
+          ? {
+              label: crumb.label,
+              href: crumb.href,
+              leading: <ProjectTile size="xs" icon={breadcrumbProject.icon} color={breadcrumbProject.color} />,
+              leadingKey: `${crumb.key}:${breadcrumbProject.icon ?? ""}:${breadcrumbProject.color ?? ""}`,
+            }
+          : { label: crumb.label, href: crumb.href, identifier: crumb.identifier },
+      ),
+    [
+      breadcrumbParent?.id,
+      breadcrumbParent?.identifier,
+      breadcrumbParent?.title,
+      breadcrumbProject?.id,
+      breadcrumbProject?.name,
+      breadcrumbProject?.urlKey,
+      breadcrumbProject?.icon,
+      breadcrumbProject?.color,
+      sourceBreadcrumb.href,
+      sourceBreadcrumb.label,
+    ],
+  );
+
   const conversationAgent = conversation?.agent ?? agents?.find(agent => agent.id === issue?.conversationAgentId);
   useEffect(() => {
     if (conversationAgent) {
@@ -5657,7 +5699,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
       return;
     }
     setBreadcrumbs([
-      sourceBreadcrumb,
+      ...contextBreadcrumbs,
       {
         // The status glyph (leading) already conveys in-progress/live state;
         // no redundant 🔵 emoji prefix on the title.
@@ -5673,8 +5715,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
     breadcrumbIdentifier,
     hasLiveRuns,
     setBreadcrumbs,
-    sourceBreadcrumb.href,
-    sourceBreadcrumb.label,
+    contextBreadcrumbs,
     breadcrumbStatusLeading,
     breadcrumbStatusKey,
   ]);
