@@ -5,5 +5,26 @@
       "description": "Comienza creando una empresa.",
       "newCompany": "Nueva empresa"
     }
+  },
+  "decisions": {
+    "origin": {
+      "requestedBy": "Solicitado por",
+      "requestedByName": "Solicitado por {{name}}",
+      "automatic": "Automático (generado por Paperclip)",
+      "requesterMissing": "Solicitante no registrado",
+      "task": "Tarea",
+      "taskMissing": "Sin tarea asociada",
+      "project": "Proyecto",
+      "projectMissing": "Sin proyecto",
+      "viewContext": "Ver contexto",
+      "contextMissing": "Origen no registrado",
+      "contextTitle": {
+        "comment": "Abrir el comentario donde se hizo la pregunta",
+        "interaction": "Abrir esta solicitud en el hilo de su tarea",
+        "task": "Abrir la tarea de la que proviene",
+        "approval": "Abrir la solicitud de aprobación completa",
+        "source": "Abrir el origen de este elemento"
+      }
+    }
   }
 }

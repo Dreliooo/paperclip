@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { t } from ".";
 import en from "./locales/en.json";
-import { localeMessages } from "./locales";
+import { COMPLETE_LOCALES, isSelectableLocale, localeMessages } from "./locales";
 import { validateLocaleMessages } from "./locale-validation";
 
 describe("locale validation", () => {
@@ -14,8 +14,26 @@ describe("locale validation", () => {
   it("accepts registered locale files", () => {
     expect(Object.keys(localeMessages)).toContain("en");
     for (const [locale, messages] of Object.entries(localeMessages)) {
-      expect(validateLocaleMessages(messages), locale).toEqual([]);
+      expect(
+        validateLocaleMessages(messages, undefined, { allowMissing: !isSelectableLocale(locale) }),
+        locale,
+      ).toEqual([]);
     }
+  });
+
+  it("requires every selectable locale to translate every English key", () => {
+    for (const locale of COMPLETE_LOCALES) {
+      expect(localeMessages).toHaveProperty(locale);
+      expect(validateLocaleMessages(localeMessages[locale]), locale).toEqual([]);
+    }
+  });
+
+  it("lets partial locales omit keys but still rejects extra keys", () => {
+    expect(
+      validateLocaleMessages({ app: { noCompanies: { title: "Titel", unexpected: "x" } } }, undefined, {
+        allowMissing: true,
+      }),
+    ).toEqual(["app.noCompanies.unexpected is not defined in English"]);
   });
 
   it("rejects missing and extra nested keys", () => {

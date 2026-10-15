@@ -5,5 +5,26 @@
       "description": "Get started by creating an organization.",
       "newCompany": "New Organization"
     }
+  },
+  "decisions": {
+    "origin": {
+      "requestedBy": "Requested by",
+      "requestedByName": "Requested by {{name}}",
+      "automatic": "Automatic (raised by Paperclip)",
+      "requesterMissing": "Requester not recorded",
+      "task": "Task",
+      "taskMissing": "No linked task",
+      "project": "Project",
+      "projectMissing": "No project",
+      "viewContext": "View context",
+      "contextMissing": "No origin recorded",
+      "contextTitle": {
+        "comment": "Open the comment where this was asked",
+        "interaction": "Open this request in its task thread",
+        "task": "Open the task this came from",
+        "approval": "Open the full approval request",
+        "source": "Open the source of this item"
+      }
+    }
   }
 }

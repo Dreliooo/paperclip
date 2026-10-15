@@ -48,6 +48,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { AttentionInteractionResolver } from "./AttentionInteractionResolver";
+import { AttentionOriginStrip } from "./AttentionOriginStrip";
 import { DecisionResolver } from "./DecisionResolver";
 import { StalledReviewActions } from "./StalledReviewActions";
 import { readIssueReviewPolicyMetadata } from "../lib/review-policy";
@@ -355,6 +356,10 @@ export const AttentionQueueRow = memo(function AttentionQueueRow({
         </span>
         <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{detailLine}</p>
       </div>
+
+      {/* Origin: who asked, on which task/project, and a link to the exact
+          place it came from. Absent facts are labelled, never guessed. */}
+      <AttentionOriginStrip item={item} agentMap={agentMap} userLabelMap={userLabelMap} />
 
       {/* Collapsed-only content. It has no counterpart to morph into — the
           thumbnail strip becomes a full gallery, and an inline row's footer is
