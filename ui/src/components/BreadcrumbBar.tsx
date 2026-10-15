@@ -18,6 +18,7 @@ import { PluginSlotOutlet, usePluginSlots } from "@/plugins/slots";
 import { PluginLauncherOutlet, usePluginLaunchers } from "@/plugins/launchers";
 import { cn } from "../lib/utils";
 
+import { useTranslation } from "@/i18n";
 type GlobalToolbarContext = { companyId: string | null; companyPrefix: string | null };
 
 /** Task identifier rendered in gray monospace beside its breadcrumb label. */
@@ -53,6 +54,7 @@ function GlobalToolbar({
 }
 
 export function BreadcrumbBar({ taskDetailLayout = false }: { taskDetailLayout?: boolean }) {
+  const { t } = useTranslation();
   const {
     breadcrumbs,
     breadcrumbToolbar,
@@ -102,14 +104,17 @@ export function BreadcrumbBar({ taskDetailLayout = false }: { taskDetailLayout?:
       size="icon-sm"
       className="mr-2 shrink-0"
       onClick={toggleSidebar}
-      aria-label="Open sidebar"
+      aria-label={t("ui2g7.breadcrumbBar.openSidebar")}
     >
       <Menu className="h-5 w-5" />
     </Button>
   );
 
   const currentCrumb = breadcrumbs[breadcrumbs.length - 1];
-  if (isMobile && breadcrumbs[0]?.label === "Tasks" && currentCrumb.identifier) {
+  // Match by href as well as label: the "Tasks" crumb label is translated.
+  const firstCrumb = breadcrumbs[0];
+  const startsAtTasks = firstCrumb?.label === "Tasks" || firstCrumb?.href?.split("?")[0] === "/issues";
+  if (isMobile && startsAtTasks && currentCrumb.identifier) {
     return (
       <div className="h-(--sz-60px) shrink-0 flex items-center border-b border-border px-4">
         {menuButton}
@@ -233,8 +238,8 @@ export function BreadcrumbBar({ taskDetailLayout = false }: { taskDetailLayout?:
           size="icon-sm"
           className="ml-5 size-9 shrink-0 text-muted-foreground"
           onClick={toggleTaskPanel}
-          aria-label={taskPanelOpen ? "Hide properties" : "Show properties"}
-          title={taskPanelOpen ? "Hide properties" : "Show properties"}
+          aria-label={taskPanelOpen ? t("ui2g7.breadcrumbBar.hideProperties") : t("ui2g7.breadcrumbBar.showProperties")}
+          title={taskPanelOpen ? t("ui2g7.breadcrumbBar.hideProperties") : t("ui2g7.breadcrumbBar.showProperties")}
         >
           {taskPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
         </Button>

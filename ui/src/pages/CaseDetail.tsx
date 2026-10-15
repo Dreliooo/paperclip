@@ -39,6 +39,7 @@ import { CaseCopyableToken, CaseIdentifierKey } from "@/components/CaseIdentifie
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 
+import { useTranslation } from "@/i18n";
 const STATUS_LABEL: Record<CaseStatus, string> = {
   draft: "Draft",
   in_progress: "In progress",
@@ -123,19 +124,20 @@ function CaseRelationshipsSection({
   parent: CaseParentRef | null;
   children: CaseSummary[];
 }) {
+  const { t } = useTranslation();
   if (!parent && children.length === 0) return null;
 
   return (
-    <section className="space-y-3" aria-label="Case relationships">
+    <section className="space-y-3" aria-label={t("ui2g7.caseRelationshipsSection.ariaLabel")}>
       {parent ? (
         <div className="space-y-1">
-          <h2 className="text-xs font-medium text-muted-foreground">Parent</h2>
+          <h2 className="text-xs font-medium text-muted-foreground">{t("ui2g7.caseRelationshipsSection.parent")}</h2>
           <CaseChildrenTree children={[parent]} />
         </div>
       ) : null}
       {children.length > 0 ? (
         <div className="space-y-1">
-          <h2 className="text-xs font-medium text-muted-foreground">Children {children.length}</h2>
+          <h2 className="text-xs font-medium text-muted-foreground">{t("ui2g7.caseRelationshipsSection.childrenWithCount", { total: children.length })}</h2>
           <CaseChildrenTree children={children} maxVisible={5} />
         </div>
       ) : null}
@@ -194,6 +196,7 @@ function CaseStatusPicker({
   onChange: (next: CaseStatus) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -202,7 +205,7 @@ function CaseStatusPicker({
           type="button"
           disabled={disabled}
           className="inline-flex items-center gap-1 rounded-md hover:bg-accent/50 disabled:opacity-50"
-          aria-label="Change case status"
+          aria-label={t("ui2g7.caseStatusPicker.changeStatus")}
         >
           <StatusBadge status={status} />
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
@@ -238,6 +241,7 @@ function CaseLabelsPicker({
   selected: IssueLabel[];
   onChange: (labelIds: string[]) => void;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [newColor, setNewColor] = useState<string>(PROJECT_COLORS[0]);
@@ -275,14 +279,14 @@ function CaseLabelsPicker({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-xs text-muted-foreground">
-          <Plus className="h-3.5 w-3.5" /> Labels
+          <Plus className="h-3.5 w-3.5" /> {t("ui2g7.caseLabelsPicker.labels")}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-2">
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search labels…"
+          placeholder={t("ui2g7.caseLabelsPicker.searchLabels")}
           className="mb-2 h-7 text-xs"
         />
         <div className="max-h-52 space-y-0.5 overflow-y-auto">
@@ -299,7 +303,7 @@ function CaseLabelsPicker({
             </button>
           ))}
           {filtered.length === 0 && !search.trim() && (
-            <p className="px-2 py-1 text-xs text-muted-foreground">No labels yet.</p>
+            <p className="px-2 py-1 text-xs text-muted-foreground">{t("ui2g7.caseLabelsPicker.noLabels")}</p>
           )}
         </div>
         {search.trim() && !all.some((l) => l.name.toLowerCase() === search.trim().toLowerCase()) && (
@@ -309,7 +313,7 @@ function CaseLabelsPicker({
               value={newColor}
               onChange={(e) => setNewColor(e.target.value)}
               className="h-6 w-6 shrink-0 cursor-pointer rounded border border-border bg-transparent"
-              aria-label="New label color"
+              aria-label={t("ui2g7.caseLabelsPicker.newLabelColor")}
             />
             <Button
               size="sm"
@@ -318,7 +322,7 @@ function CaseLabelsPicker({
               disabled={createLabel.isPending}
               onClick={() => createLabel.mutate({ name: search.trim(), color: newColor })}
             >
-              Create “{search.trim()}”
+              {t("ui2g7.caseLabelsPicker.createLabel", { name: search.trim() })}
             </Button>
           </div>
         )}
@@ -343,26 +347,27 @@ function CasePropertiesContent({
   onLabelIdsChange: (labelIds: string[]) => void;
   mode: CasePropertyDisplayMode;
 }) {
+  const { t } = useTranslation();
   const propertyRows = casePropertyRows(caseData);
   const isFull = mode === "full";
 
   return (
     <div className={cn("space-y-4", isFull && "space-y-6")}>
-      <PropertySection title="Case" first>
-        <CasePropertyRow label="Type" mode={mode}>
+      <PropertySection title={t("ui2g7.casePropertiesContent.caseSection")} first>
+        <CasePropertyRow label={t("ui2g7.casePropertiesContent.type")} mode={mode}>
           <PropertyChip>{caseData.caseType}</PropertyChip>
         </CasePropertyRow>
         {caseData.key ? (
-          <CasePropertyRow label="Key" mode={mode}>
+          <CasePropertyRow label={t("ui2g7.casePropertiesContent.key")} mode={mode}>
             <CaseCopyableToken
               value={caseData.key}
-              label="case key"
+              label={t("ui2g7.casePropertiesContent.caseKey")}
               className="font-mono text-xs text-muted-foreground"
               truncate={!isFull}
             />
           </CasePropertyRow>
         ) : null}
-        <CasePropertyRow label="Labels" wrap mode={mode}>
+        <CasePropertyRow label={t("ui2g7.casePropertiesContent.labels")} wrap mode={mode}>
           {caseData.labels.length > 0 ? (
             caseData.labels.map((label) => (
               <PropertyChip
@@ -374,7 +379,7 @@ function CasePropertiesContent({
               </PropertyChip>
             ))
           ) : (
-            <span className="text-xs text-muted-foreground">None</span>
+            <span className="text-xs text-muted-foreground">{t("ui2g7.casePropertiesContent.none")}</span>
           )}
           {companyId ? (
             <CaseLabelsPicker
@@ -383,12 +388,12 @@ function CasePropertiesContent({
               onChange={onLabelIdsChange}
             />
           ) : null}
-          {labelsPending ? <span className="text-xs text-muted-foreground">Saving...</span> : null}
+          {labelsPending ? <span className="text-xs text-muted-foreground">{t("ui2g7.casePropertiesContent.saving")}</span> : null}
         </CasePropertyRow>
       </PropertySection>
 
       {propertyRows.length > 0 ? (
-        <PropertySection title="Fields">
+        <PropertySection title={t("ui2g7.casePropertiesContent.fields")}>
           {propertyRows.map(({ key, label, value }) => (
             <CasePropertyRow
               key={key}
@@ -404,13 +409,13 @@ function CasePropertiesContent({
         </PropertySection>
       ) : null}
 
-      <PropertySection title="Linked tasks">
+      <PropertySection title={t("ui2g7.casePropertiesContent.linkedTasks")}>
         {caseData.issueLinks.length === 0 ? (
-          <CasePropertyRow label="Tasks" mode={mode}>
-            <span className="text-xs text-muted-foreground">None yet</span>
+          <CasePropertyRow label={t("ui2g7.casePropertiesContent.tasks")} mode={mode}>
+            <span className="text-xs text-muted-foreground">{t("ui2g7.casePropertiesContent.noneYet")}</span>
           </CasePropertyRow>
         ) : (
-          <CasePropertyRow label="Tasks" wrap mode={mode}>
+          <CasePropertyRow label={t("ui2g7.casePropertiesContent.tasks")} wrap mode={mode}>
             <div className="flex flex-wrap items-center gap-1.5">
               {caseData.issueLinks.map((link) => (
                 <IssueReferencePill
@@ -428,15 +433,15 @@ function CasePropertiesContent({
         )}
       </PropertySection>
 
-      <PropertySection title={`Children${childCases.length > 0 ? ` ${childCases.length}` : ""}`}>
+      <PropertySection title={childCases.length > 0 ? t("ui2g7.casePropertiesContent.childrenWithCount", { total: childCases.length }) : t("ui2g7.casePropertiesContent.children")}>
         <CaseChildrenTree children={childCases} />
       </PropertySection>
 
       {caseData.attachments.length > 0 ? (
-        <PropertySection title="Attachments">
-          <CasePropertyRow label="Files" mode={mode}>
+        <PropertySection title={t("ui2g7.casePropertiesContent.attachments")}>
+          <CasePropertyRow label={t("ui2g7.casePropertiesContent.files")} mode={mode}>
             <span className="text-xs text-muted-foreground">
-              {caseData.attachments.length} {caseData.attachments.length === 1 ? "file" : "files"}
+              {t("ui2g7.casePropertiesContent.filesCount", { count: caseData.attachments.length })}
             </span>
           </CasePropertyRow>
         </PropertySection>
@@ -446,6 +451,7 @@ function CasePropertiesContent({
 }
 
 export function CaseDetail() {
+  const { t } = useTranslation();
   const { caseIdentifier } = useParams<{ caseIdentifier: string }>();
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
@@ -493,10 +499,10 @@ export function CaseDetail() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Cases", href: caseHref() },
-      { label: caseData ? `${caseData.identifier} — ${caseData.title}` : (caseIdentifier ?? "Case") },
+      { label: t("ui2g7.caseDetail.cases"), href: caseHref() },
+      { label: caseData ? `${caseData.identifier} — ${caseData.title}` : (caseIdentifier ?? t("ui2g7.caseDetail.fallbackCase")) },
     ]);
-  }, [setBreadcrumbs, caseData, caseIdentifier, caseHref]);
+  }, [setBreadcrumbs, caseData, caseIdentifier, caseHref, t]);
 
   const events = useMemo(() => eventsQuery.data ?? [], [eventsQuery.data]);
   const caseDocumentSubject = useMemo(() => {
@@ -588,9 +594,9 @@ export function CaseDetail() {
   if (caseQuery.isError || !caseData) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
-        <p className="text-sm text-muted-foreground">Case not found.</p>
+        <p className="text-sm text-muted-foreground">{t("ui2g7.caseDetail.notFound")}</p>
         <Link to={caseHref()} className="mt-2 inline-block text-sm text-primary hover:underline">
-          ← Back to cases
+          {t("ui2g7.caseDetail.backToCases")}
         </Link>
       </div>
     );
@@ -629,7 +635,7 @@ export function CaseDetail() {
             />
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon-xs" aria-label="More case actions" title="More case actions">
+                <Button variant="ghost" size="icon-xs" aria-label={t("ui2g7.caseDetail.moreActions")} title={t("ui2g7.caseDetail.moreActions")}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
@@ -640,7 +646,7 @@ export function CaseDetail() {
                   onClick={() => copyCaseToClipboard(caseData)}
                 >
                   {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  Copy as markdown
+                  {t("ui2g7.caseDetail.copyAsMarkdown")}
                 </button>
                 <button
                   type="button"
@@ -650,7 +656,7 @@ export function CaseDetail() {
                   }}
                 >
                   <SlidersHorizontal className="h-3 w-3" />
-                  Properties
+                  {t("ui2g7.caseDetail.properties")}
                 </button>
               </PopoverContent>
             </Popover>
@@ -666,10 +672,10 @@ export function CaseDetail() {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList variant="line" className="w-full justify-start gap-1">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="properties">Properties</TabsTrigger>
+          <TabsTrigger value="overview">{t("ui2g7.caseDetail.overview")}</TabsTrigger>
+          <TabsTrigger value="properties">{t("ui2g7.caseDetail.properties")}</TabsTrigger>
           <TabsTrigger value="activity">
-            Activity{events.length > 0 && <span className="ml-1 text-muted-foreground">{events.length}</span>}
+            {t("ui2g7.caseDetail.activity")}{events.length > 0 && <span className="ml-1 text-muted-foreground">{events.length}</span>}
           </TabsTrigger>
         </TabsList>
 
@@ -684,7 +690,7 @@ export function CaseDetail() {
 
           {description ? (
             <section className="space-y-2">
-              <h2 className="text-sm font-semibold">Description</h2>
+              <h2 className="text-sm font-semibold">{t("ui2g7.caseDetail.description")}</h2>
               <Card className="px-4 py-3">
                 <CaseFieldValue value={description} />
               </Card>
@@ -693,7 +699,7 @@ export function CaseDetail() {
 
           {caseData.attachments.length > 0 && (
             <section className="space-y-2">
-              <h2 className="text-sm font-semibold">Attachments ({caseData.attachments.length})</h2>
+              <h2 className="text-sm font-semibold">{t("ui2g7.caseDetail.attachmentsHeading", { total: caseData.attachments.length })}</h2>
               <CaseAttachmentsGallery attachments={caseData.attachments} />
             </section>
           )}
