@@ -40,7 +40,7 @@ function str(value: unknown): string | null {
 }
 
 /** Sources raised by Paperclip itself rather than requested by someone. */
-const SYSTEM_SOURCES = new Set<AttentionItem["sourceKind"]>(["budget_incident"]);
+const SYSTEM_SOURCES = new Set<AttentionItem["sourceKind"]>(["budget_alert", "agent_error_alert"]);
 
 function agentRequester(id: string | null, lookups: AttentionOriginLookups, fallbackName?: string | null): AttentionRequester | null {
   const name = (id ? str(lookups.agentName?.(id)) : null) ?? str(fallbackName);

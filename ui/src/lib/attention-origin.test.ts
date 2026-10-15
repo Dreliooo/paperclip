@@ -137,8 +137,8 @@ describe("describeAttentionOrigin", () => {
     expect(origin.missing).toEqual(["project"]);
   });
 
-  it("marks budget incidents as automatic", () => {
-    const row = item({ sourceKind: "budget_incident", relatedIssue: null, project: null, subject: { ...item().subject, kind: "budget_incident", metadata: {} } });
+  it("marks budget alerts as automatic", () => {
+    const row = item({ sourceKind: "budget_alert", relatedIssue: null, project: null, subject: { ...item().subject, kind: "budget_incident", metadata: {} } });
     expect(attentionRequester(row, lookups)).toEqual({ kind: "system" });
   });
 
