@@ -54,6 +54,7 @@ import {
   formatMonitorAbsoluteFull,
   formatMonitorEta,
   formatMonitorEtaLabel,
+  monitorEtaState,
   formatMonitorOffset,
   useMonitorCountdown,
 } from "../../lib/issue-monitor";
@@ -1320,8 +1321,9 @@ export function IssueProperties({
   const monitorNotes = executionPolicy?.monitor?.notes ?? monitorState?.notes ?? null;
   const monitorNow = useMonitorCountdown(monitorNextCheckAt);
   const monitorRelative = monitorNextCheckAt ? formatMonitorEta(monitorNextCheckAt, monitorNow) : null;
-  const monitorIsDueNow = monitorRelative === "due now";
-  const monitorIsOverdue = Boolean(monitorRelative?.startsWith("overdue by "));
+  const monitorEta = monitorNextCheckAt ? monitorEtaState(monitorNextCheckAt, monitorNow) : null;
+  const monitorIsDueNow = monitorEta === "due";
+  const monitorIsOverdue = monitorEta === "overdue";
   const monitorPrimary = monitorNextCheckAt
     ? formatMonitorEtaLabel(monitorNextCheckAt, monitorNow)
     : monitorState?.status === "cleared"

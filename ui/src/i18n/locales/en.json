@@ -10042,5 +10042,24 @@
       "signsInSnapshot": "Signs in with the snapshot-local credentials captured when this clone was made.",
       "singleUseHandoff": "Uses a single-use login handoff — no password needed."
     }
+  },
+  "format": {
+    "relative": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago",
+      "weeksAgo": "{{count}}w ago",
+      "monthsAgo_one": "{{count}}mo ago",
+      "monthsAgo_other": "{{count}}mo ago"
+    },
+    "monitorEta": {
+      "in": "in {{duration}}",
+      "dueNow": "due now",
+      "overdueBy": "overdue by {{duration}}",
+      "now": "now",
+      "ago": "{{duration}} ago",
+      "today": "Today, {{time}}"
+    }
   }
 }

@@ -10041,5 +10041,24 @@
       "signsInSnapshot": "Inicia sesión con las credenciales locales de la instantánea capturadas al crear este clon.",
       "singleUseHandoff": "Permite iniciar sesión con un traspaso de un solo uso; no hace falta contraseña."
     }
+  },
+  "format": {
+    "relative": {
+      "justNow": "recién",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "daysAgo": "hace {{count}} d",
+      "weeksAgo": "hace {{count}} sem",
+      "monthsAgo_one": "hace {{count}} mes",
+      "monthsAgo_other": "hace {{count}} meses"
+    },
+    "monitorEta": {
+      "in": "en {{duration}}",
+      "dueNow": "toca ahora",
+      "overdueBy": "atrasado por {{duration}}",
+      "now": "ahora",
+      "ago": "hace {{duration}}",
+      "today": "Hoy, {{time}}"
+    }
   }
 }

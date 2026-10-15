@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { t } from "@/i18n";
 
 const SECOND_MS = 1_000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -80,11 +81,22 @@ function formatDuration(durationMs: number): string {
   return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
 }
 
+export type MonitorEtaState = "upcoming" | "due" | "overdue";
+
+/** Language-independent form of formatMonitorEta, for styling decisions. */
+export function monitorEtaState(nextCheckAt: MonitorDate, now: MonitorDate = new Date()): MonitorEtaState {
+  const deltaMs = toTimestamp(nextCheckAt) - toTimestamp(now);
+  if (deltaMs > 0) return "upcoming";
+  if (deltaMs > -DUE_NOW_GRACE_MS) return "due";
+  return "overdue";
+}
+
 export function formatMonitorEta(nextCheckAt: MonitorDate, now: MonitorDate = new Date()): string {
   const deltaMs = toTimestamp(nextCheckAt) - toTimestamp(now);
-  if (deltaMs > 0) return `in ${formatDuration(deltaMs)}`;
-  if (deltaMs > -DUE_NOW_GRACE_MS) return "due now";
-  return `overdue by ${formatDuration(Math.abs(deltaMs))}`;
+  const state = monitorEtaState(nextCheckAt, now);
+  if (state === "upcoming") return t("format.monitorEta.in", { duration: formatDuration(deltaMs) });
+  if (state === "due") return t("format.monitorEta.dueNow");
+  return t("format.monitorEta.overdueBy", { duration: formatDuration(Math.abs(deltaMs)) });
 }
 
 export function formatMonitorEtaLabel(nextCheckAt: MonitorDate, now: MonitorDate = new Date()): string {
@@ -135,7 +147,7 @@ export function formatMonitorAbsolute(
     targetYmd.year === referenceYmd.year &&
     targetYmd.month === referenceYmd.month &&
     targetYmd.day === referenceYmd.day;
-  if (isToday) return `Today, ${time}`;
+  if (isToday) return t("format.monitorEta.today", { time });
 
   const weekday = new Intl.DateTimeFormat(options.locale, {
     weekday: "short",
@@ -262,9 +274,9 @@ export function useMonitorCountdown(nextCheckAt: MonitorDate | null | undefined)
 export function formatMonitorOffset(nextCheckAt: MonitorDate): string {
   const now = new Date(Date.now());
   const deltaMs = toTimestamp(nextCheckAt) - now.getTime();
-  if (Math.round(Math.abs(deltaMs) / MINUTE_MS) === 0) return "now";
-  const eta = formatMonitorEta(nextCheckAt, now);
-  if (eta === "due now") return "now";
-  if (eta.startsWith("overdue by ")) return `${eta.slice("overdue by ".length)} ago`;
-  return eta;
+  if (Math.round(Math.abs(deltaMs) / MINUTE_MS) === 0) return t("format.monitorEta.now");
+  const state = monitorEtaState(nextCheckAt, now);
+  if (state === "due") return t("format.monitorEta.now");
+  if (state === "overdue") return t("format.monitorEta.ago", { duration: formatDuration(Math.abs(deltaMs)) });
+  return formatMonitorEta(nextCheckAt, now);
 }
