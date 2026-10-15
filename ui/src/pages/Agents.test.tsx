@@ -56,6 +56,7 @@ vi.mock("@/lib/router", () => ({
   ),
   useLocation: () => ({ pathname: mockRouterState.pathname, search: "", hash: "", state: null }),
   useNavigate: () => mockRouterState.navigate,
+  useSearchParams: () => [new URLSearchParams(), vi.fn()],
 }));
 
 vi.mock("../context/CompanyContext", () => ({
@@ -310,6 +311,7 @@ describe("Agents", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
+    window.localStorage.clear();
     mockRouterState.pathname = "/agents/all";
     mockRouterState.navigate.mockClear();
     container = document.createElement("div");
@@ -444,6 +446,16 @@ describe("Agents", () => {
 
     expect(mockAgentsApi.org).toHaveBeenCalledWith("company-1");
     expect(orgToggle?.getAttribute("aria-pressed")).toBe("true");
+    // The org view opens on the team explorer; the canvas chart is one click away.
+    expect(container.querySelector('[data-testid="org-explorer"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="org-chart-viewport"]')).toBeNull();
+    const chartToggle = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find(
+      (button) => button.textContent === "Chart",
+    );
+    await act(async () => {
+      chartToggle?.click();
+    });
+    await flushReact();
     const orgViewport = container.querySelector('[data-testid="org-chart-viewport"]');
     expect(orgViewport).not.toBeNull();
     expect(orgViewport?.parentElement?.classList.contains("flex-1")).toBe(true);

@@ -22,6 +22,8 @@ import { BuiltInLifecycleChip } from "../components/BuiltInAgentBadges";
 import { EmptyState } from "../components/EmptyState";
 import { PageSkeleton } from "../components/PageSkeleton";
 import { OrgChart } from "./OrgChart";
+import { OrgExplorer } from "../components/org/OrgExplorer";
+import { useTranslation } from "../i18n";
 import { relativeTime, cn, agentRouteRef, agentUrl } from "../lib/utils";
 import { PageTabBar } from "../components/PageTabBar";
 import { Tabs } from "@/components/ui/tabs";
@@ -189,6 +191,17 @@ function filterOrgTree(nodes: OrgNode[], tab: FilterTab, builtInAgentIds: Set<st
 }
 
 export type AgentsView = "list" | "org";
+/** How the org view is drawn: team explorer (default) or the full canvas chart. */
+export type OrgLayout = "teams" | "chart";
+const ORG_LAYOUT_STORAGE_KEY = "paperclip:agents:org-layout";
+
+function readOrgLayout(): OrgLayout {
+  try {
+    return globalThis.localStorage?.getItem(ORG_LAYOUT_STORAGE_KEY) === "chart" ? "chart" : "teams";
+  } catch {
+    return "teams";
+  }
+}
 
 export function Agents({ initialView = "list" }: { initialView?: AgentsView } = {}) {
   const agentChat = useAgentChatEnabled();
@@ -203,6 +216,16 @@ export function Agents({ initialView = "list" }: { initialView?: AgentsView } = 
   const requestedTab: FilterTab = isFilterTab(pathSegment) ? pathSegment : "all";
   const [view, setView] = useState<AgentsView>(() => streamlinedUiEnabled ? initialView : "org");
   const forceListView = !streamlinedUiEnabled && isMobile;
+  const { t } = useTranslation();
+  const [orgLayout, setOrgLayoutState] = useState<OrgLayout>(readOrgLayout);
+  const setOrgLayout = (next: OrgLayout) => {
+    setOrgLayoutState(next);
+    try {
+      globalThis.localStorage?.setItem(ORG_LAYOUT_STORAGE_KEY, next);
+    } catch {
+      // Remembering the layout is a convenience only.
+    }
+  };
   const effectiveView: AgentsView = forceListView ? "list" : view;
 
   useEffect(() => {
@@ -452,6 +475,30 @@ export function Agents({ initialView = "list" }: { initialView?: AgentsView } = 
           />
         </Tabs>
         <div className="flex items-center gap-2">
+          {effectiveView === "org" ? (
+            <div className="flex items-center overflow-hidden rounded-md border border-border" role="group" aria-label={t("agents.org.layout")}>
+              <Button
+                type="button"
+                size="sm"
+                variant={orgLayout === "teams" ? "secondary" : "ghost"}
+                className="rounded-none"
+                onClick={() => setOrgLayout("teams")}
+                aria-pressed={orgLayout === "teams"}
+              >
+                {t("agents.org.layoutTeams")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={orgLayout === "chart" ? "secondary" : "ghost"}
+                className="rounded-none border-l border-border"
+                onClick={() => setOrgLayout("chart")}
+                aria-pressed={orgLayout === "chart"}
+              >
+                {t("agents.org.layoutChart")}
+              </Button>
+            </div>
+          ) : null}
           {!forceListView ? <div className="flex items-center overflow-hidden rounded-md border border-border" role="group" aria-label="Agent view">
               <Button
                 type="button"
@@ -515,7 +562,9 @@ export function Agents({ initialView = "list" }: { initialView?: AgentsView } = 
 
       {/* Org chart view */}
       {effectiveView === "org" && filteredOrg.length > 0 && (
-        <OrgChart embedded orgTree={filteredOrg} agents={agents ?? []} />
+        orgLayout === "teams"
+          ? <OrgExplorer orgTree={filteredOrg} agents={agents ?? []} />
+          : <OrgChart embedded orgTree={filteredOrg} agents={agents ?? []} />
       )}
 
       {effectiveView === "org" && orgTree && orgTree.length > 0 && filteredOrg.length === 0 && (

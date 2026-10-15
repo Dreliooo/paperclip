@@ -26,5 +26,43 @@
         "source": "Open the source of this item"
       }
     }
+  },
+  "agents": {
+    "org": {
+      "layout": "Org layout",
+      "layoutTeams": "Teams",
+      "layoutChart": "Chart",
+      "hierarchy": "Hierarchy",
+      "searchPlaceholder": "Search agents by name, role or title",
+      "clearSearch": "Clear search",
+      "matchCount_one": "{{count}} match",
+      "matchCount_other": "{{count}} matches",
+      "collapse": "Collapse {{name}}",
+      "expand": "Expand {{name}}",
+      "teamSize_one": "{{count}} agent in team",
+      "teamSize_other": "{{count}} agents in team",
+      "noMatches": "No agents match your search.",
+      "team": "Team",
+      "chainOfCommand": "Chain of command",
+      "organization": "Organization",
+      "reportsTo": "Reports to",
+      "directReports_one": "{{count}} direct report",
+      "directReports_other": "{{count}} direct reports",
+      "directReportsHeading": "Direct reports",
+      "topLevel": "Top-level agents",
+      "noReports": "No direct reports.",
+      "viewTeam_one": "View team ({{count}})",
+      "viewTeam_other": "View team ({{count}})"
+    },
+    "status": {
+      "running": "running",
+      "active": "idle",
+      "idle": "idle",
+      "paused": "paused",
+      "error": "error",
+      "pending_approval": "pending approval",
+      "terminated": "terminated",
+      "archived": "archived"
+    }
   }
 }

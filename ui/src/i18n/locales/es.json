@@ -26,5 +26,43 @@
         "source": "Abrir el origen de este elemento"
       }
     }
+  },
+  "agents": {
+    "org": {
+      "layout": "Diseño del organigrama",
+      "layoutTeams": "Equipos",
+      "layoutChart": "Diagrama",
+      "hierarchy": "Jerarquía",
+      "searchPlaceholder": "Buscar agentes por nombre, rol o cargo",
+      "clearSearch": "Borrar búsqueda",
+      "matchCount_one": "{{count}} resultado",
+      "matchCount_other": "{{count}} resultados",
+      "collapse": "Contraer {{name}}",
+      "expand": "Expandir {{name}}",
+      "teamSize_one": "{{count}} agente en el equipo",
+      "teamSize_other": "{{count}} agentes en el equipo",
+      "noMatches": "Ningún agente coincide con la búsqueda.",
+      "team": "Equipo",
+      "chainOfCommand": "Cadena de mando",
+      "organization": "Organización",
+      "reportsTo": "Reporta a",
+      "directReports_one": "{{count}} reporte directo",
+      "directReports_other": "{{count}} reportes directos",
+      "directReportsHeading": "Reportes directos",
+      "topLevel": "Agentes de nivel superior",
+      "noReports": "Sin reportes directos.",
+      "viewTeam_one": "Ver equipo ({{count}})",
+      "viewTeam_other": "Ver equipo ({{count}})"
+    },
+    "status": {
+      "running": "en ejecución",
+      "active": "inactivo",
+      "idle": "inactivo",
+      "paused": "en pausa",
+      "error": "con error",
+      "pending_approval": "pendiente de aprobación",
+      "terminated": "dado de baja",
+      "archived": "archivado"
+    }
   }
 }
