@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ExecutionBlocker, Issue } from "@paperclipai/shared";
 import { WorkspaceFileRecovery } from "./WorkspaceFileRecovery";
@@ -18,6 +19,7 @@ export function ExecutionBlockerNotice({ companyId, issueId, issueStatus, canMan
   blocker: ExecutionBlocker;
   onRetried: () => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data: recovery, error: recoveryError } = useQuery({
     queryKey: queryKeys.issues.recoveryActions(issueId, blocker.recoveryActionId ?? null, blocker.runId ?? null),
@@ -48,37 +50,36 @@ export function ExecutionBlockerNotice({ companyId, issueId, issueStatus, canMan
     },
   });
   return (
-    <div role="status" aria-label="Task recovery" className={cn("task-context-notice flex flex-wrap items-center justify-between gap-2", className)}>
+    <div role="status" aria-label={t("ui2g2.executionBlocker.ariaLabel")} className={cn("task-context-notice flex flex-wrap items-center justify-between gap-2", className)}>
       <div className="min-w-0 flex-1 break-words">
-        <p>{modelRejected ? "Model unavailable." : "Recovery needed."}{blocker.runError ? ` ${blocker.runError}` : ""}</p>
-        {modelRejected && <p>Choose a supported model or clear the task's model override, then retry.</p>}
+        <p>{modelRejected ? t("ui2g2.executionBlocker.modelUnavailable") : t("ui2g2.executionBlocker.recoveryNeeded")}{blocker.runError ? ` ${blocker.runError}` : ""}</p>
+        {modelRejected && <p>{t("ui2g2.executionBlocker.chooseModel")}</p>}
         {blocker.workspaceRepairRequired ? (
           <>
             {/* The stored next action is an operator runbook step; lead with what happened. This hold also covers
                 unsafe archives and local runs, so do not claim retries or a retained sandbox here. */}
             <p>
-              Paperclip could not restore the agent's workspace files after its last run. A board operator must
-              recover the files before the agent can continue.
+              {t("ui2g2.executionBlocker.workspaceRepair")}
             </p>
             <details>
-              <summary className="cursor-pointer">Technical details</summary>
+              <summary className="cursor-pointer">{t("ui2g2.executionBlocker.technicalDetails")}</summary>
               <p>{blocker.nextAction}</p>
             </details>
           </>
         ) : <p>{blocker.nextAction}</p>}
         {Boolean(blocker.savedMessageCount) && (
-          <p>{blocker.savedMessageCount} saved {blocker.savedMessageCount === 1 ? "message is" : "messages are"} waiting for recovery.</p>
+          <p>{t("ui2g2.executionBlocker.savedMessages", { count: blocker.savedMessageCount })}</p>
         )}
       </div>
       {blocker.agentId && blocker.runId && (
         <Button variant="outline" size="sm" asChild>
-          <Link to={`/agents/${blocker.agentId}/runs/${blocker.runId}`}>Inspect run</Link>
+          <Link to={`/agents/${blocker.agentId}/runs/${blocker.runId}`}>{t("ui2g2.executionBlocker.inspectRun")}</Link>
         </Button>
       )}
       {!blocker.workspaceRepairRequired && (!requiresInspection || blocker.canRetry) && blocker.agentId && blocker.runId &&
         ((blocker.cause === "legacy_execution_requires_reconciliation" && failedRun) || blocker.canContinue || blocker.canRetry) && (
         <Button variant="outline" size="sm" disabled={retry.isPending} onClick={() => retry.mutate()}>
-          {retry.isPending ? "Starting…" : blocker.canContinue ? "Continue" : "Retry"}
+          {retry.isPending ? t("ui2g2.executionBlocker.starting") : blocker.canContinue ? t("ui2g2.executionBlocker.continue") : t("ui2g2.executionBlocker.retry")}
         </Button>
       )}
       {retry.isError && (
@@ -86,12 +87,12 @@ export function ExecutionBlockerNotice({ companyId, issueId, issueStatus, canMan
       )}
       {runsError && <p role="alert" className="w-full text-destructive">{runsError.message}</p>}
       {canManage && hold && <details className="w-full">
-        <summary className="cursor-pointer">Recovery details</summary>
+        <summary className="cursor-pointer">{t("ui2g2.executionBlocker.recoveryDetails")}</summary>
         {replayBlocked &&
-          <p>Paperclip stopped automatic retries to avoid repeating work with an unknown outcome. Inspect the run before requesting continuation.</p>}
+          <p>{t("ui2g2.executionBlocker.replayBlocked")}</p>}
         {hold.resolutionNote && <p>{hold.resolutionNote}</p>}
       </details>}
-      {recoveryError && <p role="alert" className="w-full text-destructive">Unable to load recovery details: {recoveryError.message}</p>}
+      {recoveryError && <p role="alert" className="w-full text-destructive">{t("ui2g2.executionBlocker.loadFailed", { message: recoveryError.message })}</p>}
       {issueStatus && <WorkspaceFileRecovery key={`${blocker.recoveryActionId}:${blocker.runId}`} issueId={issueId}
         issueStatus={issueStatus} blocker={blocker} canManage={canManage} onRecorded={onRetried} />}
     </div>
