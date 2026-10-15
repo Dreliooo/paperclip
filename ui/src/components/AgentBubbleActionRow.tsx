@@ -3,6 +3,7 @@ import type {
   FeedbackDataSharingPreference,
   FeedbackVoteValue,
 } from "@paperclipai/shared";
+import { useTranslation } from "@/i18n";
 import { cn, formatShortDate } from "../lib/utils";
 import { timeAgo } from "../lib/timeAgo";
 import { useCopyAction, useCopyToast } from "../lib/use-copy-action";
@@ -49,8 +50,9 @@ export function agentBubbleDateLabel(date: Date | string | undefined): string {
  * re-declaring the same button markup on each surface.
  */
 export function BubbleCopyButton({ copyText }: { copyText: string }) {
+  const { t } = useTranslation();
   const { copied, failed, copy } = useCopyAction(2000);
-  const label = failed ? "Couldn’t copy message" : "Copy message";
+  const label = failed ? t("agentDetail.bubble.copyFailed") : t("agentDetail.bubble.copyMessage");
 
   return (
     <button
@@ -116,6 +118,7 @@ export function AgentBubbleActionRow({
   className?: string;
 }) {
   // The menu closes on click, so its copy confirmation has to outlive it.
+  const { t } = useTranslation();
   const copyWithToast = useCopyToast();
   return (
     <div className={cn("mt-2 flex items-center gap-1", className)}>
@@ -150,8 +153,8 @@ export function AgentBubbleActionRow({
             variant="ghost"
             size="icon-xs"
             className="text-muted-foreground hover:text-foreground"
-            title="More actions"
-            aria-label="More actions"
+            title={t("agentDetail.bubble.moreActions")}
+            aria-label={t("agentDetail.bubble.moreActions")}
           >
             <MoreHorizontal className="h-3.5 w-3.5" />
           </Button>
@@ -159,11 +162,11 @@ export function AgentBubbleActionRow({
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() => {
-              void copyWithToast(copyText, "Message copied");
+              void copyWithToast(copyText, t("agentDetail.bubble.messageCopied"));
             }}
           >
             <Copy className="mr-2 h-3.5 w-3.5" />
-            Copy message
+            {t("agentDetail.bubble.copyMessage")}
           </DropdownMenuItem>
           {menuItems}
         </DropdownMenuContent>
@@ -188,6 +191,7 @@ export function IssueChatFeedbackButtons({
   termsUrl: string | null;
   onVote: (vote: FeedbackVoteValue, options?: { allowSharing?: boolean; reason?: string }) => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
   const [optimisticVote, setOptimisticVote] = useState<FeedbackVoteValue | null>(null);
   const [reasonOpen, setReasonOpen] = useState(false);
@@ -267,8 +271,8 @@ export function IssueChatFeedbackButtons({
             ? "text-green-600 dark:text-green-400"
             : "text-muted-foreground hover:bg-accent hover:text-foreground",
         )}
-        title="Helpful"
-        aria-label="Helpful"
+        title={t("agentDetail.bubble.helpful")}
+        aria-label={t("agentDetail.bubble.helpful")}
         onClick={handleThumbsUp}
       >
         <ThumbsUp className="h-3.5 w-3.5" />
@@ -284,19 +288,19 @@ export function IssueChatFeedbackButtons({
                 ? "text-amber-600 dark:text-amber-400"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
-            title="Needs work"
-            aria-label="Needs work"
+            title={t("agentDetail.bubble.needsWork")}
+            aria-label={t("agentDetail.bubble.needsWork")}
             onClick={handleThumbsDown}
           >
             <ThumbsDown className="h-3.5 w-3.5" />
           </button>
         </PopoverTrigger>
         <PopoverContent side="top" align="start" className="w-80 p-3">
-          <div className="mb-2 text-sm font-medium">What could have been better?</div>
+          <div className="mb-2 text-sm font-medium">{t("agentDetail.bubble.betterQuestion")}</div>
           <Textarea
             value={downvoteReason}
             onChange={(event) => setDownvoteReason(event.target.value)}
-            placeholder="Add a short note"
+            placeholder={t("agentDetail.bubble.addNote")}
             className="min-h-20 resize-y bg-background text-sm"
             disabled={isSaving}
           />
@@ -311,7 +315,7 @@ export function IssueChatFeedbackButtons({
                 setDownvoteReason("");
               }}
             >
-              Dismiss
+              {t("agentDetail.bubble.dismiss")}
             </Button>
             <Button
               type="button"
@@ -319,7 +323,7 @@ export function IssueChatFeedbackButtons({
               disabled={isSaving || !downvoteReason.trim()}
               onClick={handleSubmitReason}
             >
-              {isSaving ? "Saving..." : "Save note"}
+              {isSaving ? t("agentDetail.bubble.saving") : t("agentDetail.bubble.saveNote")}
             </Button>
           </div>
         </PopoverContent>
@@ -336,21 +340,21 @@ export function IssueChatFeedbackButtons({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Save your feedback sharing preference</DialogTitle>
+            <DialogTitle>{t("agentDetail.bubble.sharingTitle")}</DialogTitle>
             <DialogDescription>
-              Choose whether voted AI outputs can be shared with Paperclip Labs. This
-              answer becomes the default for future thumbs up and thumbs down votes.
+              {t("agentDetail.bubble.sharingDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>This vote is always saved locally.</p>
+            <p>{t("agentDetail.bubble.localVote")}</p>
             <p>
-              Choose <span className="font-medium text-foreground">Always allow</span> to share
-              this vote and future voted AI outputs. Choose{" "}
-              <span className="font-medium text-foreground">Don't allow</span> to keep this vote
-              and future votes local.
+              {t("agentDetail.bubble.choose")}{" "}
+              <span className="font-medium text-foreground">{t("agentDetail.bubble.alwaysAllow")}</span>{" "}
+              {t("agentDetail.bubble.shareVote")}{" "}
+              <span className="font-medium text-foreground">{t("agentDetail.bubble.dontAllow")}</span>{" "}
+              {t("agentDetail.bubble.keepLocal")}
             </p>
-            <p>You can change this later in Settings &gt; General.</p>
+            <p>{t("agentDetail.bubble.changeLater")}</p>
             {termsUrl ? (
               <a
                 href={termsUrl}
@@ -358,7 +362,7 @@ export function IssueChatFeedbackButtons({
                 rel="noreferrer"
                 className="inline-flex text-sm text-foreground underline underline-offset-4"
               >
-                Read our terms of service
+                {t("agentDetail.bubble.terms")}
               </a>
             ) : null}
           </div>
@@ -375,7 +379,7 @@ export function IssueChatFeedbackButtons({
                 ).then(() => setPendingSharingDialog(null));
               }}
             >
-              {isSaving ? "Saving..." : "Don't allow"}
+              {isSaving ? t("agentDetail.bubble.saving") : t("agentDetail.bubble.dontAllow")}
             </Button>
             <Button
               type="button"
@@ -388,7 +392,7 @@ export function IssueChatFeedbackButtons({
                 }).then(() => setPendingSharingDialog(null));
               }}
             >
-              {isSaving ? "Saving..." : "Always allow"}
+              {isSaving ? t("agentDetail.bubble.saving") : t("agentDetail.bubble.alwaysAllow")}
             </Button>
           </DialogFooter>
         </DialogContent>
