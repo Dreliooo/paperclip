@@ -42,6 +42,7 @@ import {
 } from "@/components/IssueDocumentAnnotations";
 import { formatDateTime } from "@/lib/utils";
 import { useLocation } from "@/lib/router";
+import { useTranslation } from "@/i18n";
 
 interface IssuePropertiesArtifactsTabProps {
   issue: Issue;
@@ -53,23 +54,23 @@ interface IssuePropertiesArtifactsTabProps {
   } | null;
 }
 
-/** Work-product status → label + `--status-task-*` base-hue var for `.status-chip`. */
+/** Work-product status → label key + `--status-task-*` base-hue var for `.status-chip`. */
 function workProductStatusBadge(
   status: string,
-): { label: string; cssVar: string } | null {
+): { labelKey: string; cssVar: string } | null {
   switch (status) {
     case "active":
     case "draft":
-      return { label: "In progress", cssVar: "--status-task-in_progress" };
+      return { labelKey: "properties.artifacts.status.inProgress", cssVar: "--status-task-in_progress" };
     case "ready_for_review":
-      return { label: "For review", cssVar: "--status-task-in_review" };
+      return { labelKey: "properties.artifacts.status.forReview", cssVar: "--status-task-in_review" };
     case "approved":
     case "merged":
-      return { label: "Done", cssVar: "--status-task-done" };
+      return { labelKey: "properties.artifacts.status.done", cssVar: "--status-task-done" };
     case "changes_requested":
-      return { label: "Changes requested", cssVar: "--status-task-todo" };
+      return { labelKey: "properties.artifacts.status.changesRequested", cssVar: "--status-task-todo" };
     case "failed":
-      return { label: "Failed", cssVar: "--status-task-blocked" };
+      return { labelKey: "properties.artifacts.status.failed", cssVar: "--status-task-blocked" };
     default:
       return null;
   }
@@ -97,6 +98,7 @@ function MarkdownWorkProductRow({
   author: string;
   openRequestId?: number;
 }) {
+  const { t } = useTranslation();
   const openTextAttachment = useContext(TextAttachmentContext);
   const [expanded, setExpanded] = useState(false);
   const [annotationPanelOpen, setAnnotationPanelOpen] = useState(false);
@@ -153,7 +155,7 @@ function MarkdownWorkProductRow({
   if (tooLarge) {
     expandedBody = (
       <p className="text-sm text-muted-foreground">
-        This Markdown file is too large to preview. Use Raw or Download instead.
+        {t("properties.artifacts.tooLargePreview")}
       </p>
     );
   } else if (reviewDoc) {
@@ -174,15 +176,15 @@ function MarkdownWorkProductRow({
           <MarkdownBody>{reviewDoc.body}</MarkdownBody>
         </IssueDocumentAnnotations>
       ) : (
-        <p className="text-sm text-muted-foreground">Document is empty.</p>
+        <p className="text-sm text-muted-foreground">{t("properties.artifacts.documentEmpty")}</p>
       );
   } else if (ensure.isError) {
     expandedBody = (
       <div className="flex flex-col items-start gap-1.5">
         <p className="text-sm text-muted-foreground">
           {unsupportedError
-            ? "This file can't be previewed as Markdown. Use Raw or Download instead."
-            : "Preview failed to load."}
+            ? t("properties.artifacts.unsupportedPreview")
+            : t("properties.artifacts.previewFailed")}
         </p>
         {!unsupportedError ? (
           <button
@@ -193,14 +195,14 @@ function MarkdownWorkProductRow({
               ensure.mutate();
             }}
           >
-            Retry
+            {t("properties.artifacts.retry")}
           </button>
         ) : null}
       </div>
     );
   } else {
     expandedBody = (
-      <p className="text-sm text-muted-foreground">Preparing preview…</p>
+      <p className="text-sm text-muted-foreground">{t("properties.artifacts.preparingPreview")}</p>
     );
   }
 
@@ -220,7 +222,7 @@ function MarkdownWorkProductRow({
           statusBadge={
             badge ? (
               <span className="text-xs text-muted-foreground">
-                {badge.label}
+                {t(badge.labelKey)}
               </span>
             ) : undefined
           }
@@ -241,8 +243,8 @@ function MarkdownWorkProductRow({
                 <button
                   type="button"
                   onClick={() => openTextAttachment(metadata.attachmentId, metadata.originalFilename ?? workProduct.title)}
-                  aria-label={`Open in tab: ${workProduct.title}`}
-                  title="Open in tab"
+                  aria-label={t("properties.artifacts.openInTabAria", { title: workProduct.title })}
+                  title={t("properties.artifacts.openInTab")}
                   className="shrink-0 px-1.5 py-1.5 text-muted-foreground hover:text-foreground"
                 >
                   <FileText className="h-3 w-3" />
@@ -252,16 +254,16 @@ function MarkdownWorkProductRow({
                 href={metadata.openPath}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`Open raw ${workProduct.title}`}
-                title="Open raw"
+                aria-label={t("properties.artifacts.openRawAria", { title: workProduct.title })}
+                title={t("properties.artifacts.openRaw")}
                 className="shrink-0 px-1.5 py-1.5 text-muted-foreground hover:text-foreground"
               >
                 <ExternalLink className="h-3 w-3" />
               </a>
               <a
                 href={metadata.downloadPath}
-                aria-label={`Download ${workProduct.title}`}
-                title="Download"
+                aria-label={t("properties.artifacts.downloadAria", { title: workProduct.title })}
+                title={t("properties.artifacts.download")}
                 className="shrink-0 py-1.5 pr-2 pl-0.5 text-muted-foreground hover:text-foreground"
               >
                 <Download className="h-3 w-3" />
@@ -290,6 +292,7 @@ function DocumentRow({
   openRequestId?: number;
   onOpen?: () => void;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [annotationPanelOpen, setAnnotationPanelOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -346,7 +349,7 @@ function DocumentRow({
               <MarkdownBody>{doc.body}</MarkdownBody>
             </IssueDocumentAnnotations>
           ) : (
-            <p className="text-sm text-muted-foreground">Document is empty.</p>
+            <p className="text-sm text-muted-foreground">{t("properties.artifacts.documentEmpty")}</p>
           )}
         </div>
       ) : null}
@@ -368,6 +371,7 @@ export function IssuePropertiesArtifactsTab({
   onOpenDocument,
   uploadState,
 }: IssuePropertiesArtifactsTabProps) {
+  const { t } = useTranslation();
   const {
     data: attachments,
     isPending: attachmentsPending,
@@ -496,7 +500,7 @@ export function IssuePropertiesArtifactsTab({
   const loading = attachmentsPending || productsPending || documentsPending;
   const feedback = loadError ? (
     <div role="alert" className="px-1 py-3 text-sm text-muted-foreground">
-      Some artifacts could not be loaded.
+      {t("properties.artifacts.loadError")}
       <button
         className="ml-2 underline"
         onClick={() => {
@@ -505,12 +509,12 @@ export function IssuePropertiesArtifactsTab({
           void refetchDocuments();
         }}
       >
-        Retry
+        {t("properties.artifacts.retry")}
       </button>
     </div>
   ) : loading ? (
     <p role="status" className="px-1 py-3 text-sm text-muted-foreground">
-      Loading artifacts…
+      {t("properties.artifacts.loading")}
     </p>
   ) : null;
 
@@ -526,8 +530,7 @@ export function IssuePropertiesArtifactsTab({
     if (feedback) return withUploads(feedback);
     return withUploads(
       <div className="px-1 py-6 text-sm text-muted-foreground">
-        No artifacts yet. Work products, documents, and agent-produced files
-        will appear here.
+        {t("properties.artifacts.empty")}
       </div>,
       true,
     );
@@ -544,7 +547,7 @@ export function IssuePropertiesArtifactsTab({
             {group.runId !== "other" ? (
               <header className="flex items-baseline justify-between gap-2 px-1">
                 <h3 className="truncate text-xs font-medium text-foreground">
-                  {agent?.name ?? `Run ${group.runId.slice(0, 8)}`}
+                  {agent?.name ?? t("properties.artifacts.runFallback", { id: group.runId.slice(0, 8) })}
                 </h3>
                 <time
                   className="shrink-0 text-(length:--text-micro) text-muted-foreground"
