@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SecretBindingPicker, type SecretBindingValue } from "./SecretBindingPicker";
+import { t as translate, useTranslation } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -197,7 +198,7 @@ export function validateField(
 
   // Required check
   if (isRequired && (value === undefined || value === null || value === "")) {
-    return "This field is required";
+    return translate("ui2g4.jsonSchemaForm.required");
   }
 
   // Skip further validation if empty and not required
@@ -207,19 +208,19 @@ export function validateField(
     return null;
   }
   if (type === "secret-ref" && typeof value === "object") {
-    return "Invalid secret reference";
+    return translate("ui2g4.jsonSchemaForm.invalidSecretRef");
   }
   if (type === "object" && (typeof value !== "object" || Array.isArray(value))) {
-    return "Enter a valid JSON object";
+    return translate("ui2g4.jsonSchemaForm.enterJsonObject");
   }
 
   if (type === "string" || type === "secret-ref") {
     const str = String(value);
     if (schema.minLength != null && str.length < schema.minLength) {
-      return `Must be at least ${schema.minLength} characters`;
+      return translate("ui2g4.jsonSchemaForm.minLength", { n: schema.minLength });
     }
     if (schema.maxLength != null && str.length > schema.maxLength) {
-      return `Must be at most ${schema.maxLength} characters`;
+      return translate("ui2g4.jsonSchemaForm.maxLength", { n: schema.maxLength });
     }
     if (schema.pattern) {
       // Guard against ReDoS: reject overly complex patterns from plugin JSON Schemas.
@@ -229,7 +230,7 @@ export function validateField(
         try {
           const re = new RegExp(schema.pattern);
           if (!re.test(str)) {
-            return `Must match pattern: ${schema.pattern}`;
+            return translate("ui2g4.jsonSchemaForm.pattern", { pattern: schema.pattern });
           }
         } catch {
           // Invalid regex in schema — skip
@@ -240,34 +241,34 @@ export function validateField(
 
   if (type === "number" || type === "integer") {
     const num = Number(value);
-    if (isNaN(num)) return "Must be a valid number";
+    if (isNaN(num)) return translate("ui2g4.jsonSchemaForm.notNumber");
     if (schema.minimum != null && num < schema.minimum) {
-      return `Must be at least ${schema.minimum}`;
+      return translate("ui2g4.jsonSchemaForm.minimum", { n: schema.minimum });
     }
     if (schema.maximum != null && num > schema.maximum) {
-      return `Must be at most ${schema.maximum}`;
+      return translate("ui2g4.jsonSchemaForm.maximum", { n: schema.maximum });
     }
     if (schema.exclusiveMinimum != null && num <= schema.exclusiveMinimum) {
-      return `Must be greater than ${schema.exclusiveMinimum}`;
+      return translate("ui2g4.jsonSchemaForm.greaterThan", { n: schema.exclusiveMinimum });
     }
     if (schema.exclusiveMaximum != null && num >= schema.exclusiveMaximum) {
-      return `Must be less than ${schema.exclusiveMaximum}`;
+      return translate("ui2g4.jsonSchemaForm.lessThan", { n: schema.exclusiveMaximum });
     }
     if (type === "integer" && !Number.isInteger(num)) {
-      return "Must be a whole number";
+      return translate("ui2g4.jsonSchemaForm.wholeNumber");
     }
     if (schema.multipleOf != null && num % schema.multipleOf !== 0) {
-      return `Must be a multiple of ${schema.multipleOf}`;
+      return translate("ui2g4.jsonSchemaForm.multipleOf", { n: schema.multipleOf });
     }
   }
 
   if (type === "array") {
     const arr = value as unknown[];
     if (schema.minItems != null && arr.length < schema.minItems) {
-      return `Must have at least ${schema.minItems} items`;
+      return translate("ui2g4.jsonSchemaForm.minItems", { n: schema.minItems });
     }
     if (schema.maxItems != null && arr.length > schema.maxItems) {
-      return `Must have at most ${schema.maxItems} items`;
+      return translate("ui2g4.jsonSchemaForm.maxItems", { n: schema.maxItems });
     }
   }
 
@@ -515,6 +516,7 @@ const EnumField = React.memo(({
   error?: string;
   options: unknown[];
 }) => {
+  const { t } = useTranslation();
   // Optional enums get a leading blank row so the user can express "not
   // configured"; it is also the selected row when no value is set.
   const showUnsetOption = !isRequired;
@@ -553,12 +555,12 @@ const EnumField = React.memo(({
         disabled={disabled}
       >
         <SelectTrigger className="w-full" aria-label={label} aria-required={isRequired}>
-          <SelectValue placeholder="Select an option" />
+          <SelectValue placeholder={t("ui2g4.jsonSchemaForm.selectOption")} />
         </SelectTrigger>
         <SelectContent>
           {showUnsetOption && (
-            <SelectItem value={ENUM_UNSET_VALUE} textValue="None">
-              <span className="text-muted-foreground">None</span>
+            <SelectItem value={ENUM_UNSET_VALUE} textValue={t("ui2g4.jsonSchemaForm.none")}>
+              <span className="text-muted-foreground">{t("ui2g4.jsonSchemaForm.none")}</span>
             </SelectItem>
           )}
           {options.map((option) => (
@@ -601,6 +603,7 @@ const SecretField = React.memo(({
   defaultValue?: unknown;
   maxLength?: number;
 }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const isTextArea = maxLength != null && maxLength > TEXTAREA_THRESHOLD;
 
@@ -668,7 +671,7 @@ const SecretField = React.memo(({
           value={
             stringValue.length === 0
               ? ""
-              : `Sensitive — ${stringValue.length} characters hidden. Click the eye to reveal.`
+              : t("ui2g4.jsonSchemaForm.sensitive", { n: stringValue.length })
           }
           readOnly
           placeholder={String(defaultValue ?? "")}
@@ -691,7 +694,7 @@ const SecretField = React.memo(({
           <Eye className="h-4 w-4 text-muted-foreground" />
         )}
         <span className="sr-only">
-          {isVisible ? "Hide secret" : "Show secret"}
+          {isVisible ? t("ui2g4.jsonSchemaForm.hideSecret") : t("ui2g4.jsonSchemaForm.showSecret")}
         </span>
       </Button>
     </div>
@@ -722,7 +725,7 @@ const SecretField = React.memo(({
           <Eye className="h-4 w-4 text-muted-foreground" />
         )}
         <span className="sr-only">
-          {isVisible ? "Hide secret" : "Show secret"}
+          {isVisible ? t("ui2g4.jsonSchemaForm.hideSecret") : t("ui2g4.jsonSchemaForm.showSecret")}
         </span>
       </Button>
     </div>
@@ -733,7 +736,7 @@ const SecretField = React.memo(({
       label={label}
       description={
         description ||
-        "Pick an existing organization secret, or paste a raw value (Paperclip will store it as a secret on save)."
+        t("ui2g4.jsonSchemaForm.secretDescription")
       }
       required={isRequired}
       error={error}
@@ -744,9 +747,9 @@ const SecretField = React.memo(({
           value={bindingValue}
           onChange={handlePickerChange}
           label=""
-          placeholder="Select an existing secret"
+          placeholder={t("ui2g4.jsonSchemaForm.selectSecret")}
           allowVersionSelector={false}
-          emptyHint="No active secrets yet. Create one or paste a raw value below."
+          emptyHint={t("ui2g4.jsonSchemaForm.noActiveSecrets")}
           disabled={disabled}
         />
         {!isBoundToSecret ? (
@@ -763,7 +766,7 @@ const SecretField = React.memo(({
                   }}
                   disabled={disabled}
                 >
-                  Hide raw value input
+                  {t("ui2g4.jsonSchemaForm.hideRawInput")}
                 </button>
               ) : null}
             </div>
@@ -774,7 +777,7 @@ const SecretField = React.memo(({
               onClick={() => setShowRawInput(true)}
               disabled={disabled}
             >
-              Or paste a raw value
+              {t("ui2g4.jsonSchemaForm.orPasteRaw")}
             </button>
           )
         ) : null}
@@ -945,6 +948,7 @@ const ArrayField = React.memo(({
   errors: Record<string, string>;
   path: string;
 }) => {
+  const { t } = useTranslation();
   const items = Array.isArray(value) ? value : [];
   const itemSchema = propSchema.items as JsonSchemaNode;
   const isComplex = resolveType(itemSchema) === "object";
@@ -975,7 +979,7 @@ const ArrayField = React.memo(({
           }}
         >
           <Plus className="mr-2 h-4 w-4" />
-          {isComplex ? "Add item" : "Add"}
+          {isComplex ? t("ui2g4.jsonSchemaForm.addItem") : t("ui2g4.jsonSchemaForm.add")}
         </Button>
       </div>
 
@@ -1020,13 +1024,13 @@ const ArrayField = React.memo(({
               }}
             >
               <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Remove item</span>
+              <span className="sr-only">{t("ui2g4.jsonSchemaForm.removeItem")}</span>
             </Button>
           </div>
         ))}
         {items.length === 0 && (
           <div className="rounded-lg border border-dashed p-4 text-center text-xs text-muted-foreground">
-            No items added yet.
+            {t("ui2g4.jsonSchemaForm.noItems")}
           </div>
         )}
       </div>
@@ -1043,6 +1047,7 @@ ArrayField.displayName = "ArrayField";
 function JsonObjectField({ value, onChange, disabled, label, error }: {
   value: unknown; onChange: (value: unknown) => void; disabled: boolean; label: string; error?: string;
 }) {
+  const { t } = useTranslation();
   const format = (next: unknown) => typeof next === "string" ? next : JSON.stringify(next ?? {}, null, 2);
   const [text, setText] = useState(() => format(value));
   const emitted = useRef(value);
@@ -1061,8 +1066,8 @@ function JsonObjectField({ value, onChange, disabled, label, error }: {
     onChange(next);
   };
   return <div className="space-y-2">
-    <Textarea aria-label={`${label} JSON`} aria-invalid={!!error} value={text} onChange={(event) => change(event.target.value)} disabled={disabled} rows={5} className="font-mono text-sm" />
-    <p className="text-xs text-muted-foreground">Enter a JSON object using the action's argument names.</p>
+    <Textarea aria-label={t("ui2g4.jsonSchemaForm.jsonAria", { label })} aria-invalid={!!error} value={text} onChange={(event) => change(event.target.value)} disabled={disabled} rows={5} className="font-mono text-sm" />
+    <p className="text-xs text-muted-foreground">{t("ui2g4.jsonSchemaForm.jsonHelp")}</p>
     {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
   </div>;
 }
@@ -1283,8 +1288,9 @@ export function JsonSchemaForm({
   errors = {},
   disabled,
   className,
-  advancedLabel = "Advanced options",
+  advancedLabel,
 }: JsonSchemaFormProps) {
+  const { t } = useTranslation();
   const type = resolveType(schema);
 
   const handleRootScalarChange = useCallback((newVal: unknown) => {
@@ -1329,7 +1335,7 @@ export function JsonSchemaForm({
     const groupOrder: string[] = [];
     const groups = new Map<string, Array<[string, JsonSchemaNode]>>();
     const advancedKeys = new Set<string>();
-    const DEFAULT_GROUP = "More options";
+    const DEFAULT_GROUP = t("ui2g4.jsonSchemaForm.moreOptions");
 
     for (const entry of Object.entries(properties)) {
       const [key, propSchema] = entry;
@@ -1357,7 +1363,7 @@ export function JsonSchemaForm({
       })),
       advancedKeys,
     };
-  }, [properties]);
+  }, [properties, t]);
 
   const hasAdvanced = advancedGroups.length > 0;
 
@@ -1389,7 +1395,7 @@ export function JsonSchemaForm({
           className,
         )}
       >
-        No configuration options available.
+        {t("ui2g4.jsonSchemaForm.noConfigOptions")}
       </div>
     );
   }
@@ -1429,7 +1435,7 @@ export function JsonSchemaForm({
             onClick={() => setIsAdvancedOpen((open) => !open)}
             aria-expanded={isAdvancedOpen}
           >
-            <span className="text-sm font-medium">{advancedLabel}</span>
+            <span className="text-sm font-medium">{advancedLabel ?? t("ui2g4.jsonSchemaForm.advancedOptions")}</span>
             {isAdvancedOpen ? (
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             ) : (

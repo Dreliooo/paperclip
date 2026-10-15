@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import type { SidePanelContentMode, SidePanelPresentation } from "./types";
 import { useScrollbarWhileScrolling } from "./use-scrollbar-while-scrolling";
+import { useTranslation } from "@/i18n";
 
 export interface SidePanelFrameProps {
   children: ReactNode;
@@ -33,16 +34,17 @@ export function SidePanelFrame({
   open = true,
   maximized = false,
   resizing = false,
-  label = "Side panel",
+  label,
   headerSize = "default",
   className,
   bodyClassName,
   style,
 }: SidePanelFrameProps) {
+  const { t } = useTranslation();
   const handleScroll = useScrollbarWhileScrolling();
   return (
     <section
-      aria-label={label}
+      aria-label={label ?? t("ui2g4.sidePanel.label")}
       aria-hidden={!open}
       data-presentation={presentation}
       data-open={open ? "true" : "false"}
@@ -108,7 +110,8 @@ export function SidePanelToggleButton({
   shortcut?: string;
   className?: string;
 }) {
-  const label = "Toggle side panel";
+  const { t } = useTranslation();
+  const label = t("ui2g4.sidePanel.toggle");
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -129,7 +132,7 @@ export function SidePanelToggleButton({
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {shortcut ? `${label} (${shortcut})` : label}
+        {shortcut ? t("ui2g4.sidePanel.toggleWithShortcut", { label, shortcut }) : label}
       </TooltipContent>
     </Tooltip>
   );
@@ -146,6 +149,8 @@ export function SidePanelWindowControls({
   onToggle: () => void;
   closeControl?: "toggle" | "close";
 }) {
+  const { t } = useTranslation();
+  const maximizeLabel = maximized ? t("ui2g4.sidePanel.restore") : t("ui2g4.sidePanel.maximize");
   return (
     <>
       <Button
@@ -154,8 +159,8 @@ export function SidePanelWindowControls({
         size="icon-sm"
         className="h-(--side-panel-tab-height) w-(--side-panel-tab-height) text-muted-foreground hover:text-foreground focus-visible:text-foreground"
         onClick={() => onMaximizedChange(!maximized)}
-        aria-label={maximized ? "Restore side panel" : "Maximize side panel"}
-        title={maximized ? "Restore side panel" : "Maximize side panel"}
+        aria-label={maximizeLabel}
+        title={maximizeLabel}
       >
         {maximized ? <Minimize2 aria-hidden /> : <Maximize2 aria-hidden />}
       </Button>
@@ -166,8 +171,8 @@ export function SidePanelWindowControls({
           size="icon-sm"
           className="h-(--side-panel-tab-height) w-(--side-panel-tab-height) text-muted-foreground hover:text-foreground focus-visible:text-foreground"
           onClick={onToggle}
-          aria-label="Close side panel"
-          title="Close side panel"
+          aria-label={t("ui2g4.sidePanel.close")}
+          title={t("ui2g4.sidePanel.close")}
         >
           <X aria-hidden />
         </Button>

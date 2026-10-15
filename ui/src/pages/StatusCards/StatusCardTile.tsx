@@ -22,6 +22,7 @@ import {
 } from "@/lib/status-card-state";
 import { formatCents, formatTokens } from "./format";
 import type { StatusCardView } from "./types";
+import { useTranslation } from "@/i18n";
 
 export interface StatusCardTileProps {
   card: StatusCardView;
@@ -60,6 +61,7 @@ export function StatusCardTile({
   refreshPending,
   recompilePending,
 }: StatusCardTileProps) {
+  const { t } = useTranslation();
   const lifecycle = deriveStatusCardLifecycle(card);
   const presentation = STATUS_CARD_LIFECYCLE_PRESENTATION[lifecycle];
   // A setup run is actually in flight when the card is compiling AND has a
@@ -72,16 +74,16 @@ export function StatusCardTile({
   const generatingIssue = useMemo<SummarySlotIssueRef | null>(
     () =>
       lifecycle === "updating" && card.generatingIssueId
-        ? { id: card.generatingIssueId, identifier: null, title: card.title ?? "Status update", status: "in_progress" }
+        ? { id: card.generatingIssueId, identifier: null, title: card.title ?? t("ui2g4.statusCardTile.statusUpdate"), status: "in_progress" }
         : null,
-    [lifecycle, card.generatingIssueId, card.title],
+    [lifecycle, card.generatingIssueId, card.title, t],
   );
   const draftStream = useSummaryDraftStream(companyId, generatingIssue);
 
   const policyLabel = describeRefreshPolicy(card.refreshPolicy);
   const tokensLabel = formatTokens(card.todayTokens);
   const costLabel = formatCents(card.todayCostCents);
-  const freshnessLabel = card.lastGeneratedAt ? relativeTime(card.lastGeneratedAt) : "no summary yet";
+  const freshnessLabel = card.lastGeneratedAt ? relativeTime(card.lastGeneratedAt) : t("ui2g4.statusCardTile.noSummaryYet");
   const hasSummary = Boolean(card.summaryBody && card.summaryBody.trim().length > 0);
 
   return (
@@ -112,30 +114,30 @@ export function StatusCardTile({
           )}
           title={card.title ?? card.interestPrompt}
         >
-          {card.title ?? "New card"}
+          {card.title ?? t("ui2g4.statusCardTile.newCard")}
         </span>
         <div onClick={(event) => event.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="-mr-1 -mt-1 h-7 w-7 text-muted-foreground" aria-label="Card actions">
+              <Button variant="ghost" size="icon" className="-mr-1 -mt-1 h-7 w-7 text-muted-foreground" aria-label={t("ui2g4.statusCardTile.cardActionsAria")}>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={onOpen}>Open detail</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onOpen}>{t("ui2g4.statusCardTile.openDetail")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={onRefresh} disabled={refreshPending || lifecycle === "updating"}>
-                Refresh now
+                {t("ui2g4.statusCardTile.refreshNow")}
               </DropdownMenuItem>
               {(lifecycle === "compiling" && !setupRunning) || lifecycle === "error" ? (
                 <DropdownMenuItem onSelect={onRecompile} disabled={recompilePending}>
-                  Run now
+                  {t("ui2g4.statusCardTile.runNow")}
                 </DropdownMenuItem>
               ) : null}
-              <DropdownMenuItem onSelect={onEditInterest}>Edit interest &amp; settings</DropdownMenuItem>
-              <DropdownMenuItem onSelect={onOpenDebug}>Query debug</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onEditInterest}>{t("ui2g4.statusCardTile.editInterest")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onOpenDebug}>{t("ui2g4.statusCardTile.queryDebug")}</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={onArchive} variant="destructive">
-                Archive
+                {t("ui2g4.statusCardTile.archive")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -154,9 +156,9 @@ export function StatusCardTile({
               ) : (
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
               )}
-              <span>{setupRunning ? "Setting up your card…" : "Setup didn’t finish"}</span>
+              <span>{setupRunning ? t("ui2g4.statusCardTile.settingUp") : t("ui2g4.statusCardTile.setupDidNotFinish")}</span>
             </div>
-            <p className="mt-1 line-clamp-2 text-muted-foreground">“{card.interestPrompt}”</p>
+            <p className="mt-1 line-clamp-2 text-muted-foreground">{t("ui2g4.statusCardTile.interestPrompt", { prompt: card.interestPrompt })}</p>
             {setupRunning ? (
               // The setup run is live — link to the task instead of offering
               // "Run now", which would kick a duplicate run and race it.
@@ -166,7 +168,7 @@ export function StatusCardTile({
                 className="mt-2 inline-flex items-center gap-1.5 font-medium text-foreground underline-offset-2 hover:underline"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-                View setup task
+                {t("ui2g4.statusCardTile.viewSetupTask")}
               </Link>
             ) : (
               // The first run stalled (agent run died mid-setup) and the card
@@ -178,7 +180,7 @@ export function StatusCardTile({
                 className="mt-2 inline-flex items-center gap-1.5 font-medium text-foreground underline-offset-2 hover:underline disabled:opacity-60"
               >
                 <Wand2 className={cn("h-3.5 w-3.5", recompilePending && "animate-pulse")} />
-                {recompilePending ? "Starting…" : "Run now"}
+                {recompilePending ? t("ui2g4.statusCardTile.starting") : t("ui2g4.statusCardTile.runNow")}
               </button>
             )}
           </div>
@@ -191,8 +193,8 @@ export function StatusCardTile({
               <span className="min-w-0 flex-1 truncate" title={draftStream.statusLine ?? undefined}>
                 {draftStream.statusLine
                   ?? (card.pendingChangeCount > 0
-                    ? `Integrating ${card.pendingChangeCount} ${card.pendingChangeCount === 1 ? "change" : "changes"}…`
-                    : "Updating now…")}
+                    ? t("ui2g4.statusCardTile.integratingChanges", { count: card.pendingChangeCount })
+                    : t("ui2g4.statusCardTile.updatingNow"))}
               </span>
               {card.generatingIssueId ? (
                 <Link
@@ -201,7 +203,7 @@ export function StatusCardTile({
                   className="inline-flex shrink-0 items-center gap-1 font-medium underline-offset-2 hover:underline"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  View update task
+                  {t("ui2g4.statusCardTile.viewUpdateTask")}
                 </Link>
               ) : null}
             </div>
@@ -216,9 +218,9 @@ export function StatusCardTile({
             className="flex w-full items-center justify-between gap-2 rounded-md border border-amber-500/40 bg-amber-500/5 px-3 py-1.5 text-left text-xs text-foreground transition-colors hover:bg-amber-500/10 disabled:opacity-60"
           >
             <span>
-              {card.pendingChangeCount} {card.pendingChangeCount === 1 ? "change" : "changes"} since last update
+              {t("ui2g4.statusCardTile.sinceLastUpdate", { count: card.pendingChangeCount })}
             </span>
-            <span className="shrink-0 font-medium text-amber-700 dark:text-amber-400">Refresh</span>
+            <span className="shrink-0 font-medium text-amber-700 dark:text-amber-400">{t("ui2g4.statusCardTile.refresh")}</span>
           </button>
         ) : null}
 
@@ -226,14 +228,14 @@ export function StatusCardTile({
           <div className="flex items-center justify-between gap-2 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-1.5 text-xs">
             <span className="flex items-center gap-1.5 text-destructive">
               <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              Last update failed
+              {t("ui2g4.statusCardTile.lastUpdateFailed")}
             </span>
             <span className="flex shrink-0 items-center gap-3">
               <button type="button" onClick={stopClick(onRefresh)} disabled={refreshPending} className="font-medium text-destructive hover:underline disabled:opacity-60">
-                Retry
+                {t("ui2g4.statusCardTile.retry")}
               </button>
               <button type="button" onClick={stopClick(onOpen)} className="text-muted-foreground hover:underline">
-                Details
+                {t("ui2g4.statusCardTile.details")}
               </button>
             </span>
           </div>
@@ -244,8 +246,8 @@ export function StatusCardTile({
             <PauseCircle className="h-3.5 w-3.5 shrink-0 text-orange-500" />
             <span>
               {lifecycle === "paused_budget"
-                ? "Daily token cap reached — auto-updates paused"
-                : "Outside active hours — auto-updates paused"}
+                ? t("ui2g4.statusCardTile.pausedBudget")
+                : t("ui2g4.statusCardTile.pausedHours")}
             </span>
           </div>
         ) : null}
@@ -254,18 +256,18 @@ export function StatusCardTile({
       {/* Summary body — kept visible for stale/error/updating/paused (never blank) */}
       <div className="min-h-0 flex-1 overflow-hidden px-4 pt-2">
         {lifecycle === "error" && card.summaryBody ? (
-          <p className="mb-1 text-(length:--text-micro) text-muted-foreground">Showing last good summary:</p>
+          <p className="mb-1 text-(length:--text-micro) text-muted-foreground">{t("ui2g4.statusCardTile.showingLastGood")}</p>
         ) : null}
         {hasSummary ? (
           <MarkdownBody className="text-xs leading-6 text-foreground [&_p]:my-0.5">{card.summaryBody!}</MarkdownBody>
         ) : lifecycle === "compiling" ? (
           <p className="text-xs text-muted-foreground">
-            You can add instructions and pick an update policy while this runs.
+            {t("ui2g4.statusCardTile.addInstructions")}
           </p>
         ) : lifecycle === "updating" && draftStream.draft ? (
           <MarkdownBody className="text-xs leading-6 text-foreground [&_p]:my-0.5">{draftStream.draft}</MarkdownBody>
         ) : (
-          <p className="text-xs text-muted-foreground">No summary yet.</p>
+          <p className="text-xs text-muted-foreground">{t("ui2g4.statusCardTile.noSummaryYetSentence")}</p>
         )}
       </div>
 
@@ -273,7 +275,7 @@ export function StatusCardTile({
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-border px-4 py-2.5">
         <span className="truncate text-(length:--text-micro) text-muted-foreground">
           {lifecycle === "compiling" ? (
-            "setting up · first summary pending"
+            t("ui2g4.statusCardTile.settingUpFooter")
           ) : (
             <>
               {freshnessLabel} · {policyLabel}
@@ -292,7 +294,7 @@ export function StatusCardTile({
             className="h-7 w-7 shrink-0 text-muted-foreground"
             onClick={stopClick(onRefresh)}
             disabled={refreshPending}
-            aria-label="Refresh card"
+            aria-label={t("ui2g4.statusCardTile.refreshCardAria")}
           >
             <RefreshCw className={cn("h-3.5 w-3.5", refreshPending && "animate-spin")} />
           </Button>

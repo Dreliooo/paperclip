@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CaseCopyableToken } from "@/components/CaseIdentifierKey";
+import { useTranslation } from "@/i18n";
 
 type CaseRelationRow = Pick<CaseSummary, "id" | "identifier" | "title" | "caseType" | "status"> & {
   key?: string | null;
@@ -24,9 +25,10 @@ export function CaseChildrenTree({
   maxVisible?: number;
 }) {
   const caseHref = useCaseHref();
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   if (children.length === 0) {
-    return <p className="text-xs text-muted-foreground">No child cases.</p>;
+    return <p className="text-xs text-muted-foreground">{t("ui2g4.caseChildrenTree.noChildCases")}</p>;
   }
 
   const shouldCap = maxVisible != null && children.length > maxVisible;
@@ -44,7 +46,7 @@ export function CaseChildrenTree({
             >
               <CaseCopyableToken
                 value={child.identifier}
-                label="case ID"
+                label={t("ui2g4.caseChildrenTree.caseIdLabel")}
                 className="shrink-0 font-mono text-xs text-muted-foreground"
                 containerClassName="shrink-0"
                 stopPropagation
@@ -65,7 +67,7 @@ export function CaseChildrenTree({
           onClick={() => setExpanded(true)}
         >
           <ChevronDown className="h-3.5 w-3.5" />
-          Show {hiddenCount} more
+          {t("ui2g4.caseChildrenTree.showMore", { hiddenCount })}
         </Button>
       ) : null}
     </div>

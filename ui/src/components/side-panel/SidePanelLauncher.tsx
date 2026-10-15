@@ -39,7 +39,7 @@ function LauncherContent({
   const { t } = useTranslation();
   return (
     <Command className={cn(panel && "border border-border shadow-sm")}>
-      <CommandInput placeholder={placeholder} aria-label={placeholder} />
+      <CommandInput data-side-panel-launcher-search="" placeholder={placeholder} aria-label={placeholder} />
       <CommandList className={cn(panel && "max-h-none flex-1")}>
         <CommandEmpty>{emptyMessage}</CommandEmpty>
         {sections.map((section, sectionIndex) => (
