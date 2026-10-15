@@ -5671,6 +5671,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
               href: crumb.href,
               leading: <ProjectTile size="xs" icon={breadcrumbProject.icon} color={breadcrumbProject.color} />,
               leadingKey: `${crumb.key}:${breadcrumbProject.icon ?? ""}:${breadcrumbProject.color ?? ""}`,
+              preserveCase: true,
             }
           : { label: crumb.label, href: crumb.href, identifier: crumb.identifier },
       ),

@@ -155,7 +155,8 @@ export function BreadcrumbBar({ taskDetailLayout = false }: { taskDetailLayout?:
                           to={crumb.href} onClick={crumb.onClick}
                           className={cn(
                             "flex min-w-0 items-baseline gap-1.5",
-                            i === 0 && "font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground",
+                            i === 0 && "font-semibold text-muted-foreground hover:text-foreground",
+                            i === 0 && !crumb.preserveCase && "uppercase tracking-wider",
                           )}
                         >
                           {crumb.leading && (
@@ -170,7 +171,8 @@ export function BreadcrumbBar({ taskDetailLayout = false }: { taskDetailLayout?:
                           to={crumb.href} onClick={crumb.onClick}
                           className={cn(
                             "min-w-0 truncate",
-                            i === 0 && "font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground",
+                            i === 0 && "font-semibold text-muted-foreground hover:text-foreground",
+                            i === 0 && !crumb.preserveCase && "uppercase tracking-wider",
                           )}
                         >
                           {crumb.label}
