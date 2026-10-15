@@ -2797,5 +2797,478 @@
         "triggerChanged": "Disparador {{name}}"
       }
     }
+  },
+  "taskLists": {
+    "decisions": {
+      "count_one": "{{count}} decisión",
+      "count_other": "{{count}} decisiones",
+      "filter": "Filtrar",
+      "group": "Agrupar",
+      "sort": "Ordenar",
+      "clear": "Limpiar",
+      "section": {
+        "type": "Tipo",
+        "severity": "Severidad",
+        "project": "Proyecto",
+        "workspace": "Espacio de trabajo"
+      },
+      "severityLevel": {
+        "critical": "Crítica",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "noProject": "Sin proyecto",
+      "noWorkspace": "Sin espacio de trabajo"
+    },
+    "searchFilter": {
+      "title": "Filtros",
+      "clearAll": "Limpiar todo",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "assignee": "Responsable asignado",
+      "project": "Proyecto",
+      "label": "Etiqueta",
+      "updated": "Actualizado",
+      "sortBy": "Ordenar por",
+      "cancel": "Cancelar",
+      "showResults": "Mostrar resultados",
+      "showCount_one": "Mostrar {{count}} resultado",
+      "showCount_other": "Mostrar {{count}} resultados"
+    },
+    "commandPalette": {
+      "placeholder": "Buscar tareas, agentes, proyectos...",
+      "emptyLead": "No hay coincidencias rápidas de tareas. Presioná",
+      "emptyTo": "para",
+      "emptySearchAll": "buscar en todo",
+      "emptyTail": "o seguí escribiendo para afinar.",
+      "noResults": "No se encontraron resultados.",
+      "searchAllFor": "Buscar todo para",
+      "quotedQuery": "“{{query}}”",
+      "openFullSearch": "abrir búsqueda completa",
+      "groups": {
+        "search": "Buscar",
+        "quickFilters": "Filtros rápidos",
+        "projects": "Proyectos",
+        "actions": "Acciones",
+        "pages": "Páginas",
+        "tasks": "Tareas",
+        "agents": "Agentes"
+      },
+      "actions": {
+        "createTask": "Crear nueva tarea",
+        "openFileInIssue": "Abrir archivo en esta tarea...",
+        "createAgent": "Crear nuevo agente",
+        "createProject": "Crear nuevo proyecto"
+      },
+      "nav": {
+        "dashboard": "Panel",
+        "myWork": "Mi trabajo",
+        "inbox": "Bandeja de entrada",
+        "tasks": "Tareas",
+        "projects": "Proyectos",
+        "goals": "Objetivos",
+        "agents": "Agentes",
+        "costs": "Costos",
+        "activity": "Actividad"
+      }
+    },
+    "issueFilters": {
+      "inboxCategory": {
+        "everything": "Todas las categorías",
+        "issues_i_touched": "Mis tareas recientes",
+        "join_requests": "Solicitudes de ingreso",
+        "approvals": "Aprobaciones",
+        "failed_runs": "Corridas fallidas",
+        "alerts": "Alertas"
+      },
+      "inboxApproval": {
+        "all": "Todos los estados de aprobación",
+        "actionable": "Requiere acción",
+        "resolved": "Resueltas"
+      },
+      "filter": "Filtrar",
+      "filters": "Filtros",
+      "filtersCount": "Filtros: {{n}}",
+      "clear": "Limpiar",
+      "searchPlaceholder": "Buscar {{label}}...",
+      "searchAriaLabel": "Buscar {{label}}",
+      "category": "Categoría",
+      "approvalStatus": "Estado de aprobación",
+      "quickFilters": "Filtros rápidos",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "responsible": "Responsable",
+      "noResponsible": "Sin responsable",
+      "me": "Yo",
+      "creator": "Creador",
+      "removeCreator": "Quitar creador {{label}}",
+      "searchCreators": "Buscar creadores...",
+      "noCreatorsMatch": "Ningún creador coincide.",
+      "project": "Proyecto",
+      "projectsPlural": "Proyectos",
+      "labels": "Etiquetas",
+      "externalObjectStatus": "Estado de objetos externos",
+      "visibility": "Visibilidad",
+      "liveRunsOnly": "Solo corridas en vivo",
+      "showAgentCreated": "mostrar tareas creadas por agentes"
+    },
+    "issueColumns": {
+      "name": {
+        "status": "Estado",
+        "id": "ID",
+        "assignee": "Responsable",
+        "kickedOffBy": "Iniciada por",
+        "project": "Proyecto",
+        "workspace": "Espacio de trabajo",
+        "parent": "Tarea padre",
+        "labels": "Etiquetas",
+        "updated": "Última actualización"
+      },
+      "desc": {
+        "status": "Chip de estado de la tarea en el borde izquierdo.",
+        "id": "Identificador de la tarea, como PAP-1009.",
+        "assignee": "Agente o usuario del tablero responsable.",
+        "kickedOffBy": "Usuario del tablero o agente que creó la tarea.",
+        "project": "Etiqueta del proyecto vinculado, con su color.",
+        "workspace": "Espacio de trabajo de ejecución o del proyecto que usa la tarea.",
+        "parent": "Identificador y título de la tarea padre.",
+        "labels": "Etiquetas de la tarea.",
+        "updated": "Hora de la última actividad visible."
+      },
+      "descTask": {
+        "id": "Identificador de la tarea, como PAP-1009, en el borde final.",
+        "status": "Ícono de estado de la tarea en el borde inicial."
+      },
+      "updatedAgo": "Actualizada {{time}}",
+      "label": "Columnas",
+      "desktopTaskRows": "Filas de tareas de escritorio",
+      "dateGroupSeparators": "Separadores de grupos por fecha",
+      "dateGroupSeparatorsHint": "Muestra las reglas Hoy, Ayer y Anteriores en las listas de tareas con las más recientes primero.",
+      "resetDefaults": "Restablecer valores predeterminados",
+      "resetDefaultsHint": "estado, id, actualizado",
+      "live": "En vivo",
+      "liveBelow": "{{n}} en vivo debajo",
+      "subtaskRunningBelow_one": "{{count}} subtarea en ejecución debajo",
+      "subtaskRunningBelow_other": "{{count}} subtareas en ejecución debajo",
+      "filterByWorkspace": "Filtrar por espacio de trabajo",
+      "subTask": "Subtarea",
+      "unassigned": "Sin asignar",
+      "unknown": "Desconocido",
+      "user": "Usuario",
+      "noProject": "Sin proyecto",
+      "viaAgent": "{{user}} · vía {{agent}}"
+    },
+    "newIssue": {
+      "privacy": {
+        "subtaskOfPrivate": "Subtarea de la tarea privada {{title}}",
+        "inPrivateProject": "En el proyecto privado {{name}}"
+      },
+      "toast": {
+        "openIssue": "Abrir {{ref}}",
+        "createdWithWarnings": "Se creó {{ref}} con advertencias de carga",
+        "uploadFailures_one": "No se pudo agregar {{count}} archivo preparado.",
+        "uploadFailures_other": "No se pudieron agregar {{count}} archivos preparados.",
+        "created": "Se creó {{ref}}"
+      },
+      "dialogTitle": {
+        "subTask": "Nueva subtarea",
+        "task": "Nueva tarea"
+      },
+      "composer": {
+        "placeholder": "Describí una tarea…",
+        "submitSubTask": "Crear subtarea",
+        "submitTask": "Crear tarea",
+        "titleAria": "Título de la tarea"
+      },
+      "header": {
+        "subTaskOf": "Subtarea de"
+      },
+      "parentAccess": {
+        "failed": "No se pudo verificar el acceso a la tarea padre.",
+        "checking": "Verificando el acceso a la tarea padre…"
+      },
+      "retry": "Reintentar",
+      "worktree": {
+        "checkFailed": "No se pudo verificar el worktree seleccionado. Reintentá desde Worktrees o elegí Nuevo worktree.",
+        "unavailable": "El worktree seleccionado ya no está disponible. Elegí otro o creá uno nuevo."
+      },
+      "documents": "Documentos",
+      "attachments": "Adjuntos",
+      "removeDocument": "Quitar documento",
+      "removeAttachment": "Quitar adjunto",
+      "backlog": {
+        "lead": "Asignar implica una intención ejecutable: dejá el estado en",
+        "middle": "solo si querés dejar esto en pausa a propósito. El responsable no se activará hasta que el estado pase a",
+        "or": "o"
+      },
+      "status": {
+        "backlog": "Backlog",
+        "todo": "Por hacer",
+        "inProgress": "En curso"
+      },
+      "paused": {
+        "note": "está en pausa y no empezará a trabajar en esta tarea hasta que se reanude",
+        "importNote": " — llegó en pausa desde una importación de la organización",
+        "tail": ". Podés reanudarlo desde la página de la tarea después de crearla."
+      },
+      "lowTrust": "Agente de revisión de baja confianza. Solo puede actuar dentro de su límite de revisión asignado; la política de la tarea, el proyecto o la corrida define el alcance concreto.",
+      "parentWorkspace": {
+        "noLonger": "Esta subtarea ya no usará el espacio de trabajo de la tarea padre",
+        "label": " ({{label}})"
+      },
+      "project": {
+        "placeholder": "Proyecto",
+        "noneLabel": "Sin proyecto",
+        "mobileTitle": "Seleccionar proyecto",
+        "searchPlaceholder": "Buscar proyectos...",
+        "emptyMessage": "No se encontraron proyectos.",
+        "privateAria": "Proyecto privado"
+      }
+    },
+    "search": {
+      "title": "Buscar",
+      "placeholder": "Buscar tareas, comentarios, documentos, artefactos, agentes, proyectos…",
+      "queryAria": "Consulta de búsqueda",
+      "clearAria": "Borrar búsqueda",
+      "insertOperatorAria": "Insertar operador {{token}}",
+      "tryPrefix": "Probá",
+      "tryOr": "o",
+      "scope": {
+        "all": "Todo",
+        "issues": "Tareas",
+        "comments": "Comentarios",
+        "documents": "Documentos",
+        "artifacts": "Artefactos",
+        "agents": "Agentes",
+        "projects": "Proyectos",
+        "allScopes": "Todos los ámbitos"
+      },
+      "typeToSearch": "Escribí para buscar en la memoria de la organización.",
+      "typeToSearchBody": "Tareas, comentarios, documentos de plan, artefactos, agentes y proyectos: una sola superficie, ordenada por relevancia.",
+      "recentSearches": "Búsquedas recientes",
+      "identifierLookup": "Búsqueda por identificador:",
+      "identifierType": "escribí",
+      "identifierJump": "para ir directo a una tarea.",
+      "quotedPhrases": "Frases entre comillas:",
+      "quotedBody": "encerrá una frase entre comillas para buscar la secuencia exacta.",
+      "commandPaletteHint": "vuelve a abrir la paleta de comandos con tu búsqueda actual.",
+      "errorTitle": "No se pudo ejecutar esa búsqueda",
+      "serverStatus": "El servidor respondió {{status}}.",
+      "requestFailed": "La solicitud falló.",
+      "inputStillHere": "Tu texto y tus filtros siguen aquí, así que podés reintentar o volver al filtro de Tareas.",
+      "retry": "Reintentar",
+      "openTasksView": "Abrir la vista de tareas filtrada",
+      "searchingFor": "Buscando “{{query}}”…",
+      "noResultsFor": "Sin resultados para “{{query}}”",
+      "noMatchIn": "No encontramos coincidencias en {{scope}}. Probá ampliar el ámbito o reformular la búsqueda.",
+      "searchAllScopes": "Buscar en todos los ámbitos",
+      "createFromQuery": "Crear tarea con esta búsqueda",
+      "tipFewerTokens": "Probá con menos términos o con una palabra distintiva.",
+      "tipIdentifierPrefix": "Usá un atajo de identificador como",
+      "tipQuotes": "Encerrá entre comillas las frases de varias palabras.",
+      "resultsOf": "{{shown}} de {{total}} resultados",
+      "resultsCount_one": "{{count}} resultado",
+      "resultsCount_other": "{{count}} resultados",
+      "sortedBy": " · ordenado por {{sort}}",
+      "filtersActive_one": " · {{count}} filtro activo",
+      "filtersActive_other": " · {{count}} filtros activos",
+      "updating": "Actualizando…"
+    },
+    "issues": {
+      "status": {
+        "backlog": "Backlog",
+        "todo": "Por hacer",
+        "inProgress": "En curso",
+        "inReview": "En revisión",
+        "done": "Hecha",
+        "blocked": "Bloqueada",
+        "cancelled": "Cancelada"
+      },
+      "age": {
+        "olderThanDay": "Más de un día",
+        "olderThanWeek": "Más de una semana"
+      },
+      "searchPlaceholder": "Buscar tareas...",
+      "searchAria": "Buscar tareas",
+      "progress": {
+        "done": "{{done}}/{{total}} hechas",
+        "inProgress": "{{n}} en curso",
+        "blocked": "{{n}} bloqueadas",
+        "costRuns_one": "{{runs}} corrida",
+        "costRuns_other": "{{runs}} corridas",
+        "costSubtasks_one": "{{issues}} subtarea",
+        "costSubtasks_other": "{{issues}} subtareas",
+        "costTitle": "{{runs}} en {{issues}}",
+        "tokens": "{{value}} tokens",
+        "runtime": "{{value}} de ejecución",
+        "ariaLabel": "Progreso de finalización de subtareas",
+        "segmentTitle": "{{status}}: {{count}}",
+        "nextUp": "Lo siguiente",
+        "waitingOnBlockers": "Esperando bloqueos",
+        "noActive": "No hay subtareas activas",
+        "allDone": "Todas las subtareas están hechas",
+        "noActionable": "No hay subtareas accionables"
+      },
+      "creator": {
+        "board": "Tablero",
+        "me": "Yo"
+      },
+      "group": {
+        "noWorkspace": "Sin espacio de trabajo",
+        "noProject": "Sin proyecto",
+        "noParent": "Sin tarea padre",
+        "unassigned": "Sin asignar",
+        "user": "Usuario"
+      },
+      "createNamed": "Crear {{label}}",
+      "createTask": "Crear tarea",
+      "newNamed": "Nuevo {{label}}",
+      "newTask": "Nueva tarea",
+      "taskControls": "Controles de tareas",
+      "viewMode": "Modo de vista",
+      "listView": "Vista de lista",
+      "boardView": "Vista de tablero",
+      "disableNesting": "Desactivar anidado padre-hija",
+      "enableNesting": "Activar anidado padre-hija",
+      "useComfortable": "Usar tarjetas cómodas",
+      "useCompact": "Usar tarjetas compactas",
+      "expandColdLanes": "Expandir columnas frías",
+      "collapseColdLanes": "Contraer columnas frías",
+      "cardsPerColumn": "Tarjetas por columna",
+      "perColumn": "{{n}} por columna",
+      "resetDensity": "Restablecer densidad del tablero",
+      "chooseColumns": "Elegí qué columnas de tareas siguen visibles",
+      "sort": "Ordenar",
+      "groupButton": "Agrupar",
+      "sortField": {
+        "workflow": "Flujo de trabajo",
+        "status": "Estado",
+        "priority": "Prioridad",
+        "title": "Título",
+        "created": "Creación",
+        "updated": "Actualización"
+      },
+      "groupBy": {
+        "status": "Estado",
+        "priority": "Prioridad",
+        "assignee": "Responsable",
+        "project": "Proyecto",
+        "workspace": "Espacio de trabajo",
+        "parent": "Tarea padre",
+        "none": "Ninguno"
+      },
+      "searchLimit": "Mostrando hasta {{limit}} coincidencias. Refiná la búsqueda para acotarla.",
+      "boardLimit": "Algunas columnas del tablero muestran hasta {{limit}} tareas. Refiná los filtros o la búsqueda para ver el resto.",
+      "hierarchyError": "No se pudo cargar la jerarquía de tareas: {{message}}",
+      "noMatches": "No hay tareas que coincidan con los filtros o la búsqueda actuales.",
+      "newTaskIn": "Nueva tarea en {{group}}",
+      "blockers": {
+        "step": " · paso {{step}}",
+        "blockedBy": "bloqueada por {{label}}{{suffix}}",
+        "andMore": " ... y {{n}} más",
+        "titleList": "{{first}}: {{rest}}"
+      },
+      "subTaskCount_one": "({{count}} subtarea)",
+      "subTaskCount_other": "({{count}} subtareas)",
+      "paused": "Pausada",
+      "needsNextStep": "Requiere un siguiente paso",
+      "needsNextStepHint": "Esta tarea necesita un siguiente paso",
+      "collapseSubTasks": "Contraer subtareas",
+      "expandSubTasks": "Expandir subtareas",
+      "assignee": "Responsable asignado",
+      "searchResponsible": "Buscar responsable...",
+      "noResponsible": "Sin responsable",
+      "loadingMore": "Cargando más tareas...",
+      "rendering": "Mostrando {{shown}} de {{total}} tareas",
+      "scrollToLoad": "Desplazate para cargar más tareas"
+    },
+    "inbox": {
+      "runExitedWithError": "La corrida terminó con un error.",
+      "agentJoinRequest": "Solicitud de ingreso de agente",
+      "agentJoinRequestNamed": "Solicitud de ingreso de agente: {{name}}",
+      "joinRequestNameEmail": "{{name}} ({{email}})",
+      "humanJoinRequest": "Solicitud de ingreso de persona",
+      "markAsRead": "Marcar como leída",
+      "failedRun": "Corrida fallida",
+      "failedRunBy": "Corrida fallida — {{name}}",
+      "retrying": "Reintentando…",
+      "retry": "Reintentar",
+      "dismiss": "Descartar",
+      "requestedBy": "solicitado por {{name}}",
+      "updatedAgo": "actualizado {{time}}",
+      "approvalStatus": {
+        "pending": "pendiente",
+        "revisionRequested": "revisión solicitada",
+        "approved": "aprobada",
+        "rejected": "rechazada",
+        "cancelled": "cancelada"
+      },
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "joinRequestedFromIp": "solicitada {{time}} desde la IP {{ip}}",
+      "adapterLabel": "adaptador: {{type}}",
+      "title": "Bandeja de entrada",
+      "creator": {
+        "board": "Tablero",
+        "me": "Yo"
+      },
+      "failedToApprove": "No se pudo aprobar",
+      "failedToReject": "No se pudo rechazar",
+      "failedToApproveJoin": "No se pudo aprobar la solicitud de ingreso",
+      "failedToRejectJoin": "No se pudo rechazar la solicitud de ingreso",
+      "runRetryFailed": "Falló el reintento de la corrida",
+      "unableToRetry": "No se pudo reintentar la corrida",
+      "failedToArchive": "No se pudo archivar la tarea",
+      "failedToUndoArchive": "No se pudo deshacer el archivado",
+      "selectOrgToView": "Seleccioná una organización para ver {{label}}.",
+      "liveOnlyHint": "Solo corridas en vivo: tareas conectadas actualmente a una corrida de agente.",
+      "activeStatusesHint": "Estados activos: tareas abiertas, tenga o no un agente corriendo.",
+      "controlsLabel": "Controles de {{label}}",
+      "tabs": {
+        "mine": "Mías",
+        "recent": "Recientes",
+        "unread": "No leídas",
+        "blocked": "Bloqueadas",
+        "all": "Todas"
+      },
+      "searchPlaceholder": "Buscar en {{label}}…",
+      "group": "Agrupar",
+      "chooseColumns": "Elegí qué columnas siguen visibles",
+      "sort": "Ordenar",
+      "disableNesting": "Desactivar anidado padre-hija",
+      "enableNesting": "Activar anidado padre-hija",
+      "groupBy": {
+        "none": "Ninguno",
+        "type": "Tipo",
+        "assignee": "Responsable",
+        "project": "Proyecto",
+        "workspace": "Espacio de trabajo"
+      },
+      "marking": "Marcando…",
+      "markAllRead": "Marcar todo como leído",
+      "markAllReadTitle": "¿Marcar todo como leído?",
+      "markAllReadBody_one": "Esto marcará {{count}} elemento no leído como leído.",
+      "markAllReadBody_other": "Esto marcará {{count}} elementos no leídos como leídos.",
+      "cancel": "Cancelar",
+      "emptySearch": "No hay elementos de la bandeja que coincidan con tu búsqueda.",
+      "inboxZero": "Bandeja vacía.",
+      "noNewItems": "No hay elementos nuevos en la bandeja.",
+      "noRecentItems": "No hay elementos recientes en la bandeja.",
+      "noFilterMatch": "No hay elementos de la bandeja que coincidan con estos filtros.",
+      "collapseSubTasks": "Contraer subtareas",
+      "expandSubTasks": "Expandir subtareas",
+      "subTaskCount_one": "({{count}} subtarea)",
+      "subTaskCount_other": "({{count}} subtareas)",
+      "archived": "Archivadas",
+      "otherResults": "Otros resultados",
+      "newTaskIn": "Nueva tarea en {{group}}",
+      "earlier": "Anteriores",
+      "alerts": "Alertas",
+      "agentErrorsText_one": "agente tiene errores",
+      "agentErrorsText_other": "agentes tienen errores",
+      "budgetAt": "Presupuesto al",
+      "utilizationThisMonth": "de uso este mes"
+    }
   }
 }
