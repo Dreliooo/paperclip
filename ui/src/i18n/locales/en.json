@@ -1267,5 +1267,50 @@
     "missingBody": "This tab is preserved so the missing resource is explicit. Close it or choose another document.",
     "empty": "Document is empty.",
     "actions": "Document actions"
+  },
+  "taskViews": {
+    "changeView": "Change view — currently {{label}}",
+    "groups": {
+      "myWork": "My work",
+      "organization": "Organization"
+    },
+    "views": {
+      "mine": {
+        "label": "Mine",
+        "hint": "Assigned to you or waiting on you"
+      },
+      "unread": {
+        "label": "Unread",
+        "hint": "Tasks you touched with new activity"
+      },
+      "blocked": {
+        "label": "Blocked",
+        "hint": "Blocked tasks, grouped by blocker"
+      },
+      "recent": {
+        "label": "Recent",
+        "hint": "Everything you touched lately"
+      },
+      "everything": {
+        "label": "Everything",
+        "hint": "Tasks, approvals, failed runs and join requests"
+      },
+      "all": {
+        "label": "All tasks",
+        "hint": "Every task in the organization"
+      },
+      "active": {
+        "label": "Active",
+        "hint": "Open tasks, running or not"
+      },
+      "backlog": {
+        "label": "Backlog",
+        "hint": "Not started yet"
+      },
+      "done": {
+        "label": "Done",
+        "hint": "Completed and cancelled"
+      }
+    }
   }
 }

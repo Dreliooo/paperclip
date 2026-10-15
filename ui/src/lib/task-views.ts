@@ -43,12 +43,15 @@ export interface TaskView {
 }
 
 export interface TaskViewGroup {
+  /** Stable id for the group's translation key (`taskViews.groups.<key>`). */
+  key: "myWork" | "organization";
   label: string;
   views: TaskView[];
 }
 
 export const TASK_VIEW_GROUPS: TaskViewGroup[] = [
   {
+    key: "myWork",
     label: "My work",
     views: [
       { key: "mine", label: "Mine", surface: "inbox", inboxTab: "mine", hint: "Assigned to you or waiting on you" },
@@ -59,6 +62,7 @@ export const TASK_VIEW_GROUPS: TaskViewGroup[] = [
     ],
   },
   {
+    key: "organization",
     label: "Organization",
     views: [
       { key: "all", label: "All tasks", surface: "issues", statuses: [], hint: "Every task in the organization" },

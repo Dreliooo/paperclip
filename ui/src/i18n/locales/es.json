@@ -1215,7 +1215,7 @@
       "dismiss": "Descartar sugerencia de carpetas"
     },
     "sheetTitle": "Carpetas de {{items}}",
-    "mySkills": "Mis skills",
+    "mySkills": "Mis habilidades",
     "organization": "Organización",
     "projects": "Proyectos",
     "bundled": "Incluidas",
@@ -1226,7 +1226,7 @@
       "editTitle": "Editar carpeta",
       "createTitle": "Crear carpeta",
       "descriptionRoutine": "Organizá las rutinas de esta organización.",
-      "descriptionSkill": "Organizá las skills instaladas en la organización.",
+      "descriptionSkill": "Organizá las habilidades instaladas en la organización.",
       "descriptionProject": "Agrupá los proyectos de esta organización. Las carpetas solo ordenan: no cambian quién puede ver cada proyecto.",
       "name": "Nombre",
       "color": "Color",
@@ -1267,5 +1267,50 @@
     "missingBody": "Dejamos esta pestaña abierta para que se vea que falta. Cerrala o elegí otro documento.",
     "empty": "El documento está vacío.",
     "actions": "Acciones del documento"
+  },
+  "taskViews": {
+    "changeView": "Cambiar vista — ahora: {{label}}",
+    "groups": {
+      "myWork": "Mi trabajo",
+      "organization": "Organización"
+    },
+    "views": {
+      "mine": {
+        "label": "Mías",
+        "hint": "Asignadas a vos o esperándote"
+      },
+      "unread": {
+        "label": "Sin leer",
+        "hint": "Tareas tuyas con actividad nueva"
+      },
+      "blocked": {
+        "label": "Bloqueadas",
+        "hint": "Tareas bloqueadas, agrupadas por bloqueo"
+      },
+      "recent": {
+        "label": "Recientes",
+        "hint": "Todo lo que tocaste últimamente"
+      },
+      "everything": {
+        "label": "Todo",
+        "hint": "Tareas, aprobaciones, corridas fallidas y pedidos de ingreso"
+      },
+      "all": {
+        "label": "Todas las tareas",
+        "hint": "Todas las tareas de la organización"
+      },
+      "active": {
+        "label": "Activas",
+        "hint": "Tareas abiertas, en curso o no"
+      },
+      "backlog": {
+        "label": "Pendientes",
+        "hint": "Todavía sin empezar"
+      },
+      "done": {
+        "label": "Terminadas",
+        "hint": "Completadas y canceladas"
+      }
+    }
   }
 }
