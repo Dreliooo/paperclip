@@ -16,6 +16,7 @@ import {
   listCasesQuerySchema,
   listEventsQuerySchema,
 } from "./cases-schemas.js";
+import { issueReadSqlCondition } from "../services/authorization.js";
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
 import { z } from "zod";
@@ -1372,6 +1373,10 @@ export function caseRoutes(db: Db, storage: StorageService) {
     const issue = await loadIssueByIdOrIdentifier(db, issueIdOrIdentifier, caseLookupCompanyIds(req));
     if (!issue || !hasCompanyAccess(req, issue.companyId)) throw notFound("Issue not found");
     assertCompanyAccess(req, issue.companyId);
+    // Same audience as the task itself: private tasks answer 404.
+    const [readable] = await db.select({ id: issues.id }).from(issues)
+      .where(and(eq(issues.id, issue.id), await issueReadSqlCondition(db, req.actor)));
+    if (!readable) throw notFound("Issue not found");
     const rows = await db
       .select({ link: caseIssueLinks, caseRow: cases })
       .from(caseIssueLinks)

@@ -136,7 +136,8 @@
       "noUsage": "No usage yet",
       "tokensShort": "{{tokens}} tokens",
       "apiEquivalentShort": "≈ {{amount}} API equivalent"
-    }
+    },
+    "privateProject": "Private project"
   },
   "profile": {
     "display": {

@@ -35,6 +35,9 @@ import { assertBoard, assertCompanyAccess, getAccessibleResource, getActorInfo }
 import { fetchCompanyQuotaWindows } from "../services/quota-windows.js";
 import { usageBreakdownService } from "../services/usage-breakdown.js";
 import { cacheReuseService } from "../services/cache-reuse.js";
+import { projectReadSqlCondition } from "../services/authorization.js";
+import { projects as projectsTable } from "@paperclipai/db";
+import { and, eq, inArray } from "drizzle-orm";
 import { badRequest, forbidden } from "../errors.js";
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
@@ -422,7 +425,19 @@ export function costRoutes(
     if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
     const range = parseCostDateRange(req.query);
     const rows = await costs.byProject(companyId, range);
-    res.json(rows);
+    // Totals stay company-wide, but a private project's identity is only
+    // shown to people who can read that project.
+    const projectIds = rows.map((row) => row.projectId).filter((id): id is string => Boolean(id));
+    const readable = projectIds.length === 0
+      ? new Set<string>()
+      : new Set((await db.select({ id: projectsTable.id }).from(projectsTable).where(and(
+        eq(projectsTable.companyId, companyId),
+        inArray(projectsTable.id, projectIds),
+        await projectReadSqlCondition(db, req.actor),
+      ))).map((row) => row.id));
+    res.json(rows.map((row) => (row.projectId && !readable.has(row.projectId)
+      ? { ...row, projectId: null, projectName: null, restricted: true }
+      : row)));
   });
 
   router.patch("/companies/:companyId/budgets", validate(updateBudgetSchema), async (req, res) => {

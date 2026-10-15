@@ -207,6 +207,8 @@ export interface CostWindowSpendRow {
 export interface CostByProject {
   projectId: string | null;
   projectName: string | null;
+  /** Set when the row is a private project the viewer cannot read; identity is withheld. */
+  restricted?: boolean;
   /** Ledger events in this project and selected date range, not distinct runs. */
   eventCount: number;
   estimatedEventCount: number;
