@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/context/ToastContext";
+import { useTranslation } from "@/i18n";
 import { redactUrlSecrets } from "@/lib/redact-url-secrets";
 import {
   LoadingState,
@@ -69,6 +70,7 @@ function vaultRef(secret: CompanySecret | undefined, version: number | "latest" 
 }
 
 export function CatalogDialog({ connection, onClose }: { connection: ToolConnection; onClose: () => void }) {
+  const { t } = useTranslation();
   const catalog = useQuery({
     queryKey: queryKeys.tools.catalog(connection.id),
     queryFn: () => toolsApi.listCatalog(connection.id),
@@ -77,7 +79,7 @@ export function CatalogDialog({ connection, onClose }: { connection: ToolConnect
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Tool catalog — {connection.name}</DialogTitle>
+          <DialogTitle>{t("ui3g9.connectionDialogs.catalogTitle", { name: connection.name })}</DialogTitle>
         </DialogHeader>
         {catalog.isLoading ? (
           <LoadingState />
@@ -85,7 +87,7 @@ export function CatalogDialog({ connection, onClose }: { connection: ToolConnect
           <ErrorState error={catalog.error} onRetry={() => catalog.refetch()} />
         ) : (catalog.data?.catalog ?? []).length === 0 ? (
           <p className="py-6 text-sm text-muted-foreground">
-            No tools discovered yet. Use “Refresh catalog” to discover tools from this connection.
+            {t("ui3g9.connectionDialogs.catalogEmpty")}
           </p>
         ) : (
           <ul className="max-h-(--sz-60vh) divide-y divide-border overflow-y-auto">
@@ -135,6 +137,7 @@ export function AddConnectionDialog({
   defaultApplicationId?: string | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { pushToast } = useToast();
 
@@ -226,7 +229,7 @@ export function AddConnectionDialog({
     },
     onError: (err) =>
       pushToast({
-        title: "Could not create connection",
+        title: t("ui3g9.connectionDialogs.createFailed"),
         body: err instanceof ApiError ? err.message : String(err),
         tone: "error",
       }),
@@ -240,7 +243,7 @@ export function AddConnectionDialog({
     },
     onError: (err) =>
       pushToast({
-        title: "Probe failed",
+        title: t("ui3g9.connectionDialogs.probeFailed"),
         body: err instanceof ApiError ? err.message : String(err),
         tone: "error",
       }),
@@ -251,12 +254,12 @@ export function AddConnectionDialog({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.tools.connections(companyId) });
       qc.invalidateQueries({ queryKey: queryKeys.tools.applications(companyId) });
-      pushToast({ title: "Connection activated", tone: "success" });
+      pushToast({ title: t("ui3g9.connectionDialogs.activated"), tone: "success" });
       onClose();
     },
     onError: (err) =>
       pushToast({
-        title: "Activation failed",
+        title: t("ui3g9.connectionDialogs.activationFailed"),
         body: err instanceof ApiError ? err.message : String(err),
         tone: "error",
       }),
@@ -279,41 +282,38 @@ export function AddConnectionDialog({
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Add application</DialogTitle>
-          <DialogDescription>
-            Choose an existing application or create one as part of the same connection flow. Credentials stay as
-            vault references and the connection is probed before activation.
-          </DialogDescription>
+          <DialogTitle>{t("ui3g9.connectionDialogs.addTitle")}</DialogTitle>
+          <DialogDescription>{t("ui3g9.connectionDialogs.addDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className={step === 1 ? "font-medium text-foreground" : ""}>1 Application</span>
+            <span className={step === 1 ? "font-medium text-foreground" : ""}>{t("ui3g9.connectionDialogs.stepApplication")}</span>
             <span>/</span>
-            <span className={step === 2 ? "font-medium text-foreground" : ""}>2 Connection</span>
+            <span className={step === 2 ? "font-medium text-foreground" : ""}>{t("ui3g9.connectionDialogs.stepConnection")}</span>
           </div>
 
           {step === 1 && !locked ? (
             <>
               <div className="space-y-1.5">
-                <Label>Application</Label>
+                <Label>{t("ui3g9.connectionDialogs.application")}</Label>
                 <Select value={applicationMode} onValueChange={(v) => setApplicationMode(v as "existing" | "new")}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="existing">Use existing application</SelectItem>
-                    <SelectItem value="new">Create new application</SelectItem>
+                    <SelectItem value="existing">{t("ui3g9.connectionDialogs.useExisting")}</SelectItem>
+                    <SelectItem value="new">{t("ui3g9.connectionDialogs.createNew")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {applicationMode === "existing" ? (
                 <div className="space-y-1.5">
-                  <Label>Existing application</Label>
+                  <Label>{t("ui3g9.connectionDialogs.existingApplication")}</Label>
                   <Select value={applicationId} onValueChange={setApplicationId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an application" />
+                      <SelectValue placeholder={t("ui3g9.connectionDialogs.selectApplication")} />
                     </SelectTrigger>
                     <SelectContent>
                       {(apps.data?.applications ?? []).map((a) => (
@@ -326,15 +326,15 @@ export function AddConnectionDialog({
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  <Label htmlFor="app-name">New application name</Label>
+                  <Label htmlFor="app-name">{t("ui3g9.connectionDialogs.newApplicationName")}</Label>
                   <Input
                     id="app-name"
                     value={applicationName}
                     onChange={(e) => setApplicationName(e.target.value)}
-                    placeholder="e.g. GitHub Triage"
+                    placeholder={t("ui3g9.connectionDialogs.appNamePlaceholder")}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Application type is inferred from the transport you choose next.
+                    {t("ui3g9.connectionDialogs.appTypeInferred")}
                   </p>
                 </div>
               )}
@@ -345,24 +345,24 @@ export function AddConnectionDialog({
             <>
               {applicationMode === "new" ? (
                 <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{applicationName.trim()}</span> will be created as{" "}
-                  {inferredType}.
+                  <span className="font-medium text-foreground">{applicationName.trim()}</span>{" "}
+                  {t("ui3g9.connectionDialogs.willBeCreated", { type: inferredType })}
                 </div>
               ) : null}
 
               <div className="space-y-1.5">
-                <Label htmlFor="conn-name">Connection name</Label>
+                <Label htmlFor="conn-name">{t("ui3g9.connectionDialogs.connectionName")}</Label>
                 <Input
                   id="conn-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Production GitHub"
+                  placeholder={t("ui3g9.connectionDialogs.connectionNamePlaceholder")}
                   disabled={locked}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label>Transport</Label>
+                <Label>{t("ui3g9.connectionDialogs.transport")}</Label>
                 <Select
                   value={transport}
                   onValueChange={(v) => setTransport(v as "mcp_remote" | "local_stdio")}
@@ -372,15 +372,15 @@ export function AddConnectionDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="mcp_remote">Remote HTTP (no local process)</SelectItem>
-                    <SelectItem value="local_stdio">Local stdio (approved template)</SelectItem>
+                    <SelectItem value="mcp_remote">{t("ui3g9.connectionDialogs.optionRemoteHttp")}</SelectItem>
+                    <SelectItem value="local_stdio">{t("ui3g9.connectionDialogs.optionLocalStdio")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {transport === "mcp_remote" ? (
                 <div className="space-y-1.5">
-                  <Label htmlFor="conn-url">Endpoint URL</Label>
+                  <Label htmlFor="conn-url">{t("ui3g9.connectionDialogs.endpointUrl")}</Label>
                   <Input
                     id="conn-url"
                     value={endpointUrl}
@@ -391,10 +391,10 @@ export function AddConnectionDialog({
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  <Label>Command template</Label>
+                  <Label>{t("ui3g9.connectionDialogs.commandTemplate")}</Label>
                   <Select value={templateId} onValueChange={setTemplateId} disabled={locked}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an approved template" />
+                      <SelectValue placeholder={t("ui3g9.connectionDialogs.selectTemplate")} />
                     </SelectTrigger>
                     <SelectContent>
                       {(templates.data?.templates ?? []).map((t) => (
@@ -405,14 +405,14 @@ export function AddConnectionDialog({
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Only board-approved command templates can run. Arbitrary commands are never accepted.
+                    {t("ui3g9.connectionDialogs.templatesHint")}
                   </p>
                 </div>
               )}
 
               {/* Vault-reference credential picker — no free-text token field. */}
               <div className="space-y-1.5">
-                <Label>Credential references</Label>
+                <Label>{t("ui3g9.connectionDialogs.credentialRefs")}</Label>
                 {creds.length > 0 ? (
                   <ul className="space-y-1">
                     {creds.map((c, i) => (
@@ -430,7 +430,7 @@ export function AddConnectionDialog({
                             type="button"
                             className="ml-auto text-muted-foreground hover:text-destructive"
                             onClick={() => setCreds((cs) => cs.filter((_, idx) => idx !== i))}
-                            aria-label={`Remove credential reference for ${secretName(c.secretId)}`}
+                            aria-label={t("ui3g9.connectionDialogs.removeCredential", { name: secretName(c.secretId) })}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -445,7 +445,7 @@ export function AddConnectionDialog({
                       <div className="flex-1 space-y-1">
                         <Select value={pendingSecretId} onValueChange={setPendingSecretId}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a vault secret" />
+                            <SelectValue placeholder={t("ui3g9.connectionDialogs.selectVaultSecret")} />
                           </SelectTrigger>
                           <SelectContent>
                             {(secrets.data ?? []).map((s) => (
@@ -459,12 +459,12 @@ export function AddConnectionDialog({
                       <Input
                         value={pendingHeader}
                         onChange={(e) => setPendingHeader(e.target.value)}
-                        placeholder="Header"
+                        placeholder={t("ui3g9.connectionDialogs.headerPlaceholder")}
                         className="w-32"
-                        aria-label="Header name"
+                        aria-label={t("ui3g9.connectionDialogs.headerName")}
                       />
                       <Button type="button" size="sm" variant="outline" onClick={addCred} disabled={!pendingSecretId}>
-                        Add
+                        {t("ui3g9.connectionDialogs.add")}
                       </Button>
                     </div>
                     {pendingSecretId ? (
@@ -474,8 +474,9 @@ export function AddConnectionDialog({
                       </p>
                     ) : null}
                     <p className="text-xs text-muted-foreground">
-                      Free-text secrets are not accepted — pick a vault entry; Paperclip stores only the
-                      <span className="font-mono"> vault://</span> reference and resolves it at gateway use time.
+                      {t("ui3g9.connectionDialogs.freeTextPart1")}
+                      <span className="font-mono"> vault://</span>
+                      {t("ui3g9.connectionDialogs.freeTextPart2")}
                     </p>
                   </>
                 ) : null}
@@ -487,14 +488,14 @@ export function AddConnectionDialog({
           {locked ? (
             probe.isPending ? (
               <div className="rounded-md border border-border bg-muted/40 p-3">
-                <LoadingState label="Probing connection…" />
+                <LoadingState label={t("ui3g9.connectionDialogs.probing")} />
               </div>
             ) : probe.isError ? (
               <ErrorState error={probe.error} onRetry={() => draft && probe.mutate(draft.id)} />
             ) : probeResult ? (
               <div className="rounded-md border border-border bg-muted/40 p-3">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-foreground">Probe result</span>
+                  <span className="font-medium text-foreground">{t("ui3g9.connectionDialogs.probeResult")}</span>
                   <HealthBadge status={probeResult.connection.healthStatus} />
                 </div>
                 <div className="mt-2 grid grid-cols-3 gap-2">
@@ -502,19 +503,19 @@ export function AddConnectionDialog({
                     <p className="text-lg font-semibold tabular-nums text-foreground">
                       {probeResult.toolCount ?? "—"}
                     </p>
-                    <p className="text-xs text-muted-foreground">tools discovered</p>
+                    <p className="text-xs text-muted-foreground">{t("ui3g9.connectionDialogs.toolsDiscovered")}</p>
                   </div>
                   <div>
                     <p className="text-lg font-semibold tabular-nums text-foreground">
-                      {probeResult.latencyMs != null ? `${probeResult.latencyMs}ms` : "—"}
+                      {probeResult.latencyMs != null ? t("ui3g9.connectionDialogs.latencyMs", { ms: probeResult.latencyMs }) : "—"}
                     </p>
-                    <p className="text-xs text-muted-foreground">probe latency</p>
+                    <p className="text-xs text-muted-foreground">{t("ui3g9.connectionDialogs.probeLatency")}</p>
                   </div>
                   <div>
                     <p className="text-lg font-semibold tabular-nums text-foreground">
                       {probeResult.quarantinedCount}
                     </p>
-                    <p className="text-xs text-muted-foreground">quarantined</p>
+                    <p className="text-xs text-muted-foreground">{t("ui3g9.connectionDialogs.quarantined")}</p>
                   </div>
                 </div>
                 {probeResult.connection.healthMessage ? (
@@ -524,8 +525,7 @@ export function AddConnectionDialog({
                   <p className="mt-1 text-xs text-destructive">{probeResult.connection.lastError}</p>
                 ) : null}
                 <p className="mt-2 text-(length:--text-micro) text-muted-foreground">
-                  Probe latency is a single round-trip sample. Aggregate p95 latency across traffic is tracked on
-                  the Runtime tab once the connection is live.
+                  {t("ui3g9.connectionDialogs.probeNote")}
                 </p>
               </div>
             ) : null
@@ -534,29 +534,29 @@ export function AddConnectionDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t("ui3g9.connectionDialogs.cancel")}
           </Button>
           {step === 1 && !locked ? (
             <Button disabled={!appChoiceValid} onClick={() => setStep(2)}>
-              Continue
+              {t("ui3g9.connectionDialogs.continue")}
             </Button>
           ) : !locked ? (
             <>
               <Button variant="outline" onClick={() => setStep(1)}>
-                Back
+                {t("ui3g9.connectionDialogs.back")}
               </Button>
               <Button disabled={!canCreate} onClick={() => create.mutate()}>
-                {create.isPending ? "Creating draft…" : "Create & probe"}
+                {create.isPending ? t("ui3g9.connectionDialogs.creatingDraft") : t("ui3g9.connectionDialogs.createAndProbe")}
               </Button>
             </>
           ) : (
             <>
               <Button variant="outline" disabled={probe.isPending} onClick={() => draft && probe.mutate(draft.id)}>
                 <Stethoscope className="mr-1 h-3.5 w-3.5" />
-                {probe.isPending ? "Probing…" : "Re-probe"}
+                {probe.isPending ? t("ui3g9.connectionDialogs.probingShort") : t("ui3g9.connectionDialogs.reprobe")}
               </Button>
               <Button disabled={activate.isPending || probe.isPending} onClick={() => draft && activate.mutate(draft.id)}>
-                {activate.isPending ? "Activating…" : "Activate"}
+                {activate.isPending ? t("ui3g9.connectionDialogs.activating") : t("ui3g9.connectionDialogs.activate")}
               </Button>
             </>
           )}
