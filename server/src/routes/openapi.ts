@@ -6654,7 +6654,7 @@ registry.registerPath({
   path: "/api/user-preferences/me",
   tags: ["user-preferences"],
   summary: "Get the signed-in person's display preferences",
-  description: "Board users only. Returns interface language and usage display mode (tokens, costs or both); defaults apply when nothing is saved.",
+  description: "Board users only. Returns interface language and usage display mode (tokens, costs or both); unsaved values use the defaults.",
   responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden },
 });
 
