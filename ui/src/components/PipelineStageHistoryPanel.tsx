@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "../lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n";
 
 /**
  * Compact revisions panel for a per-stage instructions document. Mirrors the
@@ -30,6 +31,7 @@ export function PipelineStageHistoryPanel({
   hasDocument: boolean;
   onRestored: (body: string, baseRevisionId: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const { pushToast } = useToastActions();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -63,8 +65,8 @@ export function PipelineStageHistoryPanel({
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to restore revision",
-        body: error instanceof Error ? error.message : "Paperclip could not restore the revision.",
+        title: t("ui3g0.pipelineHistory.restoreFailedTitle"),
+        body: error instanceof Error ? error.message : t("ui3g0.pipelineHistory.restoreFailedBody"),
         tone: "error",
       });
     },
@@ -91,13 +93,13 @@ export function PipelineStageHistoryPanel({
       <CollapsibleContent className="border-t border-border/70">
         {!hasDocument ? (
           <p className="px-4 py-3 text-xs text-muted-foreground">
-            No history yet. Save the instructions to create the first revision.
+            {t("ui3g0.pipelineHistory.noHistory")}
           </p>
         ) : revisionsQuery.isLoading ? (
           <p className="px-4 py-3 text-xs text-muted-foreground">Loading revisions…</p>
         ) : revisionsQuery.error ? (
           <p className="px-4 py-3 text-xs text-destructive">
-            {revisionsQuery.error instanceof Error ? revisionsQuery.error.message : "Could not load revisions."}
+            {revisionsQuery.error instanceof Error ? revisionsQuery.error.message : t("ui3g0.pipelineHistory.loadFailed")}
           </p>
         ) : revisions.length === 0 ? (
           <p className="px-4 py-3 text-xs text-muted-foreground">No revisions recorded yet.</p>

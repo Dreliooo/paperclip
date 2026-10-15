@@ -33,11 +33,10 @@ import {
   type PaperclipRunnerPermissionMode,
   type PaperclipRunnerPermissionCapability,
 } from "@paperclipai/adapter-utils";
+import { useTranslation } from "@/i18n";
 
 const inputClass =
   "w-full rounded-md border border-border px-2.5 py-1.5 bg-transparent outline-none text-sm font-mono placeholder:text-muted-foreground/40";
-const instructionsFileHint =
-  "Absolute path to a markdown file (e.g. AGENTS.md) that defines this agent's behavior. Injected into the system prompt at runtime. Note: Codex may still auto-apply repo-scoped AGENTS.md files from the workspace.";
 const defaultOpenCodeRunnerModel = "openrouter/deepseek/deepseek-v4-flash-0731";
 const defaultAcpxClaudeModel = "claude-sonnet-5";
 const defaultClaudeManagedModel = "claude-sonnet-5";
@@ -47,7 +46,7 @@ const runnerHarnessOptions = [
   { value: "opencode", label: "OpenCode 1.18.34", adapter: "opencode_local" },
   { value: "claude_managed", label: "Claude Managed", adapter: "claude_local" },
   { value: "aws_agentcore", label: "AWS AgentCore", adapter: "aws_agentcore" },
-  { value: "acpx", label: "ACP agents", adapter: "acpx_local" },
+  { value: "acpx", labelKey: "ui3g0.adapters.codex.harnessAcpAgents", adapter: "acpx_local" },
   { value: "grok", label: "Grok Build", adapter: "grok_local" },
 ];
 
@@ -83,6 +82,8 @@ export function CodexLocalConfigFields({
   managedSandboxOnly,
   hideRunnerHarness,
 }: AdapterConfigFieldsProps) {
+  const { t } = useTranslation();
+  const instructionsFileHint = t("ui3g0.adapters.codex.instructionsFileHint");
   const runnerManaged = adapterType === "paperclip_runner";
   // The execution engine picks which binary runs on the execution host, and the
   // ACP sub-fields below name host paths. The platform-managed environment owns
@@ -98,7 +99,7 @@ export function CodexLocalConfigFields({
   const runnerPermissionCapability: PaperclipRunnerPermissionCapability =
     isPaperclipRunnerProvider(runnerProvider)
       ? PAPERCLIP_RUNNER_PERMISSION_CAPABILITIES[runnerProvider]
-      : { configurable: false, defaultMode: "provider-managed", options: [], description: "Unknown provider configuration is preserved." };
+      : { configurable: false, defaultMode: "provider-managed", options: [], description: t("ui3g0.adapters.codex.unknownProviderConfig") };
   const configuredRunnerPermissionMode =
     runnerManaged && runnerPermissionCapability.configurable
       ? isCreate
@@ -186,20 +187,20 @@ export function CodexLocalConfigFields({
   const supportedModelsLabel =
     CODEX_LOCAL_FAST_MODE_SUPPORTED_MODELS.join(", ");
   const fastModeMessage = fastModeManualModel
-    ? "Fast mode will be passed through for this manual model. If Codex rejects it, turn the toggle off."
+    ? t("ui3g0.adapters.codex.fastModeManualModel")
     : fastModeSupported
-      ? "Fast mode consumes credits/tokens much faster than standard Codex runs."
-      : `Fast mode currently only works on ${supportedModelsLabel} or manual model IDs. Paperclip will ignore this toggle until the model is switched.`;
+      ? t("ui3g0.adapters.codex.fastModeConsumesMore")
+      : t("ui3g0.adapters.codex.fastModeUnsupported", { models: supportedModelsLabel });
 
   return configFieldsForSection(section, (
     <>
       {!hideEngineChoice && (
         <Field
-          label="Execution engine"
-          hint="Default uses ACP. If ACP is unavailable, the run fails with a setup error. Choose CLI explicitly to use it."
+          label={t("ui3g0.adapters.codex.executionEngine")}
+          hint={t("ui3g0.adapters.codex.executionEngineHint")}
         >
           <SelectPopover
-            aria-label="Execution engine"
+            aria-label={t("ui3g0.adapters.codex.executionEngine")}
             value={engine}
             onValueChange={(next) => {
               const value =
@@ -217,7 +218,7 @@ export function CodexLocalConfigFields({
                   );
             }}
             options={[
-              { value: "auto", label: "Default (ACP)" },
+              { value: "auto", label: t("ui3g0.adapters.codex.engineDefault") },
               { value: "cli", label: "Codex CLI" },
               { value: "acp", label: "ACP" },
             ]}
@@ -226,8 +227,8 @@ export function CodexLocalConfigFields({
       )}
       {runnerManaged && !hideRunnerHarness && runnerProvider !== "openai_dot" && runnerProvider !== "grok_bot" && (
         <Field configSection="adapter"
-          label="Harness"
-          hint="Choose the agent harness that runs your tasks."
+          label={t("ui3g0.adapters.codex.harness")}
+          hint={t("ui3g0.adapters.codex.harnessHint")}
         >
           <Select
             value={runnerProvider === "acpx" && runnerSchemaValue("acpxAgent", "claude") === "grok" ? "grok" : runnerProvider}
@@ -274,13 +275,13 @@ export function CodexLocalConfigFields({
               }
             }}
           >
-            <SelectTrigger className="w-full" aria-label="Harness"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full" aria-label={t("ui3g0.adapters.codex.harness")}><SelectValue /></SelectTrigger>
             <SelectContent>
-              {!isPaperclipRunnerProvider(runnerProvider) && <SelectItem value={runnerProvider} disabled>{runnerProvider} (unknown provider)</SelectItem>}
+              {!isPaperclipRunnerProvider(runnerProvider) && <SelectItem value={runnerProvider} disabled>{t("ui3g0.adapters.codex.unknownProvider", { provider: runnerProvider })}</SelectItem>}
               {runnerHarnessOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   <AdapterMark type={option.adapter} className="size-4" />
-                  {option.label}
+                  {option.labelKey ? t(option.labelKey) : option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -289,18 +290,18 @@ export function CodexLocalConfigFields({
       )}
       {runnerManaged && runnerProvider === "grok_bot" && <GrokBotConnection companyId={companyId} agentId={agentId} />}
       {runnerManaged && runnerProvider === "openai_dot" && <>
-        <Field configSection="adapter" label="Dot connection" hint="A verified event round trip is required before assigning work.">
+        <Field configSection="adapter" label={t("ui3g0.adapters.codex.dotConnection")} hint={t("ui3g0.adapters.codex.dotConnectionHint")}>
           <DotRunnerConnection companyId={companyId} agentId={agentId} bindingId={String(runnerSchemaValue("dotBindingId", ""))} onBinding={id => updateRunnerSchemaValue("dotBindingId", id)} />
         </Field>
-        <ToggleField label="Read task attachments" hint="Let Dot read files attached to its current assigned task. File contents are sent to OpenAI. Does not require workspace command access; off by default."
+        <ToggleField label={t("ui3g0.adapters.codex.dotReadAttachments")} hint={t("ui3g0.adapters.codex.dotReadAttachmentsHint")}
           checked={runnerSchemaValue("dotAttachmentAccess", false) === true} onChange={value => updateRunnerSchemaValue("dotAttachmentAccess", value)} />
-        <ToggleField label="Workspace files and commands" hint="Let Dot read and write its assigned workspace and publish files. Requires a local Runner. Commands are available only on Linux with bubblewrap; they cannot read your home directory or use injected credentials."
+        <ToggleField label={t("ui3g0.adapters.codex.dotWorkspaceAccess")} hint={t("ui3g0.adapters.codex.dotWorkspaceAccessHint")}
           checked={runnerSchemaValue("dotWorkspaceAccess", false) === true} onChange={value => updateRunnerSchemaValue("dotWorkspaceAccess", value)} />
-        <ToggleField label="Allow externally billed provider" hint="Dot does not report token usage or cost. Paperclip cannot enforce a provider spend ceiling; known company and agent budget limits still apply."
+        <ToggleField label={t("ui3g0.adapters.codex.allowUnmetered")} hint={t("ui3g0.adapters.codex.allowUnmeteredHint")}
           checked={runnerSchemaValue("allowUnmeteredProvider", false) === true} onChange={value => updateRunnerSchemaValue("allowUnmeteredProvider", value)} />
       </>}
       {runnerManaged && runnerProvider === "acpx" && runnerSchemaValue("acpxAgent", "claude") !== "grok" && (
-        <Field configSection="adapter" label="ACP agent" hint="Cursor uses Paperclip questions; per-run cost is unavailable. Pi accepts any provider/model ID. GitHub Copilot awaits qualification.">
+        <Field configSection="adapter" label={t("ui3g0.adapters.codex.acpAgent")} hint={t("ui3g0.adapters.codex.acpAgentHint")}>
           <Select
             value={String(isCreate ? values!.adapterSchemaValues?.acpxAgent ?? "claude" : eff("adapterConfig", "acpxAgent", config.acpxAgent ?? "claude"))}
             onValueChange={(value) => {
@@ -312,7 +313,7 @@ export function CodexLocalConfigFields({
                 adapterSchemaValues: { ...values!.adapterSchemaValues, acpxAgent: profile.value, acpxSessionMode, piThinkingLevel } });
               else { mark("adapterConfig", "acpxAgent", profile.value); mark("adapterConfig", "acpxSessionMode", acpxSessionMode); mark("adapterConfig", "piThinkingLevel", piThinkingLevel); mark("adapterConfig", "model", profile.value === "claude" ? defaultAcpxClaudeModel : ""); }
             }}>
-            <SelectTrigger className="w-full" aria-label="ACP agent"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full" aria-label={t("ui3g0.adapters.codex.acpAgent")}><SelectValue /></SelectTrigger>
             <SelectContent>
               {PAPERCLIP_RUNNER_ACPX_PROFILES.map(profile => (
                 <SelectItem key={profile.value} value={profile.value} disabled={!profile.qualified}>
@@ -325,12 +326,12 @@ export function CodexLocalConfigFields({
         </Field>
       )}
       {runnerManaged && runnerProvider === "acpx" && runnerSchemaValue("acpxAgent", "claude") === "cursor" && (
-        <Field configSection="adapter" label="Cursor mode" hint="Select Cursor's session mode. Permissions and company approval rules still apply.">
-          <select className={inputClass} aria-label="Cursor mode"
+        <Field configSection="adapter" label={t("ui3g0.adapters.codex.cursorMode")} hint={t("ui3g0.adapters.codex.cursorModeHint")}>
+          <select className={inputClass} aria-label={t("ui3g0.adapters.codex.cursorMode")}
             value={String(runnerSchemaValue("acpxSessionMode", "agent"))}
             onChange={(event) => updateRunnerSchemaValue("acpxSessionMode", event.target.value)}>
             {!["agent", "plan", "ask"].includes(String(runnerSchemaValue("acpxSessionMode", "agent"))) && (
-              <option value={String(runnerSchemaValue("acpxSessionMode", "agent"))} disabled>Unsupported saved mode — select Agent, Plan, or Ask</option>
+              <option value={String(runnerSchemaValue("acpxSessionMode", "agent"))} disabled>{t("ui3g0.adapters.codex.unsupportedCursorMode")}</option>
             )}
             <option value="agent">Agent</option>
             <option value="plan">Plan</option>
@@ -339,19 +340,19 @@ export function CodexLocalConfigFields({
         </Field>
       )}
       {runnerManaged && runnerProvider === "acpx" && runnerSchemaValue("acpxAgent", "claude") === "pi" && (
-        <Field configSection="adapter" label="Pi thinking level" hint="The runner verifies this exact level before each session can prompt. Changing it starts a new session.">
-          <select className={inputClass} aria-label="Pi thinking level" value={String(runnerSchemaValue("piThinkingLevel", "low"))}
+        <Field configSection="adapter" label={t("ui3g0.adapters.codex.piThinkingLevel")} hint={t("ui3g0.adapters.codex.piThinkingLevelHint")}>
+          <select className={inputClass} aria-label={t("ui3g0.adapters.codex.piThinkingLevel")} value={String(runnerSchemaValue("piThinkingLevel", "low"))}
             onChange={(event) => updateRunnerSchemaValue("piThinkingLevel", event.target.value)}>
-            {!["off", "low", "high", "max"].includes(String(runnerSchemaValue("piThinkingLevel", "low"))) && <option value={String(runnerSchemaValue("piThinkingLevel", "low"))} disabled>Unsupported saved thinking level</option>}
-            <option value="off">Off</option><option value="low">Low</option><option value="high">High</option><option value="max">Max</option>
+            {!["off", "low", "high", "max"].includes(String(runnerSchemaValue("piThinkingLevel", "low"))) && <option value={String(runnerSchemaValue("piThinkingLevel", "low"))} disabled>{t("ui3g0.adapters.codex.unsupportedThinkingLevel")}</option>}
+            <option value="off">{t("ui3g0.adapters.codex.thinkingOff")}</option><option value="low">{t("ui3g0.adapters.codex.thinkingLow")}</option><option value="high">{t("ui3g0.adapters.codex.thinkingHigh")}</option><option value="max">{t("ui3g0.adapters.codex.thinkingMax")}</option>
           </select>
         </Field>
       )}
       {runnerManaged && runnerProvider === "claude_managed" && (
         <>
           <Field
-            label="Managed Agent profile"
-            hint="Company-scoped qualified profile ID or key. Remote resource identity is loaded from the stored profile, not this agent config."
+            label={t("ui3g0.adapters.codex.managedProfile")}
+            hint={t("ui3g0.adapters.codex.managedProfileHint")}
           >
             <DraftInput
               value={String(runnerSchemaValue("managedProfileId", ""))}
@@ -364,8 +365,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <Field
-            label="Session spend ceiling (USD)"
-            hint="Optional per-agent hard ceiling. Leave 1.00 to use a conservative default."
+            label={t("ui3g0.adapters.codex.sessionSpendCeiling")}
+            hint={t("ui3g0.adapters.codex.sessionSpendCeilingHint")}
           >
             <DraftNumberInput
               value={Number(runnerSchemaValue("maxSessionListCostUsd", 1))}
@@ -378,8 +379,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <ToggleField
-            label="Acknowledge managed retention"
-            hint="Claude Managed is a stateful beta service and is not eligible for ZDR or HIPAA modes."
+            label={t("ui3g0.adapters.codex.ackManagedRetention")}
+            hint={t("ui3g0.adapters.codex.ackManagedRetentionHint")}
             checked={
               runnerSchemaValue("managedAgentsRetentionAcknowledged", false) ===
               true
@@ -396,8 +397,8 @@ export function CodexLocalConfigFields({
       {runnerManaged && runnerProvider === "aws_agentcore" && (
         <>
           <Field
-            label="AgentCore profile"
-            hint="Company-scoped qualified profile ID or key. Harness, Memory, IAM, and context-store identity come from the stored profile."
+            label={t("ui3g0.adapters.codex.agentCoreProfile")}
+            hint={t("ui3g0.adapters.codex.agentCoreProfileHint")}
           >
             <DraftInput
               value={String(runnerSchemaValue("agentCoreProfileId", ""))}
@@ -410,8 +411,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <Field
-            label="Estimated session ceiling (USD)"
-            hint="Paperclip estimate; AWS does not provide a per-session currency hard stop."
+            label={t("ui3g0.adapters.codex.estimatedSessionCeiling")}
+            hint={t("ui3g0.adapters.codex.estimatedSessionCeilingHint")}
           >
             <DraftNumberInput
               value={Number(runnerSchemaValue("maxEstimatedSessionCostUsd", 1))}
@@ -424,8 +425,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <Field
-            label="Maximum iterations"
-            hint="Qualified range is 1–8. Invalid values fail closed to 8."
+            label={t("ui3g0.adapters.codex.maxIterations")}
+            hint={t("ui3g0.adapters.codex.maxIterationsHint")}
           >
             <DraftNumberInput
               value={Number(runnerSchemaValue("maxIterations", 8))}
@@ -439,8 +440,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <Field
-            label="Maximum output tokens"
-            hint="Qualified range is 1–4096."
+            label={t("ui3g0.adapters.codex.maxOutputTokens")}
+            hint={t("ui3g0.adapters.codex.maxOutputTokensHint")}
           >
             <DraftNumberInput
               value={Number(runnerSchemaValue("maxOutputTokens", 4_096))}
@@ -454,8 +455,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <Field configSection="runPolicy"
-            label="Invocation timeout (seconds)"
-            hint="Qualified range is 1–300 seconds."
+            label={t("ui3g0.adapters.codex.invocationTimeout")}
+            hint={t("ui3g0.adapters.codex.invocationTimeoutHint")}
           >
             <DraftNumberInput
               value={Number(runnerSchemaValue("timeoutSeconds", 300))}
@@ -469,8 +470,8 @@ export function CodexLocalConfigFields({
             />
           </Field>
           <ToggleField
-            label="Acknowledge 90-day Memory retention"
-            hint="The qualified AgentCore profile retains short-term Memory events for exactly 90 days."
+            label={t("ui3g0.adapters.codex.ackMemoryRetention")}
+            hint={t("ui3g0.adapters.codex.ackMemoryRetentionHint")}
             checked={
               runnerSchemaValue("agentCoreRetentionAcknowledged", false) ===
               true
@@ -483,8 +484,8 @@ export function CodexLocalConfigFields({
       )}
       {runnerManaged && runnerPermissionCapability.configurable && (runnerPermissionCapability.options.length > 1 || runnerPermissionModeUnsupported) && (
         <Field
-          label="Permission mode"
-          hint={`${runnerPermissionCapability.description} The selected mode does not widen Paperclip's workspace, network, credential, or planning boundaries.`}
+          label={t("ui3g0.adapters.codex.permissionMode")}
+          hint={t("ui3g0.adapters.codex.permissionModeHint", { description: runnerPermissionCapability.description })}
         >
           <Select
             value={
@@ -513,17 +514,17 @@ export function CodexLocalConfigFields({
               }
             }}
           >
-            <SelectTrigger aria-label="Permission mode" className="w-full font-sans">
+            <SelectTrigger aria-label={t("ui3g0.adapters.codex.permissionMode")} className="w-full font-sans">
               <SelectValue>
                 {runnerPermissionModeUnsupported
-                  ? "Unsupported saved mode — select a qualified mode"
+                  ? t("ui3g0.adapters.codex.unsupportedPermissionMode")
                   : runnerPermissionCapability.options.find((option) => option.value === runnerPermissionMode)?.label}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {runnerPermissionModeUnsupported && (
                 <SelectItem value="__unsupported__" disabled>
-                  Unsupported saved mode — select a qualified mode
+                  {t("ui3g0.adapters.codex.unsupportedPermissionMode")}
                 </SelectItem>
               )}
               {runnerPermissionCapability.options.map((option) => (
@@ -535,19 +536,18 @@ export function CodexLocalConfigFields({
           </Select>
           {runnerPermissionModeUnsupported && runnerProvider === "codex" && (
             <p className="mt-1 text-xs text-destructive" role="alert">
-              This saved Codex mode cannot start or recover a Paperclip Runner
-              run. Select Automatic (isolated) to remediate it.
+              {t("ui3g0.adapters.codex.savedModeUnrecoverable")}
             </p>
           )}
         </Field>
       )}
       {runnerManaged && runnerProvider !== "openai_dot" && runnerProvider !== "grok_bot" && (
         <Field configSection="runPolicy"
-          label="Runner lifecycle"
-          hint="Turn by turn suspends after each run. Warm keeps the same provider process available between governed runs."
+          label={t("ui3g0.adapters.codex.runnerLifecycle")}
+          hint={t("ui3g0.adapters.codex.runnerLifecycleHint")}
         >
           <SelectPopover
-            aria-label="Runner lifecycle"
+            aria-label={t("ui3g0.adapters.codex.runnerLifecycle")}
             value={runnerLifecycleMode}
             onValueChange={(next) => {
               const value = next === "warm" ? "warm" : "per_turn";
@@ -556,16 +556,16 @@ export function CodexLocalConfigFields({
                 : mark("adapterConfig", "lifecycleMode", value);
             }}
             options={[
-              { value: "per_turn", label: "Turn by turn" },
-              { value: "warm", label: "Warm session" },
+              { value: "per_turn", label: t("ui3g0.adapters.codex.turnByTurn") },
+              { value: "warm", label: t("ui3g0.adapters.codex.warmSession") },
             ]}
           />
         </Field>
       )}
       {runnerManaged && runnerProvider !== "openai_dot" && runnerProvider !== "grok_bot" && runnerLifecycleMode === "warm" && (
         <Field configSection="runPolicy"
-          label="Warm idle timeout (ms)"
-          hint="After this much inactivity, runnerd checkpoints and suspends the provider session. The maximum is 24 hours."
+          label={t("ui3g0.adapters.codex.warmIdleTimeout")}
+          hint={t("ui3g0.adapters.codex.warmIdleTimeoutHint")}
         >
           {isCreate ? (
             <input
@@ -605,8 +605,8 @@ export function CodexLocalConfigFields({
         <>
           {!managedSandboxOnly && (
             <Field configSection="advanced"
-              label="ACP server command"
-              hint="Optional override for the Codex ACP server command. Defaults to the package-local codex-acp binary."
+              label={t("ui3g0.adapters.codex.acpServerCommand")}
+              hint={t("ui3g0.adapters.codex.acpServerCommandHint")}
             >
               <DraftInput
                 value={
@@ -630,11 +630,11 @@ export function CodexLocalConfigFields({
             </Field>
           )}
           <Field configSection="runPolicy"
-            label="ACP session mode"
-            hint="Persistent keeps ACP session state between runs. One-shot starts fresh each run."
+            label={t("ui3g0.adapters.codex.acpSessionMode")}
+            hint={t("ui3g0.adapters.codex.acpSessionModeHint")}
           >
             <SelectPopover
-              aria-label="ACP session mode"
+              aria-label={t("ui3g0.adapters.codex.acpSessionMode")}
               value={
                 isCreate
                   ? (values!.codexAcpMode ?? "persistent")
@@ -652,17 +652,17 @@ export function CodexLocalConfigFields({
                   : mark("adapterConfig", "mode", value);
               }}
               options={[
-                { value: "persistent", label: "Persistent" },
-                { value: "oneshot", label: "One-shot" },
+                { value: "persistent", label: t("ui3g0.adapters.codex.sessionModePersistent") },
+                { value: "oneshot", label: t("ui3g0.adapters.codex.sessionModeOneShot") },
               ]}
             />
           </Field>
           <Field
-            label="ACP non-interactive permissions"
-            hint="Fallback if the ACP agent asks for input outside an interactive session."
+            label={t("ui3g0.adapters.codex.acpPermissions")}
+            hint={t("ui3g0.adapters.codex.acpPermissionsHint")}
           >
             <SelectPopover
-              aria-label="ACP non-interactive permissions"
+              aria-label={t("ui3g0.adapters.codex.acpPermissions")}
               value={
                 isCreate
                   ? (values!.codexAcpNonInteractivePermissions ?? "deny")
@@ -679,15 +679,15 @@ export function CodexLocalConfigFields({
                   : mark("adapterConfig", "nonInteractivePermissions", value);
               }}
               options={[
-                { value: "deny", label: "Deny" },
-                { value: "fail", label: "Fail" },
+                { value: "deny", label: t("ui3g0.adapters.codex.permissionDeny") },
+                { value: "fail", label: t("ui3g0.adapters.codex.permissionFail") },
               ]}
             />
           </Field>
           {!managedSandboxOnly && (
             <Field
-              label="ACP state directory"
-              hint="Optional ACP session state directory. Defaults to Paperclip-managed organization/agent scoped storage."
+              label={t("ui3g0.adapters.codex.acpStateDir")}
+              hint={t("ui3g0.adapters.codex.acpStateDirHint")}
             >
               <div className="flex items-center gap-2">
                 <DraftInput
@@ -714,8 +714,8 @@ export function CodexLocalConfigFields({
             </Field>
           )}
           <Field configSection="runPolicy"
-            label="ACP warm process idle ms"
-            hint="Defaults to 0, which closes the ACP process after each run while retaining persistent session state."
+            label={t("ui3g0.adapters.codex.acpWarmIdle")}
+            hint={t("ui3g0.adapters.codex.acpWarmIdleHint")}
           >
             {isCreate ? (
               <input
@@ -744,7 +744,7 @@ export function CodexLocalConfigFields({
         </>
       )}
       {!runnerManaged && !hideInstructionsFile && (
-        <Field label="Agent instructions file" hint={instructionsFileHint}>
+        <Field label={t("ui3g0.adapters.instructionsFileLabel")} hint={instructionsFileHint}>
           <div className="flex items-center gap-2">
             <DraftInput
               value={
@@ -776,7 +776,7 @@ export function CodexLocalConfigFields({
       {!runnerManaged && (
         <>
           <ToggleField
-            label="Bypass sandbox"
+            label={t("ui3g0.adapters.codex.bypassSandbox")}
             hint={help.dangerouslyBypassSandbox}
             checked={
               isCreate
@@ -794,7 +794,7 @@ export function CodexLocalConfigFields({
             }
           />
           <ToggleField
-            label="Enable search"
+            label={t("ui3g0.adapters.codex.enableSearch")}
             hint={help.search}
             checked={
               isCreate
@@ -808,7 +808,7 @@ export function CodexLocalConfigFields({
             }
           />
           <ToggleField
-            label="Fast mode"
+            label={t("ui3g0.adapters.codex.fastMode")}
             hint={help.fastMode}
             checked={fastModeEnabled}
             onChange={(v) =>
