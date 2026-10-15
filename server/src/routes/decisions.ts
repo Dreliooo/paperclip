@@ -52,6 +52,24 @@ function boardUserId(req: Parameters<typeof getActorInfo>[0]) {
 export function decisionRoutes(db: Db, options: DecisionServiceOptions) {
   const router = Router();
   const svc = decisionService(db, options);
+  /**
+   * A decision inherits the read audience of its origin task: a board user who
+   * cannot read a private task/project must not read, decide, or even learn
+   * about decisions proposed from it. Agents keep their origin-agent checks.
+   */
+  async function canBoardReadDecision(req: Parameters<typeof getActorInfo>[0], decision: { id: string; companyId: string }) {
+    if (req.actor.type !== "board") return true;
+    return canReadDecisionSource(db, req.actor, decision.companyId, "decision", decision.id);
+  }
+  async function getReadableDecision(req: Parameters<typeof getActorInfo>[0], res: Parameters<typeof getAccessibleResource>[1]) {
+    const decision = await getAccessibleResource(req, res, svc.get(req.params.id as string), "Decision not found");
+    if (!decision) return null;
+    if (!(await canBoardReadDecision(req, decision))) {
+      res.status(404).json({ error: "Decision not found" });
+      return null;
+    }
+    return decision;
+  }
   router.post(
     "/companies/:companyId/decision-archive-proposals",
     validate(createDecisionArchiveProposalSchema),
@@ -149,7 +167,19 @@ export function decisionRoutes(db: Db, options: DecisionServiceOptions) {
     const companyId = req.params.companyId as string; assertBoard(req); assertCompanyAccess(req, companyId);
     const query = z.object({ status: z.enum(["open", "decided", "expired", "cancelled"]).optional(), bundleId: z.string().guid().optional(), targetIssueId: z.string().guid().optional(), originAgentId: z.string().guid().optional(), limit: z.coerce.number().int().positive().max(100).optional() }).safeParse(req.query);
     if (!query.success) { res.status(400).json({ error: "Invalid decision filters", details: query.error.flatten() }); return; }
-    res.json(await svc.list(companyId, query.data));
+    const rows = await svc.list(companyId, query.data);
+    // Check each origin task once; decisions without a task fall back to the
+    // board governance check inside canReadDecisionSource.
+    const representativeBySource = new Map<string, { id: string; companyId: string }>();
+    for (const row of rows) {
+      const key = row.originIssueId ? `issue:${row.originIssueId}` : "company";
+      if (!representativeBySource.has(key)) representativeBySource.set(key, row);
+    }
+    const readableSources = new Set<string>();
+    await Promise.all([...representativeBySource.entries()].map(async ([key, row]) => {
+      if (await canBoardReadDecision(req, row)) readableSources.add(key);
+    }));
+    res.json(rows.filter((row) => readableSources.has(row.originIssueId ? `issue:${row.originIssueId}` : "company")));
   });
   /**
    * Gardener telemetry contract:
@@ -173,26 +203,26 @@ export function decisionRoutes(db: Db, options: DecisionServiceOptions) {
   });
   router.get("/decisions/:id", async (req, res) => {
     assertBoardOrAgent(req);
-    const decision = await getAccessibleResource(req, res, svc.get(req.params.id as string), "Decision not found");
+    const decision = await getReadableDecision(req, res);
     if (!decision) return;
     if (req.actor.type === "agent" && req.actor.agentId !== decision.originAgentId) { res.status(403).json({ error: "Only the origin agent may read this decision" }); return; }
     res.json(await svc.outcome(decision.id));
   });
   router.post("/decisions/:id/decide", validate(decideSchema), async (req, res) => {
     const userId = boardUserId(req);
-    const decision = await getAccessibleResource(req, res, svc.get(req.params.id as string), "Decision not found");
+    const decision = await getReadableDecision(req, res);
     if (!decision) return;
     res.json(await svc.decide({ id: decision.id, decidedByUserId: userId, userActor: req.actor, ...req.body }));
   });
   router.post("/decisions/:id/dismiss", validate(dismissSchema), async (req, res) => {
     const userId = boardUserId(req);
-    const decision = await getAccessibleResource(req, res, svc.get(req.params.id as string), "Decision not found");
+    const decision = await getReadableDecision(req, res);
     if (!decision) return;
     res.json(await svc.dismiss(decision.id, userId, req.actor, req.body.reason));
   });
   router.post("/decisions/:id/cancel", async (req, res) => {
     assertBoardOrAgent(req);
-    const decision = await getAccessibleResource(req, res, svc.get(req.params.id as string), "Decision not found");
+    const decision = await getReadableDecision(req, res);
     if (!decision) return;
     const actor = getActorInfo(req); res.json(await svc.cancel(decision.id, { actorType: actor.actorType, actorId: actor.actorId, runId: actor.runId }));
   });
