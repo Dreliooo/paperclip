@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "../lib/utils";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 
 export interface SecretBindingValue {
   secretId: string;
@@ -60,10 +62,10 @@ interface SecretBindingPickerProps {
 
 const VERSION_LATEST: SecretVersionSelector = "latest";
 
-function describeSecret(secret: CompanySecret): string {
+function describeSecret(secret: CompanySecret, translate: TFunction): string {
   const provider = secret.provider.replaceAll("_", " ");
   if (secret.managedMode === "external_reference") {
-    return `External · ${provider}`;
+    return translate("ui3g1.SecretBindingPicker.externalProvider", { provider });
   }
   return provider;
 }
@@ -86,14 +88,18 @@ function statusTone(status: CompanySecret["status"]): string {
 export function SecretBindingPicker({
   value,
   onChange,
-  label = "Secret",
-  placeholder = "Select secret",
+  label: labelProp,
+  placeholder: placeholderProp,
   allowVersionSelector = true,
-  emptyHint = "No matching secrets. Create one to bind it here.",
+  emptyHint: emptyHintProp,
   className,
   disabled,
   statusFilter = ["active"],
 }: SecretBindingPickerProps) {
+  const { t } = useTranslation();
+  const label = labelProp ?? t("ui3g1.SecretBindingPicker.label");
+  const placeholder = placeholderProp ?? t("ui3g1.SecretBindingPicker.selectSecret");
+  const emptyHint = emptyHintProp ?? t("ui3g1.SecretBindingPicker.emptyHint");
   const queryClient = useQueryClient();
   const { selectedCompanyId } = useCompany();
   const [createOpen, setCreateOpen] = useState(false);
@@ -148,12 +154,12 @@ export function SecretBindingPicker({
       setCreateError(null);
     },
     onError: (error) => {
-      setCreateError(error instanceof Error ? error.message : "Failed to create secret");
+      setCreateError(error instanceof Error ? error.message : t("ui3g1.SecretBindingPicker.failedCreate"));
     },
   });
 
   const versionDisplay = (selector: SecretVersionSelector | undefined) => {
-    if (selector === undefined || selector === VERSION_LATEST) return "latest";
+    if (selector === undefined || selector === VERSION_LATEST) return t("ui3g1.SecretBindingPicker.latest");
     return `v${selector}`;
   };
 
@@ -169,7 +175,7 @@ export function SecretBindingPicker({
               onClick={() => onChange(null)}
               disabled={disabled}
             >
-              <X className="h-3 w-3" /> Clear
+              <X className="h-3 w-3" /> {t("ui3g1.SecretBindingPicker.clear")}
             </button>
           ) : null}
         </div>
@@ -193,19 +199,19 @@ export function SecretBindingPicker({
             }}
             disabled={disabled || secretsQuery.isPending}
           >
-            <option value="">{secretsQuery.isPending ? "Loading…" : placeholder}</option>
+            <option value="">{secretsQuery.isPending ? t("ui3g1.SecretBindingPicker.loadingLabel") : placeholder}</option>
             {selectedMissing && value ? (
               <option value={value.secretId}>
                 {missingHint
-                  ? `${missingHint.name} — ${missingHint.companyName ?? "another organization"}`
+                  ? t("ui3g1.SecretBindingPicker.missingHintOption", { name: missingHint.name, company: missingHint.companyName ?? t("ui3g1.SecretBindingPicker.anotherOrganization") })
                   : hintsPending
-                    ? `Secret (${value.secretId.slice(0, 8)}…)`
-                    : `Missing secret (${value.secretId.slice(0, 8)}…)`}
+                    ? t("ui3g1.SecretBindingPicker.secretShort", { id: value.secretId.slice(0, 8) })
+                    : t("ui3g1.SecretBindingPicker.missingSecretShort", { id: value.secretId.slice(0, 8) })}
               </option>
             ) : null}
             {filteredSecrets.map((secret) => (
               <option key={secret.id} value={secret.id}>
-                {secret.name} — {describeSecret(secret)}
+                {secret.name} — {describeSecret(secret, t)}
               </option>
             ))}
           </select>
@@ -221,9 +227,9 @@ export function SecretBindingPicker({
               onChange({ ...value, version: next });
             }}
             disabled={disabled || !value || !selectedSecret}
-            aria-label="Version"
+            aria-label={t("ui3g1.SecretBindingPicker.version")}
           >
-            <option value={VERSION_LATEST}>latest</option>
+            <option value={VERSION_LATEST}>{t("ui3g1.SecretBindingPicker.latest")}</option>
             {selectedSecret
               ? Array.from({ length: Math.max(0, selectedSecret.latestVersion) }, (_, index) => {
                   const version = selectedSecret.latestVersion - index;
@@ -243,7 +249,7 @@ export function SecretBindingPicker({
           size="sm"
           onClick={() => setCreateOpen(true)}
           disabled={disabled || !selectedCompanyId}
-          aria-label="Create secret"
+          aria-label={t("ui3g1.SecretBindingPicker.createSecret")}
         >
           <Plus className="h-3.5 w-3.5" />
         </Button>
@@ -251,32 +257,32 @@ export function SecretBindingPicker({
 
       {selectedSecret ? (
         <p className={cn("text-(length:--text-micro) text-muted-foreground", statusTone(selectedSecret.status))}>
-          {selectedSecret.status !== "active" ? `Status: ${selectedSecret.status}. ` : null}
-          Bound to {versionDisplay(value?.version)} · {selectedSecret.key}
+          {selectedSecret.status !== "active" ? t("ui3g1.SecretBindingPicker.statusPrefix", { status: selectedSecret.status }) : null}
+          {t("ui3g1.SecretBindingPicker.boundTo", { version: versionDisplay(value?.version) })} · {selectedSecret.key}
         </p>
       ) : crossCompanyHint ? (
         <p className="text-(length:--text-micro) text-muted-foreground flex items-center gap-1">
           <AlertCircle className="h-3 w-3" />
-          Owned by {crossCompanyHint.companyName ? `the ${crossCompanyHint.companyName} organization` : "another organization"}. The binding keeps working; selecting a secret from this list re-points it here.
+          {crossCompanyHint.companyName ? t("ui3g1.SecretBindingPicker.ownedByNamed", { company: crossCompanyHint.companyName }) : t("ui3g1.SecretBindingPicker.ownedByOther")}
         </p>
       ) : missingHint ? (
         <p className="text-(length:--text-micro) text-destructive flex items-center gap-1">
           <AlertCircle className="h-3 w-3" />
           {missingHint.status === "deleted"
-            ? "The previously selected secret was deleted. Pick another or remove the binding."
-            : `This secret is ${missingHint.status}; runs cannot resolve it until it is active again.`}
+            ? t("ui3g1.SecretBindingPicker.deletedSecret")
+            : t("ui3g1.SecretBindingPicker.inactiveSecret", { status: missingHint.status })}
         </p>
       ) : hintsPending ? (
         <p className="text-(length:--text-micro) text-muted-foreground flex items-center gap-1">
           <AlertCircle className="h-3 w-3" />
           {hintsContext?.status === "error"
-            ? "Could not load this secret reference's details."
-            : "Checking this secret reference…"}
+            ? t("ui3g1.SecretBindingPicker.hintsError")
+            : t("ui3g1.SecretBindingPicker.hintsChecking")}
         </p>
       ) : selectedMissing ? (
         <p className="text-(length:--text-micro) text-destructive flex items-center gap-1">
           <AlertCircle className="h-3 w-3" />
-          The previously selected secret is no longer available. Pick another or remove the binding.
+          {t("ui3g1.SecretBindingPicker.previouslySelectedUnavailable")}
         </p>
       ) : (filteredSecrets.length === 0 && !secretsQuery.isPending) ? (
         <p className="text-(length:--text-micro) text-muted-foreground">{emptyHint}</p>
@@ -285,11 +291,11 @@ export function SecretBindingPicker({
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create new secret</DialogTitle>
+            <DialogTitle>{t("ui3g1.SecretBindingPicker.createNewSecret")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-name">Name</label>
+              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-name">{t("ui3g1.SecretBindingPicker.name")}</label>
               <Input
                 id="secret-name"
                 value={createName}
@@ -299,39 +305,39 @@ export function SecretBindingPicker({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-value">Value</label>
+              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-value">{t("ui3g1.SecretBindingPicker.value")}</label>
               <Textarea
                 id="secret-value"
                 value={createValue}
                 onChange={(event) => setCreateValue(event.target.value)}
                 rows={3}
-                placeholder="Paste the secret value"
+                placeholder={t("ui3g1.SecretBindingPicker.pasteValue")}
                 className="font-mono text-xs"
               />
               <p className="text-(length:--text-micro) text-muted-foreground mt-1">
-                The value is stored once and never re-displayed. Rotate to replace.
+                {t("ui3g1.SecretBindingPicker.valueStoredOnce")}
               </p>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-description">Description</label>
+              <label className="text-xs font-medium text-foreground/80" htmlFor="secret-description">{t("ui3g1.SecretBindingPicker.description")}</label>
               <Input
                 id="secret-description"
                 value={createDescription}
                 onChange={(event) => setCreateDescription(event.target.value)}
-                placeholder="Optional notes (no values)"
+                placeholder={t("ui3g1.SecretBindingPicker.descriptionPlaceholder")}
               />
             </div>
             {createError ? <p className="text-xs text-destructive">{createError}</p> : null}
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>{t("ui3g1.SecretBindingPicker.cancel")}</Button>
             <Button
               type="button"
               onClick={() => createMutation.mutate()}
               disabled={!createName.trim() || !createValue || createMutation.isPending}
             >
               {createMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-              Create &amp; bind
+              {t("ui3g1.SecretBindingPicker.createAndBind")}
             </Button>
           </DialogFooter>
         </DialogContent>

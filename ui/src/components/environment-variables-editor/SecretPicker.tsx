@@ -8,6 +8,8 @@ import {
 } from "@/components/SearchableSelect";
 import { Badge } from "@/components/ui/badge";
 import { normalizeSearchText } from "@/lib/searchable-select";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 import { cn } from "@/lib/utils";
 
 interface SecretOption extends SearchableSelectOption {
@@ -55,6 +57,7 @@ function buildFolderGroup(
   secrets: readonly CompanySecret[],
   currentPath: readonly string[],
   currentSecretId: string,
+  translate: TFunction,
 ): SearchableSelectGroup<string, SecretOption> {
   const currentLength = currentPath.length;
   const folders = new Map<string, SecretOption>();
@@ -107,7 +110,7 @@ function buildFolderGroup(
     options.push({
       key: `folder-up-${pathKey(currentPath)}`,
       value: folderValue(parentPath),
-      label: "Up one folder",
+      label: translate("ui3g1.SecretPicker.upOneFolder"),
       title: pathLabel(parentPath),
       searchText: pathLabel(parentPath),
       kind: "back",
@@ -119,7 +122,7 @@ function buildFolderGroup(
 
   return {
     id: "browse-secrets",
-    label: currentPath.length > 0 ? pathLabel(currentPath) : "Browse secrets",
+    label: currentPath.length > 0 ? pathLabel(currentPath) : translate("ui3g1.SecretPicker.browseSecrets"),
     options,
   };
 }
@@ -154,6 +157,7 @@ export function SecretPicker({
   triggerClassName,
   disablePortal,
 }: SecretPickerProps) {
+  const { t } = useTranslation();
   const [currentPathKey, setCurrentPathKey] = useState("");
   const boundSecret = useMemo(
     () => secrets.find((secret) => secret.id === secretId) ?? null,
@@ -171,13 +175,13 @@ export function SecretPicker({
     if (boundMissing) {
       result.push({
         id: "current-missing",
-        label: "Current",
+        label: t("ui3g1.SecretPicker.current"),
         options: [
           {
             key: `missing-${secretId}`,
             value: secretId,
-            label: `Missing secret (${secretId.slice(0, 8)}…)`,
-            title: `Missing secret (${secretId})`,
+            label: t("ui3g1.SecretPicker.missingSecretShort", { id: secretId.slice(0, 8) }),
+            title: t("ui3g1.SecretPicker.missingSecret", { id: secretId }),
             missing: true,
             disabled: true,
           },
@@ -191,7 +195,7 @@ export function SecretPicker({
     if (recent.length > 0) {
       result.push({
         id: "recently-used",
-        label: "Recently used",
+        label: t("ui3g1.SecretPicker.recentlyUsed"),
         options: recent.map((secret) => ({
           key: `recent-${secret.id}`,
           value: secret.id,
@@ -207,7 +211,7 @@ export function SecretPicker({
 
     result.push({
       id: "all-secrets",
-      label: recent.length > 0 ? "All secrets" : undefined,
+      label: recent.length > 0 ? t("ui3g1.SecretPicker.allSecrets") : undefined,
       options: secrets.map((secret) => ({
         key: `all-${secret.id}`,
         value: secret.id,
@@ -224,18 +228,18 @@ export function SecretPicker({
     });
 
     return result;
-  }, [boundMissing, recentlyUsedSecrets, secretId, secrets]);
+  }, [boundMissing, recentlyUsedSecrets, secretId, secrets, t]);
 
   const deriveGroups = useCallback(
     (query: string, baseGroups: readonly SearchableSelectGroup<string, SecretOption>[]) => {
       if (!hasFolderPaths) return baseGroups;
       if (normalizeSearchText(query)) return baseGroups;
 
-      const browseGroup = buildFolderGroup(secrets, currentPath, secretId);
+      const browseGroup = buildFolderGroup(secrets, currentPath, secretId, t);
       const stableGroups = baseGroups.filter((group) => group.id === "current-missing" || group.id === "recently-used");
       return browseGroup.options.length > 0 ? [...stableGroups, browseGroup] : stableGroups;
     },
-    [currentPath, hasFolderPaths, secretId, secrets],
+    [currentPath, hasFolderPaths, secretId, secrets, t],
   );
 
   return (
@@ -253,9 +257,9 @@ export function SecretPicker({
       deriveGroups={deriveGroups}
       disabled={disabled}
       disablePortal={disablePortal}
-      placeholder="Select secret…"
-      searchPlaceholder="Search secrets…"
-      emptyMessage="No matching secrets"
+      placeholder={t("ui3g1.SecretPicker.selectSecret")}
+      searchPlaceholder={t("ui3g1.SecretPicker.searchSecrets")}
+      emptyMessage={t("ui3g1.SecretPicker.noMatchingSecrets")}
       triggerClassName={cn(
         "h-(--sz-34px) min-h-(--sz-34px) font-mono text-sm",
         boundMissing && "border-destructive text-destructive",
@@ -264,7 +268,7 @@ export function SecretPicker({
       )}
       renderValue={(option) => {
         if (!option) {
-          return <span className="text-muted-foreground">Select secret…</span>;
+          return <span className="text-muted-foreground">{t("ui3g1.SecretPicker.selectSecret")}</span>;
         }
         if (option.missing) {
           return (
@@ -324,10 +328,10 @@ export function SecretPicker({
                 <Plus className="size-3.5 shrink-0" />
                 {query.trim() ? (
                   <span>
-                    Create secret <span className="font-mono">&ldquo;{query.trim()}&rdquo;</span>…
+                    {t("ui3g1.SecretPicker.createSecret")} <span className="font-mono">&ldquo;{query.trim()}&rdquo;</span>…
                   </span>
                 ) : (
-                  <span>Create new secret…</span>
+                  <span>{t("ui3g1.SecretPicker.createNewSecret")}</span>
                 )}
               </span>
             ),
