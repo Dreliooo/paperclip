@@ -18,13 +18,35 @@ const mockResourceMembershipsApi = vi.hoisted(() => ({
   updateProject: vi.fn(),
 }));
 
+const mockFoldersApi = vi.hoisted(() => ({
+  list: vi.fn(),
+  moveItem: vi.fn(),
+  create: vi.fn(),
+  update: vi.fn(),
+  delete: vi.fn(),
+}));
+
 const mockOpenNewProject = vi.hoisted(() => vi.fn());
 const mockSetBreadcrumbs = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/router", () => ({
-  Link: ({ children, to, ...props }: { children?: ReactNode; to: string }) => (
-    <a href={to} {...props}>{children}</a>
-  ),
+vi.mock("@/lib/router", async () => {
+  const React = await import("react");
+  type Next = URLSearchParams | ((current: URLSearchParams) => URLSearchParams);
+  return {
+    Link: ({ children, to, ...props }: { children?: ReactNode; to: string }) => (
+      <a href={to} {...props}>{children}</a>
+    ),
+    useSearchParams: () => {
+      const [params, setParams] = React.useState(() => new URLSearchParams());
+      const update = (next: Next) =>
+        setParams((current) => new URLSearchParams(typeof next === "function" ? next(current) : next));
+      return [params, update] as const;
+    },
+  };
+});
+
+vi.mock("../api/folders", () => ({
+  foldersApi: mockFoldersApi,
 }));
 
 vi.mock("../context/CompanyContext", () => ({
@@ -126,6 +148,7 @@ describe("Projects", () => {
         id: "project-c",
         urlKey: "charlie",
         name: "Charlie",
+        folderId: "folder-clients",
         updatedAt: new Date("2026-01-10T00:00:00Z"),
       }),
       makeProject({
@@ -147,6 +170,29 @@ describe("Projects", () => {
       agentMemberships: {},
       updatedAt: null,
     });
+    window.localStorage.clear();
+    mockFoldersApi.list.mockResolvedValue({
+      kind: "project",
+      folders: [{
+        id: "folder-clients",
+        companyId: "company-1",
+        kind: "project",
+        parentId: null,
+        name: "Clients",
+        slug: "clients",
+        systemKey: null,
+        path: "clients",
+        depth: 1,
+        color: "emerald",
+        position: 0,
+        createdAt: new Date("2026-01-01T00:00:00Z"),
+        updatedAt: new Date("2026-01-01T00:00:00Z"),
+        itemCount: 1,
+      }],
+      allCount: 3,
+      unfiledCount: 2,
+    });
+    mockFoldersApi.moveItem.mockResolvedValue({ kind: "project", itemId: "project-c", folderId: null });
     mockResourceMembershipsApi.updateProject.mockResolvedValue({
       resourceType: "project",
       resourceId: "project-b",
@@ -207,36 +253,77 @@ describe("Projects", () => {
     await flushReact();
   }
 
-  it("groups joined projects above left projects and defaults sorting by name", async () => {
+  async function click(element: Element | null | undefined) {
+    expect(element).toBeTruthy();
+    await act(async () => {
+      element?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, button: 0 }));
+      element?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await flushReact();
+  }
+
+  function buttonWithText(text: string, root: ParentNode = container) {
+    return Array.from(root.querySelectorAll("button")).find((element) => element.textContent?.trim().startsWith(text));
+  }
+
+  it("shows my projects by default, sorted by name, without projects I left", async () => {
     await renderProjects();
 
     const content = container.textContent ?? "";
     expect(container.querySelector('button[title="Sort"]')?.textContent).toContain("Sort: Name");
-    expect(content.indexOf("My Projects")).toBeLessThan(content.indexOf("Alpha"));
+    expect(container.querySelector('button[aria-pressed="true"]')?.textContent).toBe("My projects");
     expect(content.indexOf("Alpha")).toBeLessThan(content.indexOf("Charlie"));
-    expect(content.indexOf("Charlie")).toBeLessThan(content.indexOf("Other Projects"));
-    expect(content.indexOf("Other Projects")).toBeLessThan(content.indexOf("Bravo"));
+    expect(content).not.toContain("Bravo");
     expect(content).toContain("in progress");
   });
 
-  it("sorts grouped projects by the selected field", async () => {
+  it("switches to all projects and keeps projects I left dimmed", async () => {
+    await renderProjects();
+    await click(buttonWithText("All projects"));
+
+    const bravoLink = Array.from(container.querySelectorAll<HTMLAnchorElement>("a")).find((link) =>
+      link.textContent?.includes("Bravo"),
+    );
+    expect(bravoLink?.className).toContain("text-foreground/55");
+    expect(window.localStorage.getItem("paperclip:projects:last-view")).toBe("all");
+  });
+
+  it("sorts projects by the selected field", async () => {
     await renderProjects();
     await openSortMenu();
     await chooseSortField("Updated");
 
     const content = container.textContent ?? "";
-    expect(content.indexOf("My Projects")).toBeLessThan(content.indexOf("Charlie"));
     expect(content.indexOf("Charlie")).toBeLessThan(content.indexOf("Alpha"));
-    expect(content.indexOf("Alpha")).toBeLessThan(content.indexOf("Other Projects"));
+  });
+
+  it("filters by folder with counts that match the current view", async () => {
+    await renderProjects();
+    const rail = container.querySelector("nav");
+    expect(rail?.textContent).toContain("Clients");
+
+    await click(buttonWithText("Clients", rail!));
+    const content = container.textContent ?? "";
+    expect(content).toContain("Charlie");
+    expect(content).not.toContain("Alpha");
+  });
+
+  it("moves a project to unfiled from its row menu", async () => {
+    await renderProjects();
+    await click(container.querySelector('button[aria-label="Project actions for Charlie"]'));
+    await click(Array.from(document.body.querySelectorAll('[role="menuitem"]')).find((item) => item.textContent?.includes("Move to")));
+    await click(Array.from(document.body.querySelectorAll('[role="menuitem"]')).find((item) => item.textContent?.trim() === "Unfiled"));
+
+    expect(mockFoldersApi.moveItem).toHaveBeenCalledWith("company-1", { kind: "project", itemId: "project-c", folderId: null });
   });
 
   it("reserves description line height for projects without descriptions", async () => {
     await renderProjects();
 
-    const bravoLink = Array.from(container.querySelectorAll<HTMLAnchorElement>("a")).find((link) =>
-      link.textContent?.includes("Bravo"),
+    const charlieLink = Array.from(container.querySelectorAll<HTMLAnchorElement>("a")).find((link) =>
+      link.textContent?.includes("Charlie"),
     );
-    const hiddenDescriptionLine = bravoLink?.querySelector("p[aria-hidden='true']");
+    const hiddenDescriptionLine = charlieLink?.querySelector("p[aria-hidden='true']");
 
     expect(hiddenDescriptionLine).not.toBeNull();
     expect(hiddenDescriptionLine?.className).toContain("min-h-4");

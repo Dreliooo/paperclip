@@ -18,6 +18,8 @@ API: `present` — representative operation IDs:
 - `POST /api/companies/{companyId}/projects`.
 - `PATCH /api/projects/{id}`.
 - `DELETE /api/projects/{id}`.
+- `POST /api/companies/{companyId}/folders/items/move` with `kind: "project"`
+  (project folders; same read check as the project itself).
 
 Agent access: `available` — Native create_project/list_projects; REST / CLI / MCP.
 

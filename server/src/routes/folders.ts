@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import type { Db } from "@paperclipai/db";
 import {
   createFolderSchema,
@@ -8,14 +8,22 @@ import {
   moveFolderSchema,
   updateFolderSchema,
 } from "@paperclipai/shared";
+import type { FolderKind } from "@paperclipai/shared";
 import { validate } from "../middleware/validate.js";
 import { badRequest, forbidden } from "../errors.js";
 import { folderService, logActivity } from "../services/index.js";
+import { projectReadSqlCondition } from "../services/authorization.js";
 import { assertCompanyAccess, getActorInfo } from "./authz.js";
 
 export function folderRoutes(db: Db) {
   const router = Router();
   const svc = folderService(db);
+
+  // Project folders follow the actor's project audience: private projects the
+  // actor cannot read are neither counted nor movable.
+  async function projectAccessFor(req: Request, kind: FolderKind) {
+    return kind === "project" ? { projectReadCondition: await projectReadSqlCondition(db, req.actor) } : {};
+  }
 
   function parseKind(value: unknown) {
     const result = folderKindSchema.safeParse(value);
@@ -26,7 +34,8 @@ export function folderRoutes(db: Db) {
   router.get("/companies/:companyId/folders", async (req, res) => {
     const companyId = req.params.companyId as string;
     assertCompanyAccess(req, companyId);
-    res.json(await svc.list(companyId, parseKind(req.query.kind)));
+    const kind = parseKind(req.query.kind);
+    res.json(await svc.list(companyId, kind, await projectAccessFor(req, kind)));
   });
 
   router.post("/companies/:companyId/folders", validate(createFolderSchema), async (req, res) => {
@@ -104,7 +113,7 @@ export function folderRoutes(db: Db) {
   router.post("/companies/:companyId/folders/items/move", validate(moveFolderItemSchema), async (req, res) => {
     const companyId = req.params.companyId as string;
     assertCompanyAccess(req, companyId);
-    const moved = await svc.moveItem(companyId, req.body);
+    const moved = await svc.moveItem(companyId, req.body, await projectAccessFor(req, req.body.kind));
     const actor = getActorInfo(req);
     await logActivity(db, {
       companyId,
@@ -114,7 +123,7 @@ export function folderRoutes(db: Db) {
       runId: actor.runId,
       agentApiKeyId: actor.agentApiKeyId,
       action: "folder.item_moved",
-      entityType: req.body.kind === "routine" ? "routine" : "company_skill",
+      entityType: req.body.kind === "routine" ? "routine" : req.body.kind === "project" ? "project" : "company_skill",
       entityId: moved.itemId,
       details: { kind: moved.kind, folderId: moved.folderId },
     });

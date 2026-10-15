@@ -822,7 +822,31 @@
     "count_other": "{{count}} proyectos",
     "taskCount_one": "{{formattedCount}} tarea",
     "taskCount_other": "{{formattedCount}} tareas",
-    "privateProject": "Proyecto privado"
+    "privateProject": "Proyecto privado",
+    "view": {
+      "label": "Vista de proyectos",
+      "mine": "Mis proyectos",
+      "all": "Todos los proyectos",
+      "mineHint": "Los proyectos de los que formás parte. Si salís de un proyecto, deja de aparecer acá.",
+      "allHint": "Todos los proyectos que podés ver en la organización.",
+      "mineEmpty": "Todavía no formás parte de ningún proyecto. Pasá a «Todos los proyectos» para sumarte a uno."
+    },
+    "itemsPlural": "proyectos",
+    "allFolder": "Todos los proyectos",
+    "folderEmpty": "No hay proyectos en esta carpeta.",
+    "unknownFolder": "Carpeta",
+    "actions": "Acciones del proyecto {{name}}",
+    "toast": {
+      "folderCreated": "Carpeta creada",
+      "folderSaveFailed": "No se pudo guardar la carpeta",
+      "folderUpdateFailed": "No se pudo actualizar la carpeta",
+      "folderDeleted": "Carpeta eliminada",
+      "folderDeletedBody": "Sus proyectos pasaron a «Sin carpeta».",
+      "folderDeleteFailed": "No se pudo eliminar la carpeta",
+      "moved": "Proyecto movido",
+      "moveFailed": "No se pudo mover el proyecto",
+      "folderCreatedMoveFailed": "Se creó la carpeta, pero no se pudo mover el proyecto"
+    }
   },
   "issues": {
     "list": {
@@ -1172,6 +1196,58 @@
       "editPrice": "Editar precio",
       "unattributedUsage": "Parte del uso de suscripciones no tiene una cuenta registrada. Se incluye en el total de tokens de suscripción.",
       "footerNote": "Las cuotas mensuales cubren la cuenta completa, incluido el uso fuera de Paperclip. Son independientes de los cargos registrados y de los presupuestos de agentes. Las monedas se totalizan por separado."
+    }
+  },
+  "folders": {
+    "heading": "Carpetas",
+    "newFolder": "Nueva carpeta",
+    "newFolderEllipsis": "Nueva carpeta…",
+    "system": "Sistema",
+    "unfiled": "Sin carpeta",
+    "navLabel": "Carpetas de {{items}}",
+    "actionsFor": "Acciones de la carpeta {{name}}",
+    "rename": "Renombrar",
+    "editColor": "Cambiar color",
+    "delete": "Eliminar",
+    "banner": {
+      "text": "Agrupá estos {{items}} en carpetas para tenerlos ordenados.",
+      "create": "Creá tu primera carpeta",
+      "dismiss": "Descartar sugerencia de carpetas"
+    },
+    "sheetTitle": "Carpetas de {{items}}",
+    "mySkills": "Mis skills",
+    "organization": "Organización",
+    "projects": "Proyectos",
+    "bundled": "Incluidas",
+    "moveTo": "Mover a…",
+    "search": "Buscar carpetas",
+    "noMatch": "Ninguna carpeta coincide.",
+    "form": {
+      "editTitle": "Editar carpeta",
+      "createTitle": "Crear carpeta",
+      "descriptionRoutine": "Organizá las rutinas de esta organización.",
+      "descriptionSkill": "Organizá las skills instaladas en la organización.",
+      "descriptionProject": "Agrupá los proyectos de esta organización. Las carpetas solo ordenan: no cambian quién puede ver cada proyecto.",
+      "name": "Nombre",
+      "color": "Color",
+      "useColor": "Usar el color {{color}}",
+      "none": "Ninguno",
+      "cancel": "Cancelar",
+      "saving": "Guardando…",
+      "save": "Guardar",
+      "create": "Crear carpeta"
+    },
+    "deleteDialog": {
+      "title": "Eliminar carpeta",
+      "body": "Los {{count}} {{items}} de esta carpeta no se eliminan: pasan a «Sin carpeta».",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Eliminar carpeta"
+    },
+    "bulk": {
+      "selected": "{{count}} seleccionados",
+      "deselect": "Quitar selección",
+      "done": "Listo"
     }
   }
 }

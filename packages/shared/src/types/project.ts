@@ -117,6 +117,8 @@ export interface Project {
   personalOwnerUserId?: string | null;
   /** Only this user and administrators may change the project audience. */
   privacyOwnerUserId?: string | null;
+  /** Project folder (kind "project") the project is filed in; organisation only. */
+  folderId?: string | null;
   status: ProjectStatus;
   leadAgentId: string | null;
   targetDate: string | null;

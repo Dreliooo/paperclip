@@ -822,7 +822,31 @@
     "count_other": "{{count}} projects",
     "taskCount_one": "{{formattedCount}} task",
     "taskCount_other": "{{formattedCount}} tasks",
-    "privateProject": "Private project"
+    "privateProject": "Private project",
+    "view": {
+      "label": "Projects view",
+      "mine": "My projects",
+      "all": "All projects",
+      "mineHint": "Projects you are part of. Leave a project to take it off this list.",
+      "allHint": "Every project you can see in the organization.",
+      "mineEmpty": "You are not part of any project yet. Switch to All projects to join one."
+    },
+    "itemsPlural": "projects",
+    "allFolder": "All projects",
+    "folderEmpty": "No projects in this folder.",
+    "unknownFolder": "Folder",
+    "actions": "Project actions for {{name}}",
+    "toast": {
+      "folderCreated": "Folder created",
+      "folderSaveFailed": "Could not save the folder",
+      "folderUpdateFailed": "Could not update the folder",
+      "folderDeleted": "Folder deleted",
+      "folderDeletedBody": "Its projects moved to Unfiled.",
+      "folderDeleteFailed": "Could not delete the folder",
+      "moved": "Project moved",
+      "moveFailed": "Could not move the project",
+      "folderCreatedMoveFailed": "Folder created, but the project could not be moved"
+    }
   },
   "issues": {
     "list": {
@@ -1172,6 +1196,58 @@
       "editPrice": "Edit price",
       "unattributedUsage": "Some subscription usage has no recorded account. It is included in the subscription token total.",
       "footerNote": "Monthly fees cover the whole account, including use outside Paperclip. They are separate from recorded charges and agent budgets. Currencies are totaled separately."
+    }
+  },
+  "folders": {
+    "heading": "Folders",
+    "newFolder": "New folder",
+    "newFolderEllipsis": "New folder...",
+    "system": "System",
+    "unfiled": "Unfiled",
+    "navLabel": "{{items}} folders",
+    "actionsFor": "Folder actions for {{name}}",
+    "rename": "Rename",
+    "editColor": "Edit color",
+    "delete": "Delete",
+    "banner": {
+      "text": "Group these {{items}} into folders to keep things tidy.",
+      "create": "Create your first folder",
+      "dismiss": "Dismiss folder suggestion"
+    },
+    "sheetTitle": "{{items}} folders",
+    "mySkills": "My Skills",
+    "organization": "Organization",
+    "projects": "Projects",
+    "bundled": "Bundled",
+    "moveTo": "Move to...",
+    "search": "Search folders",
+    "noMatch": "No folders match.",
+    "form": {
+      "editTitle": "Edit folder",
+      "createTitle": "Create folder",
+      "descriptionRoutine": "Organize routines in this organization.",
+      "descriptionSkill": "Organize installed organization skills.",
+      "descriptionProject": "Group projects in this organization. Folders only organize: who can see each project does not change.",
+      "name": "Name",
+      "color": "Color",
+      "useColor": "Use folder color {{color}}",
+      "none": "None",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save",
+      "create": "Create folder"
+    },
+    "deleteDialog": {
+      "title": "Delete folder",
+      "body": "The {{count}} {{items}} in this folder won't be deleted. They'll move to Unfiled.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "confirm": "Delete folder"
+    },
+    "bulk": {
+      "selected": "{{count}} selected",
+      "deselect": "Deselect all",
+      "done": "Done"
     }
   }
 }

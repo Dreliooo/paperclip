@@ -68,7 +68,7 @@ describe("folder routes", () => {
       kind: "routine",
       itemId: "11111111-1111-4111-8111-111111111111",
       folderId: "22222222-2222-4222-8222-222222222222",
-    });
+    }, {});
     expect(mockFolderService.moveFolder).not.toHaveBeenCalled();
   });
 });

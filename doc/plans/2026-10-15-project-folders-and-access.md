@@ -1,6 +1,6 @@
 # Project folders and per-person access (proposal)
 
-Status: proposal, waiting for product approval before implementation.
+Status: decisions taken 2026-10-15; first slice implemented (see "Decisions and first slice").
 Date: 2026-10-15
 
 ## What exists today
@@ -79,3 +79,35 @@ Company
    is "folders group tasks (and everything inside them)" enough?
 3. Should a **company-level grouping of projects** (e.g. "Clients", "Internal")
    be added, or is the existing per-person sidebar order enough?
+
+## Decisions and first slice (2026-10-15)
+
+Product answers:
+
+1. **Projects view like Tasks.** The Projects page gets **My projects** and
+   **All projects**, like Tasks' "Mine" and "All tasks". Visibility rules do
+   not change: owners/admins still only see private projects they are members
+   of, and "All projects" means every project the person can read.
+2. **Folders hold projects, not tasks.** Tasks are already grouped by projects,
+   so folders group projects instead (this replaces the "Folder inside a
+   project" model above).
+3. Company-level grouping of projects is therefore the folder feature itself.
+
+Implemented:
+
+- `folders.kind = "project"` (shared `FolderKind`) and nullable
+  `projects.folder_id` (migration `0349_project_folders`, `ON DELETE SET NULL`).
+  Existing projects stay unfiled; no access changes.
+- Folder counts and project moves use the actor's project read condition, so a
+  private project is neither counted nor movable by people outside its access
+  list (unreadable projects answer 404). Test:
+  `server/src/__tests__/project-folders.test.ts`.
+- Projects page: My/All toggle, folder rail (create, rename, color, delete),
+  mobile folder sheet, per-row **Move to…**. Folder controls are translated.
+
+Still open (needs a decision before building):
+
+- **Per-folder access.** Folders currently only organize; access stays per
+  project. If a folder should restrict who sees the projects inside it, the
+  folder would need its own access list, with the rule "folder access narrows,
+  never widens" applied to every project inside.
