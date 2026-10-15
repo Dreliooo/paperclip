@@ -22,7 +22,7 @@ Agent access: [companion](../agent-access-map/documents-artifacts.md).
 
 ### `task-document`
 
-Open a document from the task thread or document side panel.
+Open a document from the task thread or document side panel. Both views offer one-click **Copy** (whole Markdown body) and **Download** (`.md`).
 
 ### `task-output`
 

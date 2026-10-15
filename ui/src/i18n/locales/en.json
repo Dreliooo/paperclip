@@ -1249,5 +1249,23 @@
       "deselect": "Deselect all",
       "done": "Done"
     }
+  },
+  "documents": {
+    "revision": "Revision {{number}}",
+    "updated": "Updated {{date}}",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy",
+    "copyTitle": "Copy the whole document as text",
+    "copyDocument": "Copy document",
+    "download": "Download",
+    "downloadTitle": "Download as a Markdown (.md) file",
+    "downloadDocument": "Download document",
+    "loading": "Loading document…",
+    "loadFailed": "The document could not be loaded. Retry from the tab launcher or refresh the task.",
+    "missingTitle": "Document no longer available",
+    "missingBody": "This tab is preserved so the missing resource is explicit. Close it or choose another document.",
+    "empty": "Document is empty.",
+    "actions": "Document actions"
   }
 }

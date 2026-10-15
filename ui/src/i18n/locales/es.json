@@ -1249,5 +1249,23 @@
       "deselect": "Quitar selección",
       "done": "Listo"
     }
+  },
+  "documents": {
+    "revision": "Revisión {{number}}",
+    "updated": "Actualizado {{date}}",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "copyFailed": "No se pudo copiar",
+    "copyTitle": "Copiar todo el documento como texto",
+    "copyDocument": "Copiar documento",
+    "download": "Descargar",
+    "downloadTitle": "Descargar como archivo Markdown (.md)",
+    "downloadDocument": "Descargar documento",
+    "loading": "Cargando documento…",
+    "loadFailed": "No se pudo cargar el documento. Reintentá desde las pestañas o recargá la tarea.",
+    "missingTitle": "El documento ya no está disponible",
+    "missingBody": "Dejamos esta pestaña abierta para que se vea que falta. Cerrala o elegí otro documento.",
+    "empty": "El documento está vacío.",
+    "actions": "Acciones del documento"
   }
 }

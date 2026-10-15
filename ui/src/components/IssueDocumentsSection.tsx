@@ -16,6 +16,7 @@ import { ApiError } from "../api/client";
 import { issuesApi } from "../api/issues";
 import { useAutosaveIndicator } from "../hooks/useAutosaveIndicator";
 import { copyTextToClipboard } from "../lib/clipboard";
+import { downloadMarkdownFile } from "../lib/document-download";
 import { deriveDocumentRevisionState } from "../lib/document-revisions";
 import type { CompanyUserProfile } from "../lib/company-members";
 import { queryKeys } from "../lib/queryKeys";
@@ -135,15 +136,7 @@ function isLockedDocumentError(error: unknown) {
 }
 
 function downloadDocumentFile(key: string, body: string) {
-  const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${key}.md`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
+  downloadMarkdownFile(`${key}.md`, body);
 }
 
 function getRevisionActor(
