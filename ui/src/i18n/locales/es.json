@@ -1333,7 +1333,7 @@
       "archivedTitle": "{{name}} está archivada",
       "switchedTo": "Cambiado a {{name}}.",
       "unarchiveHint": "Se puede desarchivar desde esta lista.",
-      "noOrganization": "No hay ninguna organización seleccionada. Selecciona una organización en el selector de arriba.",
+      "noOrganization": "No hay ninguna organización seleccionada. Seleccioná una organización en el selector de arriba.",
       "appearance": "Apariencia",
       "orgName": "Nombre de la organización",
       "orgNameHint": "El nombre visible de la organización.",
@@ -1342,7 +1342,7 @@
       "descriptionHint": "Descripción opcional que se muestra en el perfil de la organización.",
       "descriptionPlaceholder": "Descripción opcional de la organización",
       "logo": "Logo",
-      "logoHint": "Sube una imagen de logo en formato PNG, JPEG, WEBP, GIF o SVG.",
+      "logoHint": "Subí una imagen de logo en formato PNG, JPEG, WEBP, GIF o SVG.",
       "removing": "Quitando...",
       "removeLogo": "Quitar logo",
       "logoUploadFailed": "Falló la carga del logo",
@@ -1441,7 +1441,7 @@
       "enable": "Activar respuestas rápidas",
       "allowSponsored": "Permitir respuestas rápidas patrocinadas por la organización",
       "allowSponsoredHint": "Cubre los mensajes externos aceptados de personas sin una cuenta de Paperclip vinculada.",
-      "timeoutError": "El modelo no respondió en tres segundos. Prueba con un modelo más rápido.",
+      "timeoutError": "El modelo no respondió en tres segundos. Probá con un modelo más rápido.",
       "generateError": "No se pudo generar una respuesta. Revisá la conexión y el modelo, y volvé a intentarlo.",
       "resultMeta": "{{seconds}} segundos · {{input}} tokens de entrada / {{output}} tokens de salida · Uso registrado en Costos.",
       "testing": "Probando…",
@@ -4438,7 +4438,7 @@
       "noWorkspaceToRepair": "Esta tarea no tiene un espacio de trabajo de ejecución para reparar.",
       "paused": "Pausada",
       "isolatedWorkspaceArchived": "El espacio de trabajo aislado de esta tarea fue archivado. Tu próximo comentario o la reanudación lo reabrirá y reconstruirá el árbol de trabajo.",
-      "watchdogTaskHint": "Esta tarea es un watchdog generado. Verifica si el trabajo detenido en el árbol de tareas vigilado es legítimo.",
+      "watchdogTaskHint": "Esta tarea es un watchdog generado. Verificá si el trabajo detenido en el árbol de tareas vigilado es legítimo.",
       "blockedByParkedHint": "Bloqueada por trabajo en espera: al menos un bloqueo asignado está en el backlog y no despertará a su responsable.",
       "copyTaskAsMarkdown": "Copiar tarea como markdown",
       "properties": "Propiedades",
@@ -4478,7 +4478,7 @@
       "replySentContinue": "Respuesta enviada. Envía un mensaje para continuar.",
       "taskSidePanel": "Panel lateral de la tarea",
       "blockedByParkedWork": "Bloqueada por trabajo en espera",
-      "grokRunsNote": "Corre en Grok Bot · uso no informado. Detener el trabajo de Paperclip revoca la autoridad de esta sesión; la ejecución remota puede continuar. Abre la aplicación de escritorio de Grok Bot para revisarlo."
+      "grokRunsNote": "Corre en Grok Bot · uso no informado. Detener el trabajo de Paperclip revoca la autoridad de esta sesión; la ejecución remota puede continuar. Abrí la aplicación de escritorio de Grok Bot para revisarlo."
     }
   },
   "thread": {
