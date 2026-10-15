@@ -88,5 +88,21 @@
       },
       "saveFailed": "Could not save your preference: {{message}}"
     }
+  },
+  "speech": {
+    "listen": "Listen",
+    "pause": "Pause reading",
+    "resume": "Resume reading",
+    "stop": "Stop reading",
+    "settings": "Reading settings",
+    "speed": "Speed",
+    "voice": "Voice",
+    "systemVoice": "System default",
+    "localOnly": "Uses your device's built-in voices by default. Voices marked “online” send the text to your browser vendor; nothing is sent to Paperclip or any paid service.",
+    "codeOmitted": "Code omitted.",
+    "autoRead": "Read new replies aloud",
+    "autoReadOn": "Reading new replies aloud",
+    "autoReadHint": "New agent replies in this conversation will be read aloud, one at a time.",
+    "onlineVoice": "online: text is sent to the browser vendor"
   }
 }

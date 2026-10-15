@@ -89,6 +89,7 @@ import {
   shouldHideInteractionCard,
 } from "@/lib/issue-thread-interactions";
 import { TaskChatBubbleActions } from "@/components/task-chat/TaskChatBubbleActions";
+import { useAutoReadReplies } from "@/components/speech/AutoReadToggle";
 import type {
   FeedbackVoteValue,
   IssueDocument,
@@ -2665,6 +2666,9 @@ export function TaskChatThread(props: TaskChatThreadProps) {
         <TaskChatBubbleActions
           copyText={item.text}
           fastResponse={item.origin === "fast_response"}
+          speakId={
+            item.channel !== "progress" && !item.interstitial ? item.id : undefined
+          }
           feedback={
             onVote
               ? {
@@ -2685,6 +2689,33 @@ export function TaskChatThread(props: TaskChatThreadProps) {
       feedbackTermsUrl,
     ],
   );
+
+  // Auto-read ("Read new replies aloud"): final agent replies only, never progress,
+  // interstitial, streaming or optimistic bubbles. A turn's durable reply lives on
+  // the turn item, so it is collected from there too.
+  const autoReadMessages = useMemo(() => {
+    const candidates: TaskChatMessageItem[] = [];
+    for (const item of items) {
+      if (item.kind === "message") candidates.push(item);
+      else if (item.kind === "turn" && item.finalResponse) candidates.push(item.finalResponse);
+    }
+    return candidates.flatMap((message) =>
+      message.author === "agent" &&
+      message.channel !== "progress" &&
+      !message.interstitial &&
+      !message.streaming &&
+      !message.optimistic
+        ? [
+            {
+              id: message.id,
+              text: message.text,
+              atMs: message.atMs ?? (toMs(message.timestamp) || null),
+            },
+          ]
+        : [],
+    );
+  }, [items]);
+  useAutoReadReplies({ autoReadKey: `issue:${issueId ?? ""}`, messages: autoReadMessages });
 
   const renderQueuedAction = useCallback(
     (item: TaskChatMessageItem) => {

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { ListenButton } from "@/components/speech/ListenButton";
 import {
   Dialog,
   DialogContent,
@@ -89,8 +90,11 @@ export function AgentBubbleActionRow({
   feedback,
   menuItems,
   className,
+  speakId,
 }: {
   copyText: string;
+  /** Stable id for "Listen"; the read-aloud button renders only when provided. */
+  speakId?: string;
   /** Short relative label shown inline (e.g. "2h ago"). */
   dateLabel?: string;
   /** Full datetime shown in the hover tooltip. */
@@ -116,6 +120,7 @@ export function AgentBubbleActionRow({
   return (
     <div className={cn("mt-2 flex items-center gap-1", className)}>
       <BubbleCopyButton copyText={copyText} />
+      {speakId ? <ListenButton id={speakId} text={copyText} /> : null}
       {feedback ? (
         <IssueChatFeedbackButtons
           activeVote={feedback.activeVote}

@@ -276,7 +276,7 @@ export function TaskChatRunnerTurn({
             item={{ ...final, authorName: agentName ?? undefined, agentIcon, agent, timestamp: final.timestamp ?? formatTaskChatTimestamp(final.atMs) }}
             animateEntry={false}
             hideAgentIdentity={!continuedAfterSteering}
-            actions={<TaskChatBubbleActions copyText={final.text} />}
+            actions={<TaskChatBubbleActions copyText={final.text} speakId={final.id ? `final:${final.id}` : undefined} />}
           />
         </div>
       ) : null}

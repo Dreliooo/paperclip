@@ -833,6 +833,7 @@ export function BoardChat() {
                     </div>
                     <AgentBubbleActionRow
                       copyText={comment.body ?? ""}
+                      speakId={comment.id}
                       dateLabel={agentBubbleDateLabel(comment.createdAt)}
                       dateTitle={formatDateTime(comment.createdAt)}
                       anchorHref={`#comment-${comment.id}`}

@@ -88,5 +88,21 @@
       },
       "saveFailed": "No se pudo guardar tu preferencia: {{message}}"
     }
+  },
+  "speech": {
+    "listen": "Escuchar",
+    "pause": "Pausar lectura",
+    "resume": "Reanudar lectura",
+    "stop": "Detener lectura",
+    "settings": "Ajustes de lectura",
+    "speed": "Velocidad",
+    "voice": "Voz",
+    "systemVoice": "Predeterminada del sistema",
+    "localOnly": "Por defecto usa las voces integradas de tu dispositivo. Las voces marcadas “en línea” envían el texto al proveedor de tu navegador; nada se envía a Paperclip ni a servicios pagos.",
+    "codeOmitted": "Código omitido.",
+    "autoRead": "Leer respuestas nuevas en voz alta",
+    "autoReadOn": "Leyendo respuestas nuevas",
+    "autoReadHint": "Las respuestas nuevas del agente en esta conversación se leerán en voz alta, de a una.",
+    "onlineVoice": "en línea: el texto se envía al proveedor del navegador"
   }
 }
