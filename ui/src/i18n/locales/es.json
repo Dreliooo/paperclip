@@ -20313,19 +20313,19 @@
         },
         "posthog": {
           "tagline": "Explora el uso del producto, errores, flags y experimentos.",
-          "short": "Inicia sesión con PostHog. Fijar proyecto y controles de acceso son opcionales."
+          "short": "Iniciá sesión con PostHog. Fijar proyecto y controles de acceso son opcionales."
         },
         "gauge": {
           "tagline": "Sigue tu marca en las respuestas de IA y ejecuta flujos de contenido.",
-          "short": "Inicia sesión con Gauge y elige una organización. Las claves de API son opcionales."
+          "short": "Iniciá sesión con Gauge y elegí una organización. Las claves de API son opcionales."
         },
         "neon": {
           "tagline": "Administra proyectos, ramas y consultas de Postgres.",
-          "short": "Inicia sesión con Neon. Fijar proyecto y el modo solo lectura son opcionales."
+          "short": "Iniciá sesión con Neon. Fijar proyecto y el modo solo lectura son opcionales."
         },
         "superagent": {
           "tagline": "Revisa hallazgos de seguridad y ejecuta controles de red team.",
-          "short": "Conecta con una clave de API de Superagent. Las herramientas facturables y destructivas quedan bajo políticas de acción."
+          "short": "Conectá con una clave de API de Superagent. Las herramientas facturables y destructivas quedan bajo políticas de acción."
         },
         "linear": {
           "tagline": "Crea, actualiza y lee tickets.",
