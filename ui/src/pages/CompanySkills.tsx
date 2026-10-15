@@ -1151,13 +1151,13 @@ export function DiscoveryGrid({
   /** Category/folder navigation stays available in production, but the Streamlined UI relies on search and scrolling. */
   showBrowseRails?: boolean;
 }) {
+  const { t } = useTranslation();
   const installedView = tab === "installed";
   const viewTitle = installedView ? t("ui3g3.companySkills.viewHead.installedTitle") : t("ui3g3.companySkills.viewHead.discoverTitle");
   const viewDescription = installedView
     ? t("ui3g3.companySkills.viewHead.installedDesc")
     : t("ui3g3.companySkills.viewHead.discoverDesc");
   const searchLabel = installedView ? t("ui3g3.companySkills.search.installed") : t("ui3g3.companySkills.search.discover");
-  const { t } = useTranslation();
   // Source filter (github / skills.sh / local / …) lives in the grid so it
   // narrows whatever the parent already filtered by tab/category/search (PAP-10907 E).
   const [sourceBadgeFilter, setSourceBadgeFilter] = useState<string>("all");

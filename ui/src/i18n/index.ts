@@ -47,8 +47,8 @@ void i18n.use(initReactI18next).init(i18nextOptions).catch((error: unknown) => {
 });
 applyDocumentLanguage(initialLocale);
 
-export function t(key: string, options: TOptions = {}) {
-  return i18n.t(key, options);
+export function t(key: string, options: TOptions = {}): string {
+  return String(i18n.t(key, options));
 }
 
 /** Switch the UI language and remember it in this browser. */

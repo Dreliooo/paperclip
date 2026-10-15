@@ -1836,7 +1836,7 @@ function secretProposalCardState(
   return "running";
 }
 
-function secretProposalStatusClasses(state: SecretProposalCardState) {
+function secretProposalStatusClasses(state: SecretProposalCardState): ReturnType<typeof toolActionStatusClasses> {
   if (state === "failed") {
     return {
       shell: "border-2 border-red-500/80 bg-transparent",

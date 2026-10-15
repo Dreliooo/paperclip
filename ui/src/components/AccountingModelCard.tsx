@@ -56,7 +56,7 @@ export function AccountingModelCard() {
           const Icon = surface.icon;
           return (
             <div
-              key={surface.title}
+              key={surface.titleKey}
               className={`rounded-2xl border border-border/70 bg-gradient-to-br ${surface.tone} p-4 shadow-sm`}
             >
               <div className="mb-3 flex items-center gap-3">
