@@ -3,6 +3,7 @@ import {
   type AttachmentArtifactWorkProductMetadata,
   type IssueWorkProduct,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * Helpers + selectors for the issue Output surface (PAP-10162 Phase 3).
@@ -313,7 +314,7 @@ export function getIssueOutputs(workProducts: IssueWorkProduct[] | null | undefi
 
 /** Best display filename for an output, falling back to the work product title. */
 export function outputFilename(item: IssueOutputItem): string {
-  return item.metadata?.originalFilename || item.title || "output";
+  return item.metadata?.originalFilename || item.title || t("ui3lib.issueOutput.fallbackFilename");
 }
 
 export function getPromotedOutputAttachmentIds(workProducts: IssueWorkProduct[] | null | undefined): Set<string> {

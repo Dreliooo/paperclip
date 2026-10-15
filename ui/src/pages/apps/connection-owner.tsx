@@ -2,6 +2,7 @@ import type { McpConnection, ToolConnection } from "@paperclipai/shared";
 import { humanizeConnectionDisplayName } from "@paperclipai/shared";
 import { Identity } from "@/components/Identity";
 import type { CompanyUserProfile } from "@/lib/company-members";
+import { t, useTranslation } from "@/i18n";
 
 export type ConnectionOwnerProfile = CompanyUserProfile;
 
@@ -11,20 +12,21 @@ export function connectionOwnerProfile(
 ): ConnectionOwnerProfile | null {
   if (!connection.createdByUserId) return null;
   return profiles.get(connection.createdByUserId) ?? {
-    label: connection.createdByUserId === "local-board" ? "Board" : "Board member",
+    label: connection.createdByUserId === "local-board" ? t("ui3g8.connectionOwner.board") : t("ui3g8.connectionOwner.boardMember"),
     image: null,
   };
 }
 
 function ownerGivenName(label: string): string {
   const trimmed = label.trim();
-  if (!trimmed) return "Board";
+  if (!trimmed) return t("ui3g8.connectionOwner.board");
   const first = trimmed.split(/\s+/)[0] ?? trimmed;
-  return first.includes("@") ? first.split("@")[0] || "Board" : first;
+  return first.includes("@") ? first.split("@")[0] || t("ui3g8.connectionOwner.board") : first;
 }
 
-function possessive(label: string): string {
-  return label.toLowerCase().endsWith("s") ? `${label}’` : `${label}’s`;
+/** Owner-first app name ("Dotta’s Notion"); Spanish puts the app first ("Notion de Dotta"). */
+function ownerAppName(givenName: string, appName: string): string {
+  return t(givenName.toLowerCase().endsWith("s") ? "ui3g8.connectionOwner.ownerAppS" : "ui3g8.connectionOwner.ownerApp", { name: givenName, app: appName });
 }
 
 /**
@@ -49,18 +51,20 @@ export function connectionDisplayNameForOwner(
   if (connectionName.trim().toLocaleLowerCase() !== applicationName.trim().toLocaleLowerCase()) {
     return connectionName;
   }
-  return `${possessive(ownerGivenName(owner.label))} ${applicationName}`;
+  return ownerAppName(ownerGivenName(owner.label), applicationName);
 }
 
 /** Use the same owner naming as outbound connections, without changing OAuth client identity. */
 export function assistantConnectionDisplayName(connection: McpConnection): string {
   const clientName = connection.clientName.trim();
-  const owner = connection.user ? `${possessive(ownerGivenName(connection.user.name))} ` : "";
-  return `${owner}${clientName} connection`;
+  if (!connection.user) return t("ui3g8.connectionOwner.assistantConnection", { client: clientName });
+  const givenName = ownerGivenName(connection.user.name);
+  return t(givenName.toLowerCase().endsWith("s") ? "ui3g8.connectionOwner.assistantConnectionOwnedS" : "ui3g8.connectionOwner.assistantConnectionOwned", { name: givenName, client: clientName });
 }
 
 export function ConnectionOwnerIdentity({ owner }: { owner: ConnectionOwnerProfile | null }) {
-  if (!owner) return <span className="text-xs text-muted-foreground">Unknown</span>;
+  const { t } = useTranslation();
+  if (!owner) return <span className="text-xs text-muted-foreground">{t("ui3g8.connectionOwner.unknown")}</span>;
   return (
     <Identity
       name={owner.label}

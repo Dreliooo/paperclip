@@ -8,6 +8,7 @@ import {
   type IssueStatus,
 } from "@paperclipai/shared";
 import type { CompanySearchParams } from "@/api/search";
+import { t } from "@/i18n";
 
 const SEARCH_FILTER_PARAM_KEYS = [
   "status",
@@ -40,13 +41,13 @@ export interface SearchOperatorSuggestion {
 export const SEARCH_OPERATOR_QUICK_FILTERS = ["assignee:me", "is:open", "updated:>7d"] as const;
 
 export const SEARCH_OPERATOR_SUGGESTIONS: SearchOperatorSuggestion[] = [
-  { token: "status:todo", label: "Open todo tasks", description: "Filter by task status" },
-  { token: "status:blocked", label: "Blocked tasks", description: "Find blocked work" },
-  { token: "assignee:me", label: "Assigned to me", description: "Use your current board user" },
-  { token: "project:\"Paperclip App\"", label: "Project name", description: "Quote multi-word project names" },
-  { token: "label:bug", label: "Label", description: "Filter by issue label" },
-  { token: "priority:high", label: "High priority", description: "Filter by priority" },
-  { token: "updated:>7d", label: "Recently updated", description: "Updated in the last 7 days" },
+  { token: "status:todo", get label() { return t("ui3lib.searchQuery.suggestion.openTodo.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.statusFilter.description"); } },
+  { token: "status:blocked", get label() { return t("ui3lib.searchQuery.suggestion.blocked.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.blocked.description"); } },
+  { token: "assignee:me", get label() { return t("ui3lib.searchQuery.suggestion.assignedToMe.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.assignedToMe.description"); } },
+  { token: "project:\"Paperclip App\"", get label() { return t("ui3lib.searchQuery.suggestion.projectName.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.projectName.description"); } },
+  { token: "label:bug", get label() { return t("ui3lib.searchQuery.suggestion.label.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.label.description"); } },
+  { token: "priority:high", get label() { return t("ui3lib.searchQuery.suggestion.highPriority.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.highPriority.description"); } },
+  { token: "updated:>7d", get label() { return t("ui3lib.searchQuery.suggestion.recentlyUpdated.label"); }, get description() { return t("ui3lib.searchQuery.suggestion.recentlyUpdated.description"); } },
 ];
 
 export interface SearchQueryParserContext {

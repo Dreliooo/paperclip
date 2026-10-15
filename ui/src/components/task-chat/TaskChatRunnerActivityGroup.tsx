@@ -23,10 +23,12 @@ import {
 } from "./TaskChatProtocolActivityRow";
 import { TaskChatUsageReadout } from "./TaskChatUsageReadout";
 import { toolActivityPresentation } from "./tool-taxonomy";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 
 type Activity = TaskChatActivityPhaseItem["items"][number];
 
-function presentation(item: Activity, active: boolean) {
+function presentation(item: Activity, active: boolean, t: TFunction) {
   if (item.kind === "tool") {
     const tool = toolActivityPresentation({
       name: item.rawName ?? item.name,
@@ -53,7 +55,7 @@ function presentation(item: Activity, active: boolean) {
     const running = active && Boolean(item.streaming);
     return {
       icon: Brain,
-      label: running ? "Thinking" : "Thought",
+      label: running ? t("ui3g2.runnerActivity.thinking") : t("ui3g2.runnerActivity.thought"),
       target: item.lines
         .filter((line) => line.trim())
         .at(-1)
@@ -95,7 +97,7 @@ function presentation(item: Activity, active: boolean) {
     .join(" · ");
   return {
     icon: Gauge,
-    label: item.label ?? "Token usage",
+    label: item.label ?? t("ui3g2.runnerActivity.tokenUsage"),
     target: usage || item.detail,
     mono: false,
     running: false,
@@ -109,7 +111,8 @@ function ActivityContent({
   item: Activity;
   active: boolean;
 }) {
-  const row = presentation(item, active);
+  const { t } = useTranslation();
+  const row = presentation(item, active, t);
   if (!row) return null;
   const Icon = row.icon;
   return (
@@ -208,6 +211,7 @@ function RollingActivity({
 }
 
 function ActivityDetails({ item }: { item: Activity }) {
+  const { t } = useTranslation();
   if (item.kind === "thinking")
     return <MarkdownBody softBreaks>{item.lines.join("\n")}</MarkdownBody>;
   if (item.kind === "usage") return <TaskChatUsageReadout item={item} />;
@@ -229,7 +233,7 @@ function ActivityDetails({ item }: { item: Activity }) {
           {item.detail}
         </pre>
       ) : null}
-      {item.decision ? <p>Permission {item.decision}</p> : null}
+      {item.decision ? <p>{t("ui3g2.runnerActivity.permission", { decision: item.decision })}</p> : null}
       {item.diff ? (
         <p className="break-all font-mono">
           {item.diff.path} · +{item.diff.added} −{item.diff.removed}
@@ -312,18 +316,19 @@ export function TaskChatRunnerActivityGroup({
   item: TaskChatActivityPhaseItem;
   defaultExpanded?: boolean;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useTaskChatExpansion(
     item.id,
     defaultExpanded,
   );
   const historyId = useId();
   const activities = item.items.filter(
-    (activity) => presentation(activity, false) !== null,
+    (activity) => presentation(activity, false, t) !== null,
   );
   const latest = activities.at(-1);
   const summary = completedActivitySummary(activities);
   const SummaryIcon = summary.icon;
-  const countLabel = `${activities.length} ${activities.length === 1 ? "activity" : "activities"}`;
+  const countLabel = t("ui3g2.runnerActivity.activityCount", { count: activities.length });
   return (
     <section
       className="flex min-w-0 flex-col gap-2"
@@ -350,7 +355,7 @@ export function TaskChatRunnerActivityGroup({
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
             aria-controls={expanded ? historyId : undefined}
-            aria-label={`${expanded ? "Collapse" : "Expand"} ${item.active ? countLabel : `${summary.fullLabel.toLowerCase()} (${countLabel})`}`}
+            aria-label={t(expanded ? "ui3g2.runnerActivity.collapseAria" : "ui3g2.runnerActivity.expandAria", { target: item.active ? countLabel : t("ui3g2.runnerActivity.summaryCount", { label: summary.fullLabel.toLowerCase(), countLabel }) })}
           >
             {!item.active ? (
               <span
@@ -386,7 +391,7 @@ export function TaskChatRunnerActivityGroup({
             <ol
               id={historyId}
               className="flex min-w-0 flex-col gap-1"
-              aria-label="Activity history"
+              aria-label={t("ui3g2.runnerActivity.historyAria")}
               data-testid="task-chat-runner-activity-list"
             >
               {activities.map((activity, index) => (

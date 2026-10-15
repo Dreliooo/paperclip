@@ -393,7 +393,7 @@ function createRunCancelledStatusUpdateError(
 ): StopAndFinalizeRunError {
   const message =
     err instanceof Error
-      ? `Run was stopped, but updating the task failed: ${err.message}`
+      ? translate("ui3g4.issueDetail.runStoppedFailed", { message: err.message })
       : translate("issueDetail.detail.runStoppedUpdateFailed");
   const error = new Error(message) as StopAndFinalizeRunError;
   error.runCancelledBeforeStatusUpdateFailed = true;
@@ -689,7 +689,7 @@ function ActorIdentity({
     const agent = agentMap.get(id);
     return <AgentIdentity agent={agent ?? { id, name: id.slice(0, 8) }} size="sm" />;
   }
-  if (evt.actorType === "system") return <Identity name="System" size="sm" />;
+  if (evt.actorType === "system") return <Identity name={translate("ui3g4.issueDetail.system")} size="sm" />;
   if (evt.actorType === "user") {
     const profile = userProfileMap?.get(id);
     return (
@@ -720,17 +720,19 @@ function attributionInitials(name: string): string {
 
 function AttributionAvatar({
   label,
+  testId,
   actor,
   via,
 }: {
-  label: "Assignee" | "Originating";
+  label: string;
+  testId: "assignee" | "originating";
   actor: AttributionActor;
   via?: string | null;
 }) {
   const accessibleLabel = via
-    ? `${label}: ${actor.name} · via ${via}`
-    : `${label}: ${actor.name}`;
-  const testIdLabel = label.toLowerCase();
+    ? translate("ui3g4.issueDetail.attributionWithVia", { label, name: actor.name, via })
+    : translate("ui3g4.issueDetail.attribution", { label, name: actor.name });
+  const testIdLabel = testId;
 
   return (
     <Tooltip>
@@ -845,11 +847,12 @@ function IssueAttributionByline({
         data-testid="issue-attribution-avatar-stack"
       >
         {assignee ? (
-          <AttributionAvatar label={translate("issueDetail.detail.assignee")} actor={assignee} />
+          <AttributionAvatar label={translate("issueDetail.detail.assignee")} testId="assignee" actor={assignee} />
         ) : null}
         {originator ? (
           <AttributionAvatar
             label={translate("issueDetail.detail.originating")}
+            testId="originating"
             actor={originator}
             via={originatorVia}
           />
@@ -1018,7 +1021,7 @@ function IssueDetailLoadingState({
                 <Badge
                   variant="outline"
                   className="border-violet-500/30 bg-violet-500/10 text-(length:--text-nano) text-violet-600 dark:text-violet-400"
-                  title={`Routine execution from routine ${headerSeed.originId}`}
+                  title={translate("ui3g4.issueDetail.routineExecution", { id: headerSeed.originId })}
                 >
                   <Repeat className="h-3 w-3" />
                   {translate("issueDetail.detail.routine")}
@@ -1170,7 +1173,7 @@ function InboxMobileToolbar({
               }}
             >
               <Copy className="h-3 w-3" />
-              Copy as markdown
+              {translate("ui3g4.issueDetail.copyMarkdown")}
             </button>
             <button
               className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50"
@@ -2647,7 +2650,7 @@ const IssueDetailChatTab = memo(function IssueDetailChatTab({
                 : undefined
             }
             stopRunLabel={grokWork ? translate("issueDetail.detail.stopPaperclipWork") : translate("issueDetail.detail.pauseWork")}
-            stoppingRunLabel={grokWork ? translate("issueDetail.detail.stoppingPaperclipWork") : "Pausing..."}
+            stoppingRunLabel={grokWork ? translate("issueDetail.detail.stoppingPaperclipWork") : translate("ui3g4.issueDetail.pausing")}
             stopRunVariant={grokWork ? "stop" : "pause"}
             runFinalizationActions={runFinalizationActions}
             onAcceptInteraction={onAcceptInteraction}
@@ -3926,7 +3929,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
       options.push({ id: `agent:${agent.id}`, label: agent.name });
     }
     if (currentUserId) {
-      options.push({ id: `user:${currentUserId}`, label: "Me" });
+      options.push({ id: `user:${currentUserId}`, label: translate("ui3g4.issueDetail.me") });
     }
     return options;
   }, [agents, companyMembers?.users, currentUserId]);
@@ -4460,7 +4463,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
     onSuccess: (result) => {
       if (result.kind === "release" && result.hold.wakeFailures?.length) {
         setTreeControlWakeWarning(
-          `Pause released, but ${result.hold.wakeFailures.length} ${result.hold.wakeFailures.length === 1 ? "task" : "tasks"} could not start. ${result.hold.wakeFailures[0].message} Check the affected agents and try starting them again.`,
+          translate("ui3g4.issueDetail.wakeWarning", { count: result.hold.wakeFailures.length, message: result.hold.wakeFailures[0].message }),
         );
       }
       setTreeControlOpen(false);
@@ -4986,7 +4989,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
             : interaction.kind === "request_checkbox_confirmation"
               ? translate("issueDetail.detail.selectionConfirmed")
               : skippedCount > 0
-                ? `Accepted ${createdCount} draft${createdCount === 1 ? "" : "s"} and skipped ${skippedCount}`
+                ? translate("ui3g4.issueDetail.acceptedDrafts", { count: createdCount, skipped: skippedCount })
                 : translate("issueDetail.detail.suggestedTasksAccepted"),
         tone: "success",
       });
@@ -6845,7 +6848,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
       pushToast({
         title: translate("issueDetail.detail.isolatedReissueCreated"),
         body: created.identifier
-          ? `${created.identifier} will run on a fresh isolated workspace.`
+          ? translate("ui3g4.issueDetail.willRunIsolated", { id: created.identifier })
           : translate("issueDetail.detail.isolatedReissueCreatedBody"),
         tone: "success",
       });
@@ -6855,7 +6858,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
     },
     onError: (err) => {
       pushToast({
-        title: "Re-issue failed",
+        title: translate("ui3g4.issueDetail.reissueFailed"),
         body:
           err instanceof Error
             ? err.message
@@ -7165,7 +7168,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
       >
         <Paperclip className="h-3.5 w-3.5 mr-1.5" />
         {uploadAttachment.isPending || importMarkdownDocument.isPending ? (
-          "Uploading..."
+          translate("ui3g4.issueDetail.uploading")
         ) : (
           <>
             <span className="hidden sm:inline">{translate("issueDetail.detail.uploadAttachment")}</span>
@@ -7310,7 +7313,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
           <Link
             to={`/routines/${issue.originId}`}
             className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 border border-violet-500/30 px-2 py-0.5 text-(length:--text-nano) font-medium text-violet-600 dark:text-violet-400 shrink-0 hover:bg-violet-500/20 transition-colors"
-            title={`Routine execution from routine ${issue.originId}`}
+            title={translate("ui3g4.issueDetail.routineExecution", { id: issue.originId })}
           >
             <Repeat className="h-3 w-3" />
             {translate("issueDetail.detail.routine")}
@@ -7344,7 +7347,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
                     "text-(length:--text-nano)",
                     workModeMeta.classes.badge,
                   )}
-                  title={`This task is in ${workModeMeta.label.toLowerCase()}.`}
+                  title={translate("ui3g4.issueDetail.inWorkMode", { mode: workModeMeta.label.toLowerCase() })}
                 >
                   <WorkModeIcon className="h-3 w-3" aria-hidden />
                   {workModeMeta.label}
@@ -7561,7 +7564,7 @@ export function TaskDetailSurface({ conversation, tasksTab }: { tasksTab?: TaskS
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
-                      Copy as markdown
+                      {translate("ui3g4.issueDetail.copyMarkdown")}
                     </button>
                     {canArchiveFromInbox ? (
                       <button

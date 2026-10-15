@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 type TranscriptDensity = "comfortable" | "compact";
 
 type TranscriptActivity = {
@@ -118,7 +119,7 @@ export function isCommandTool(name: string, input: unknown): boolean {
 }
 
 export function displayToolName(name: string, input: unknown): string {
-  if (isCommandTool(name, input)) return "Executing command";
+  if (isCommandTool(name, input)) return t("ui3lib.transcript.executingCommand");
   return humanizeLabel(name);
 }
 
@@ -135,7 +136,7 @@ export function summarizeToolInput(
   const record = asRecord(input);
   if (!record) {
     const serialized = compactWhitespace(formatUnknown(input));
-    return serialized ? truncate(serialized, compactMax) : `Inspect ${name} input`;
+    return serialized ? truncate(serialized, compactMax) : t("ui3lib.transcript.inspectInput", { name });
   }
 
   const command = typeof record.command === "string"
@@ -162,14 +163,14 @@ export function summarizeToolInput(
   if (Array.isArray(record.paths) && record.paths.length > 0) {
     const first = record.paths.find((value): value is string => typeof value === "string" && value.trim().length > 0);
     if (first) {
-      return truncate(`${record.paths.length} paths, starting with ${first}`, compactMax);
+      return truncate(t("ui3lib.transcript.pathsStarting", { count: record.paths.length, first }), compactMax);
     }
   }
 
   const keys = Object.keys(record);
-  if (keys.length === 0) return `No ${name} input`;
-  if (keys.length === 1) return truncate(`${keys[0]} payload`, compactMax);
-  return truncate(`${keys.length} fields: ${keys.slice(0, 3).join(", ")}`, compactMax);
+  if (keys.length === 0) return t("ui3lib.transcript.noInput", { name });
+  if (keys.length === 1) return truncate(t("ui3lib.transcript.keyPayload", { key: keys[0] }), compactMax);
+  return truncate(t("ui3lib.transcript.fieldsList", { count: keys.length, fields: keys.slice(0, 3).join(", ") }), compactMax);
 }
 
 function readToolDetailValue(value: unknown, max = 200): string | null {
@@ -220,7 +221,7 @@ export function describeToolInput(name: string, input: unknown): ToolInputDetail
       .slice(0, 3)
       .join(", ");
     if (paths) {
-      const suffix = record.paths.length > 3 ? `, +${record.paths.length - 3} more` : "";
+      const suffix = record.paths.length > 3 ? t("ui3lib.transcript.morePaths", { count: record.paths.length - 3 }) : "";
       pushDetail("Paths", `${paths}${suffix}`);
     }
   }
@@ -242,15 +243,17 @@ export function summarizeToolResult(
   isError: boolean | undefined,
   density: TranscriptDensity = "comfortable",
 ): string {
-  if (!result) return isError ? "Tool failed" : "Waiting for result";
+  if (!result) return isError ? t("ui3lib.transcript.toolFailed") : t("ui3lib.transcript.waitingForResult");
   const structured = parseStructuredToolResult(result);
   if (structured) {
     if (structured.body) {
       return truncate(structured.body.split("\n")[0] ?? structured.body, density === "compact" ? 84 : 140);
     }
-    if (structured.status === "completed") return "Completed";
+    if (structured.status === "completed") return t("ui3lib.transcript.completed");
     if (structured.status === "failed" || structured.status === "error") {
-      return structured.exitCode ? `Failed with exit code ${structured.exitCode}` : "Failed";
+      return structured.exitCode
+        ? t("ui3lib.transcript.failedExitCode", { code: structured.exitCode })
+        : t("ui3lib.transcript.failed");
     }
   }
   const lines = result
@@ -266,7 +269,7 @@ export function parseSystemActivity(text: string): TranscriptActivity | null {
   if (!match) return null;
   return {
     status: match[1].toLowerCase() === "started" ? "running" : "completed",
-    name: humanizeLabel(match[2] ?? "Activity"),
+    name: humanizeLabel(match[2] ?? t("ui3lib.transcript.activity")),
     activityId: match[3] || undefined,
   };
 }

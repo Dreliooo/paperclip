@@ -1,6 +1,7 @@
 import type { Agent } from "@paperclipai/shared";
 import type { CompanyUserProfile } from "./company-members";
 import { formatReviewPolicyValue } from "./review-policy";
+import { t } from "@/i18n";
 
 type ActivityDetails = Record<string, unknown> | null | undefined;
 
@@ -23,166 +24,166 @@ interface ActivityFormatOptions {
 }
 
 const ACTIVITY_ROW_VERBS: Record<string, string> = {
-  "issue.created": "created",
-  "issue.updated": "updated",
-  "issue.read_marked": "read",
-  "issue.read_unmarked": "marked unread",
-  "issue.checked_out": "checked out",
-  "issue.released": "released",
-  "issue.comment_added": "commented on",
-  "issue.comment_cancelled": "cancelled a queued comment on",
-  "issue.queued_comment_edited": "edited a queued comment on",
-  "issue.queued_comments_reordered": "reordered queued comments on",
-  "issue.queued_comment_discarded": "discarded a queued comment on",
-  "issue.comment_deleted": "deleted a comment on",
-  "issue.attachment_added": "attached file to",
-  "issue.attachment_removed": "removed attachment from",
-  "issue.document_created": "created document for",
-  "issue.document_updated": "updated document on",
-  "issue.document_locked": "locked document on",
-  "issue.document_unlocked": "unlocked document on",
-  "issue.document_deleted": "deleted document from",
-  "issue.monitor_scheduled": "scheduled monitor on",
-  "issue.monitor_triggered": "triggered monitor for",
-  "issue.monitor_cleared": "cleared monitor on",
-  "issue.monitor_skipped": "skipped monitor for",
-  "issue.monitor_exhausted": "exhausted monitor on",
-  "issue.monitor_recovery_wake_queued": "queued monitor recovery for",
-  "issue.monitor_recovery_issue_created": "created monitor recovery for",
-  "issue.monitor_escalated_to_board": "escalated monitor for",
-  "issue.commented": "commented on",
-  "issue.deleted": "deleted",
-  "issue.successful_run_handoff_required": "flagged missing next step on",
-  "issue.successful_run_handoff_resolved": "recorded next step chosen on",
-  "issue.successful_run_handoff_escalated": "escalated missing next step on",
-  "issue.accepted_plan_decomposition_updated": "updated accepted-plan decomposition on",
-  "issue.recovery_action_opened": "opened a recovery action on",
-  "issue.recovery_action_resolved": "resolved the recovery action on",
-  "issue.recovery_action_escalated": "escalated the recovery action on",
-  "agent.created": "created",
-  "agent.updated": "updated",
-  "agent.paused": "paused",
-  "agent.resumed": "resumed",
-  "agent.error_cleared": "cleared error on",
-  "agent.terminated": "terminated",
-  "agent.key_created": "created API key for",
-  "agent.budget_updated": "updated budget for",
-  "agent.runtime_session_reset": "reset session for",
-  "heartbeat.invoked": "invoked heartbeat for",
-  "heartbeat.cancelled": "cancelled heartbeat for",
-  "heartbeat.output_stale_source_resolved": "system-folded stale run on",
-  "heartbeat.output_stale_recovery_recursion_refused": "refused recovery-on-recovery for",
-  "approval.created": "requested approval",
-  "approval.approved": "approved",
-  "approval.rejected": "rejected",
+  get "issue.created"() { return t("ui3lib.activityFormat.row.issue_created"); },
+  get "issue.updated"() { return t("ui3lib.activityFormat.row.issue_updated"); },
+  get "issue.read_marked"() { return t("ui3lib.activityFormat.row.issue_read_marked"); },
+  get "issue.read_unmarked"() { return t("ui3lib.activityFormat.row.issue_read_unmarked"); },
+  get "issue.checked_out"() { return t("ui3lib.activityFormat.row.issue_checked_out"); },
+  get "issue.released"() { return t("ui3lib.activityFormat.row.issue_released"); },
+  get "issue.comment_added"() { return t("ui3lib.activityFormat.row.issue_comment_added"); },
+  get "issue.comment_cancelled"() { return t("ui3lib.activityFormat.row.issue_comment_cancelled"); },
+  get "issue.queued_comment_edited"() { return t("ui3lib.activityFormat.row.issue_queued_comment_edited"); },
+  get "issue.queued_comments_reordered"() { return t("ui3lib.activityFormat.row.issue_queued_comments_reordered"); },
+  get "issue.queued_comment_discarded"() { return t("ui3lib.activityFormat.row.issue_queued_comment_discarded"); },
+  get "issue.comment_deleted"() { return t("ui3lib.activityFormat.row.issue_comment_deleted"); },
+  get "issue.attachment_added"() { return t("ui3lib.activityFormat.row.issue_attachment_added"); },
+  get "issue.attachment_removed"() { return t("ui3lib.activityFormat.row.issue_attachment_removed"); },
+  get "issue.document_created"() { return t("ui3lib.activityFormat.row.issue_document_created"); },
+  get "issue.document_updated"() { return t("ui3lib.activityFormat.row.issue_document_updated"); },
+  get "issue.document_locked"() { return t("ui3lib.activityFormat.row.issue_document_locked"); },
+  get "issue.document_unlocked"() { return t("ui3lib.activityFormat.row.issue_document_unlocked"); },
+  get "issue.document_deleted"() { return t("ui3lib.activityFormat.row.issue_document_deleted"); },
+  get "issue.monitor_scheduled"() { return t("ui3lib.activityFormat.row.issue_monitor_scheduled"); },
+  get "issue.monitor_triggered"() { return t("ui3lib.activityFormat.row.issue_monitor_triggered"); },
+  get "issue.monitor_cleared"() { return t("ui3lib.activityFormat.row.issue_monitor_cleared"); },
+  get "issue.monitor_skipped"() { return t("ui3lib.activityFormat.row.issue_monitor_skipped"); },
+  get "issue.monitor_exhausted"() { return t("ui3lib.activityFormat.row.issue_monitor_exhausted"); },
+  get "issue.monitor_recovery_wake_queued"() { return t("ui3lib.activityFormat.row.issue_monitor_recovery_wake_queued"); },
+  get "issue.monitor_recovery_issue_created"() { return t("ui3lib.activityFormat.row.issue_monitor_recovery_issue_created"); },
+  get "issue.monitor_escalated_to_board"() { return t("ui3lib.activityFormat.row.issue_monitor_escalated_to_board"); },
+  get "issue.commented"() { return t("ui3lib.activityFormat.row.issue_commented"); },
+  get "issue.deleted"() { return t("ui3lib.activityFormat.row.issue_deleted"); },
+  get "issue.successful_run_handoff_required"() { return t("ui3lib.activityFormat.row.issue_successful_run_handoff_required"); },
+  get "issue.successful_run_handoff_resolved"() { return t("ui3lib.activityFormat.row.issue_successful_run_handoff_resolved"); },
+  get "issue.successful_run_handoff_escalated"() { return t("ui3lib.activityFormat.row.issue_successful_run_handoff_escalated"); },
+  get "issue.accepted_plan_decomposition_updated"() { return t("ui3lib.activityFormat.row.issue_accepted_plan_decomposition_updated"); },
+  get "issue.recovery_action_opened"() { return t("ui3lib.activityFormat.row.issue_recovery_action_opened"); },
+  get "issue.recovery_action_resolved"() { return t("ui3lib.activityFormat.row.issue_recovery_action_resolved"); },
+  get "issue.recovery_action_escalated"() { return t("ui3lib.activityFormat.row.issue_recovery_action_escalated"); },
+  get "agent.created"() { return t("ui3lib.activityFormat.row.agent_created"); },
+  get "agent.updated"() { return t("ui3lib.activityFormat.row.agent_updated"); },
+  get "agent.paused"() { return t("ui3lib.activityFormat.row.agent_paused"); },
+  get "agent.resumed"() { return t("ui3lib.activityFormat.row.agent_resumed"); },
+  get "agent.error_cleared"() { return t("ui3lib.activityFormat.row.agent_error_cleared"); },
+  get "agent.terminated"() { return t("ui3lib.activityFormat.row.agent_terminated"); },
+  get "agent.key_created"() { return t("ui3lib.activityFormat.row.agent_key_created"); },
+  get "agent.budget_updated"() { return t("ui3lib.activityFormat.row.agent_budget_updated"); },
+  get "agent.runtime_session_reset"() { return t("ui3lib.activityFormat.row.agent_runtime_session_reset"); },
+  get "heartbeat.invoked"() { return t("ui3lib.activityFormat.row.heartbeat_invoked"); },
+  get "heartbeat.cancelled"() { return t("ui3lib.activityFormat.row.heartbeat_cancelled"); },
+  get "heartbeat.output_stale_source_resolved"() { return t("ui3lib.activityFormat.row.heartbeat_output_stale_source_resolved"); },
+  get "heartbeat.output_stale_recovery_recursion_refused"() { return t("ui3lib.activityFormat.row.heartbeat_output_stale_recovery_recursion_refused"); },
+  get "approval.created"() { return t("ui3lib.activityFormat.row.approval_created"); },
+  get "approval.approved"() { return t("ui3lib.activityFormat.row.approval_approved"); },
+  get "approval.rejected"() { return t("ui3lib.activityFormat.row.approval_rejected"); },
   // Interaction outcomes (PAP-16506). An agent may now resolve one — including a
   // review of its own work — so these must read as outcomes in the feed instead
   // of falling through to the raw "issue thread interaction accepted" action id.
   // `details.interactionKind` sharpens the wording; see INTERACTION_OUTCOME_LABELS.
-  "issue.thread_interaction_created": "asked for a decision on",
-  "issue.thread_interaction_accepted": "accepted the request on",
-  "issue.thread_interaction_rejected": "rejected the request on",
-  "issue.thread_interaction_answered": "answered the request on",
-  "issue.thread_interaction_withdrawn": "withdrew the request on",
-  "issue.thread_interaction_cancelled": "cancelled the request on",
-  "issue.thread_interaction_skipped": "skipped the request on",
-  "issue.thread_interaction_expired": "expired the request on",
-  "issue.thread_interaction_item_verdicts_submitted": "submitted verdicts on",
-  "issue.stalled_review_decided": "recorded a review verdict on",
-  "project.created": "created",
-  "project.updated": "updated",
-  "project.deleted": "deleted",
-  "goal.created": "created",
-  "goal.updated": "updated",
-  "goal.deleted": "deleted",
-  "cost.reported": "reported cost for",
-  "cost.recorded": "recorded cost for",
-  "company.created": "created organization",
-  "company.updated": "updated organization",
-  "company.archived": "archived",
-  "company.reactivated": "reactivated",
-  "company.budget_updated": "updated budget for",
-  "audit.exported": "exported the agent audit log for",
-  "tool_app.connected": "connected",
-  "tool_app.oauth_connected": "connected credentials for",
-  "tool_app.oauth_failed": "failed to connect credentials for",
-  "tool_app.oauth_access_finalized": "finished credential access for",
-  "tool_app.finished": "finished setup for",
-  "tool_app.reconnected": "reconnected",
-  "tool_connection.created": "created",
-  "tool_connection.updated": "updated",
-  "tool_connection.archived": "removed",
-  "tool_connection.catalog_refresh": "refreshed actions for",
-  "tool_connection.installs_synced": "changed agent installs for",
-  "tool_connection.install_access_extended": "extended agent access for",
-  "tool_connection.grant_audience_replaced": "changed human access for",
-  "tool_connection.grant_added": "added credentials to",
-  "tool_connection.grant_revoked": "revoked credentials from",
-  "tool_connection.grant_delegated": "delegated credentials for",
-  "tool_connection.grant_delegation_revoked": "revoked credential delegation for",
+  get "issue.thread_interaction_created"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_created"); },
+  get "issue.thread_interaction_accepted"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_accepted"); },
+  get "issue.thread_interaction_rejected"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_rejected"); },
+  get "issue.thread_interaction_answered"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_answered"); },
+  get "issue.thread_interaction_withdrawn"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_withdrawn"); },
+  get "issue.thread_interaction_cancelled"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_cancelled"); },
+  get "issue.thread_interaction_skipped"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_skipped"); },
+  get "issue.thread_interaction_expired"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_expired"); },
+  get "issue.thread_interaction_item_verdicts_submitted"() { return t("ui3lib.activityFormat.row.issue_thread_interaction_item_verdicts_submitted"); },
+  get "issue.stalled_review_decided"() { return t("ui3lib.activityFormat.row.issue_stalled_review_decided"); },
+  get "project.created"() { return t("ui3lib.activityFormat.row.project_created"); },
+  get "project.updated"() { return t("ui3lib.activityFormat.row.project_updated"); },
+  get "project.deleted"() { return t("ui3lib.activityFormat.row.project_deleted"); },
+  get "goal.created"() { return t("ui3lib.activityFormat.row.goal_created"); },
+  get "goal.updated"() { return t("ui3lib.activityFormat.row.goal_updated"); },
+  get "goal.deleted"() { return t("ui3lib.activityFormat.row.goal_deleted"); },
+  get "cost.reported"() { return t("ui3lib.activityFormat.row.cost_reported"); },
+  get "cost.recorded"() { return t("ui3lib.activityFormat.row.cost_recorded"); },
+  get "company.created"() { return t("ui3lib.activityFormat.row.company_created"); },
+  get "company.updated"() { return t("ui3lib.activityFormat.row.company_updated"); },
+  get "company.archived"() { return t("ui3lib.activityFormat.row.company_archived"); },
+  get "company.reactivated"() { return t("ui3lib.activityFormat.row.company_reactivated"); },
+  get "company.budget_updated"() { return t("ui3lib.activityFormat.row.company_budget_updated"); },
+  get "audit.exported"() { return t("ui3lib.activityFormat.row.audit_exported"); },
+  get "tool_app.connected"() { return t("ui3lib.activityFormat.row.tool_app_connected"); },
+  get "tool_app.oauth_connected"() { return t("ui3lib.activityFormat.row.tool_app_oauth_connected"); },
+  get "tool_app.oauth_failed"() { return t("ui3lib.activityFormat.row.tool_app_oauth_failed"); },
+  get "tool_app.oauth_access_finalized"() { return t("ui3lib.activityFormat.row.tool_app_oauth_access_finalized"); },
+  get "tool_app.finished"() { return t("ui3lib.activityFormat.row.tool_app_finished"); },
+  get "tool_app.reconnected"() { return t("ui3lib.activityFormat.row.tool_app_reconnected"); },
+  get "tool_connection.created"() { return t("ui3lib.activityFormat.row.tool_connection_created"); },
+  get "tool_connection.updated"() { return t("ui3lib.activityFormat.row.tool_connection_updated"); },
+  get "tool_connection.archived"() { return t("ui3lib.activityFormat.row.tool_connection_archived"); },
+  get "tool_connection.catalog_refresh"() { return t("ui3lib.activityFormat.row.tool_connection_catalog_refresh"); },
+  get "tool_connection.installs_synced"() { return t("ui3lib.activityFormat.row.tool_connection_installs_synced"); },
+  get "tool_connection.install_access_extended"() { return t("ui3lib.activityFormat.row.tool_connection_install_access_extended"); },
+  get "tool_connection.grant_audience_replaced"() { return t("ui3lib.activityFormat.row.tool_connection_grant_audience_replaced"); },
+  get "tool_connection.grant_added"() { return t("ui3lib.activityFormat.row.tool_connection_grant_added"); },
+  get "tool_connection.grant_revoked"() { return t("ui3lib.activityFormat.row.tool_connection_grant_revoked"); },
+  get "tool_connection.grant_delegated"() { return t("ui3lib.activityFormat.row.tool_connection_grant_delegated"); },
+  get "tool_connection.grant_delegation_revoked"() { return t("ui3lib.activityFormat.row.tool_connection_grant_delegation_revoked"); },
 };
 
 const ISSUE_ACTIVITY_LABELS: Record<string, string> = {
-  "issue.created": "created the issue",
-  "issue.updated": "updated the issue",
-  "issue.checked_out": "checked out the issue",
-  "issue.released": "released the issue",
-  "issue.comment_added": "added a comment",
-  "issue.comment_cancelled": "cancelled a queued comment",
-  "issue.queued_comment_edited": "edited a queued comment",
-  "issue.queued_comments_reordered": "reordered queued comments",
-  "issue.queued_comment_discarded": "discarded a queued comment",
-  "issue.comment_deleted": "deleted a comment",
-  "issue.feedback_vote_saved": "saved feedback on an AI output",
-  "issue.attachment_added": "added an attachment",
-  "issue.attachment_removed": "removed an attachment",
-  "issue.document_created": "created a document",
-  "issue.document_updated": "updated a document",
-  "issue.document_locked": "locked a document",
-  "issue.document_unlocked": "unlocked a document",
-  "issue.document_deleted": "deleted a document",
-  "issue.monitor_scheduled": "scheduled a monitor",
-  "issue.monitor_triggered": "triggered a monitor",
-  "issue.monitor_cleared": "cleared a monitor",
-  "issue.monitor_skipped": "skipped a monitor",
-  "issue.monitor_exhausted": "exhausted a monitor",
-  "issue.monitor_recovery_wake_queued": "queued a monitor recovery wake",
-  "issue.monitor_recovery_issue_created": "created a monitor recovery issue",
-  "issue.monitor_escalated_to_board": "escalated a monitor to the board",
-  "issue.deleted": "deleted the issue",
-  "issue.successful_run_handoff_required": "Run finished without a clear next step",
-  "issue.successful_run_handoff_resolved": "Next step chosen",
-  "issue.successful_run_handoff_escalated": "Run finished without a next step - recovery escalated",
-  "issue.cross_issue_influence_cap_rejected": "hit the per-run cross-task write cap",
-  "issue.cross_issue_influence_observed": "made a cross-task write",
-  "issue.attribution_spoof_rejected": "tried to choose its own responsible user",
-  "issue.recovery_action_opened": "Opened a source-scoped recovery action",
-  "issue.recovery_action_resolved": "Resolved the recovery action",
-  "issue.recovery_action_escalated": "Escalated the recovery action",
-  "issue.accepted_plan_decomposition_updated": "updated the accepted-plan decomposition",
-  "agent.created": "created an agent",
-  "agent.updated": "updated the agent",
-  "agent.paused": "paused the agent",
-  "agent.resumed": "resumed the agent",
-  "agent.error_cleared": "cleared the agent error",
-  "agent.terminated": "terminated the agent",
-  "heartbeat.invoked": "invoked a heartbeat",
-  "heartbeat.cancelled": "cancelled a heartbeat",
-  "heartbeat.output_stale_source_resolved": "System folded a stale run",
-  "heartbeat.output_stale_recovery_recursion_refused": "Refused recovery-on-recovery escalation",
-  "approval.created": "requested approval",
-  "approval.approved": "approved",
-  "approval.rejected": "rejected",
-  "issue.thread_interaction_created": "asked for a decision",
-  "issue.thread_interaction_accepted": "accepted the request",
-  "issue.thread_interaction_rejected": "rejected the request",
-  "issue.thread_interaction_answered": "answered the request",
-  "issue.thread_interaction_withdrawn": "withdrew the request",
-  "issue.thread_interaction_cancelled": "cancelled the request",
-  "issue.thread_interaction_skipped": "skipped the request",
-  "issue.thread_interaction_expired": "expired the request",
-  "issue.thread_interaction_item_verdicts_submitted": "submitted verdicts on the request",
-  "issue.stalled_review_decided": "recorded a review verdict",
+  get "issue.created"() { return t("ui3lib.activityFormat.issue.issue_created"); },
+  get "issue.updated"() { return t("ui3lib.activityFormat.issue.issue_updated"); },
+  get "issue.checked_out"() { return t("ui3lib.activityFormat.issue.issue_checked_out"); },
+  get "issue.released"() { return t("ui3lib.activityFormat.issue.issue_released"); },
+  get "issue.comment_added"() { return t("ui3lib.activityFormat.issue.issue_comment_added"); },
+  get "issue.comment_cancelled"() { return t("ui3lib.activityFormat.issue.issue_comment_cancelled"); },
+  get "issue.queued_comment_edited"() { return t("ui3lib.activityFormat.issue.issue_queued_comment_edited"); },
+  get "issue.queued_comments_reordered"() { return t("ui3lib.activityFormat.issue.issue_queued_comments_reordered"); },
+  get "issue.queued_comment_discarded"() { return t("ui3lib.activityFormat.issue.issue_queued_comment_discarded"); },
+  get "issue.comment_deleted"() { return t("ui3lib.activityFormat.issue.issue_comment_deleted"); },
+  get "issue.feedback_vote_saved"() { return t("ui3lib.activityFormat.issue.issue_feedback_vote_saved"); },
+  get "issue.attachment_added"() { return t("ui3lib.activityFormat.issue.issue_attachment_added"); },
+  get "issue.attachment_removed"() { return t("ui3lib.activityFormat.issue.issue_attachment_removed"); },
+  get "issue.document_created"() { return t("ui3lib.activityFormat.issue.issue_document_created"); },
+  get "issue.document_updated"() { return t("ui3lib.activityFormat.issue.issue_document_updated"); },
+  get "issue.document_locked"() { return t("ui3lib.activityFormat.issue.issue_document_locked"); },
+  get "issue.document_unlocked"() { return t("ui3lib.activityFormat.issue.issue_document_unlocked"); },
+  get "issue.document_deleted"() { return t("ui3lib.activityFormat.issue.issue_document_deleted"); },
+  get "issue.monitor_scheduled"() { return t("ui3lib.activityFormat.issue.issue_monitor_scheduled"); },
+  get "issue.monitor_triggered"() { return t("ui3lib.activityFormat.issue.issue_monitor_triggered"); },
+  get "issue.monitor_cleared"() { return t("ui3lib.activityFormat.issue.issue_monitor_cleared"); },
+  get "issue.monitor_skipped"() { return t("ui3lib.activityFormat.issue.issue_monitor_skipped"); },
+  get "issue.monitor_exhausted"() { return t("ui3lib.activityFormat.issue.issue_monitor_exhausted"); },
+  get "issue.monitor_recovery_wake_queued"() { return t("ui3lib.activityFormat.issue.issue_monitor_recovery_wake_queued"); },
+  get "issue.monitor_recovery_issue_created"() { return t("ui3lib.activityFormat.issue.issue_monitor_recovery_issue_created"); },
+  get "issue.monitor_escalated_to_board"() { return t("ui3lib.activityFormat.issue.issue_monitor_escalated_to_board"); },
+  get "issue.deleted"() { return t("ui3lib.activityFormat.issue.issue_deleted"); },
+  get "issue.successful_run_handoff_required"() { return t("ui3lib.activityFormat.issue.issue_successful_run_handoff_required"); },
+  get "issue.successful_run_handoff_resolved"() { return t("ui3lib.activityFormat.issue.issue_successful_run_handoff_resolved"); },
+  get "issue.successful_run_handoff_escalated"() { return t("ui3lib.activityFormat.issue.issue_successful_run_handoff_escalated"); },
+  get "issue.cross_issue_influence_cap_rejected"() { return t("ui3lib.activityFormat.issue.issue_cross_issue_influence_cap_rejected"); },
+  get "issue.cross_issue_influence_observed"() { return t("ui3lib.activityFormat.issue.issue_cross_issue_influence_observed"); },
+  get "issue.attribution_spoof_rejected"() { return t("ui3lib.activityFormat.issue.issue_attribution_spoof_rejected"); },
+  get "issue.recovery_action_opened"() { return t("ui3lib.activityFormat.issue.issue_recovery_action_opened"); },
+  get "issue.recovery_action_resolved"() { return t("ui3lib.activityFormat.issue.issue_recovery_action_resolved"); },
+  get "issue.recovery_action_escalated"() { return t("ui3lib.activityFormat.issue.issue_recovery_action_escalated"); },
+  get "issue.accepted_plan_decomposition_updated"() { return t("ui3lib.activityFormat.issue.issue_accepted_plan_decomposition_updated"); },
+  get "agent.created"() { return t("ui3lib.activityFormat.issue.agent_created"); },
+  get "agent.updated"() { return t("ui3lib.activityFormat.issue.agent_updated"); },
+  get "agent.paused"() { return t("ui3lib.activityFormat.issue.agent_paused"); },
+  get "agent.resumed"() { return t("ui3lib.activityFormat.issue.agent_resumed"); },
+  get "agent.error_cleared"() { return t("ui3lib.activityFormat.issue.agent_error_cleared"); },
+  get "agent.terminated"() { return t("ui3lib.activityFormat.issue.agent_terminated"); },
+  get "heartbeat.invoked"() { return t("ui3lib.activityFormat.issue.heartbeat_invoked"); },
+  get "heartbeat.cancelled"() { return t("ui3lib.activityFormat.issue.heartbeat_cancelled"); },
+  get "heartbeat.output_stale_source_resolved"() { return t("ui3lib.activityFormat.issue.heartbeat_output_stale_source_resolved"); },
+  get "heartbeat.output_stale_recovery_recursion_refused"() { return t("ui3lib.activityFormat.issue.heartbeat_output_stale_recovery_recursion_refused"); },
+  get "approval.created"() { return t("ui3lib.activityFormat.row.approval_created"); },
+  get "approval.approved"() { return t("ui3lib.activityFormat.row.approval_approved"); },
+  get "approval.rejected"() { return t("ui3lib.activityFormat.row.approval_rejected"); },
+  get "issue.thread_interaction_created"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_created"); },
+  get "issue.thread_interaction_accepted"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_accepted"); },
+  get "issue.thread_interaction_rejected"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_rejected"); },
+  get "issue.thread_interaction_answered"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_answered"); },
+  get "issue.thread_interaction_withdrawn"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_withdrawn"); },
+  get "issue.thread_interaction_cancelled"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_cancelled"); },
+  get "issue.thread_interaction_skipped"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_skipped"); },
+  get "issue.thread_interaction_expired"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_expired"); },
+  get "issue.thread_interaction_item_verdicts_submitted"() { return t("ui3lib.activityFormat.issue.issue_thread_interaction_item_verdicts_submitted"); },
+  get "issue.stalled_review_decided"() { return t("ui3lib.activityFormat.issue.issue_stalled_review_decided"); },
 };
 
 /**
@@ -191,9 +192,9 @@ const ISSUE_ACTIVITY_LABELS: Record<string, string> = {
  * Mirrors `StalledReviewDecisionAction` in shared.
  */
 const STALLED_REVIEW_DECISION_LABELS: Record<string, string> = {
-  approve: "approved the review",
-  request_changes: "requested changes on the review",
-  send_back: "sent the review back to work",
+  get approve() { return t("ui3lib.activityFormat.stalledReview.approve"); },
+  get request_changes() { return t("ui3lib.activityFormat.stalledReview.requestChanges"); },
+  get send_back() { return t("ui3lib.activityFormat.stalledReview.sendBack"); },
 };
 
 /**
@@ -204,17 +205,17 @@ const STALLED_REVIEW_DECISION_LABELS: Record<string, string> = {
  * is also the fallback for an event that carries no kind.
  */
 const INTERACTION_ACCEPTED_LABELS: Record<string, string> = {
-  request_confirmation: "approved the request",
-  request_checkbox_confirmation: "approved the request",
-  suggest_tasks: "accepted the task suggestions",
-  ask_user_questions: "accepted the answers",
+  get request_confirmation() { return t("ui3lib.activityFormat.interactionAccepted.requestConfirmation"); },
+  get request_checkbox_confirmation() { return t("ui3lib.activityFormat.interactionAccepted.requestCheckboxConfirmation"); },
+  get suggest_tasks() { return t("ui3lib.activityFormat.interactionAccepted.suggestTasks"); },
+  get ask_user_questions() { return t("ui3lib.activityFormat.interactionAccepted.askUserQuestions"); },
 };
 
 const INTERACTION_REJECTED_LABELS: Record<string, string> = {
-  request_confirmation: "rejected the request",
-  request_checkbox_confirmation: "rejected the request",
-  suggest_tasks: "declined the task suggestions",
-  ask_user_questions: "declined the questions",
+  get request_confirmation() { return t("ui3lib.activityFormat.interactionRejected.requestConfirmation"); },
+  get request_checkbox_confirmation() { return t("ui3lib.activityFormat.interactionRejected.requestCheckboxConfirmation"); },
+  get suggest_tasks() { return t("ui3lib.activityFormat.interactionRejected.suggestTasks"); },
+  get ask_user_questions() { return t("ui3lib.activityFormat.interactionRejected.askUserQuestions"); },
 };
 
 /**
@@ -238,7 +239,7 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 }
 
 function humanizeValue(value: unknown): string {
-  if (typeof value !== "string") return String(value ?? "none");
+  if (typeof value !== "string") return String(value ?? t("ui3lib.activityFormat.none"));
   return value.replace(/_/g, " ");
 }
 
@@ -265,17 +266,17 @@ function readIssueReferences(details: ActivityDetails, key: string): ActivityIss
 }
 
 function formatUserLabel(userId: string | null | undefined, options: ActivityFormatOptions = {}): string {
-  if (!userId || userId === "local-board") return "Board";
-  if (options.currentUserId && userId === options.currentUserId) return "You";
+  if (!userId || userId === "local-board") return t("ui3lib.assignees.board");
+  if (options.currentUserId && userId === options.currentUserId) return t("ui3lib.assignees.you");
   const profile = options.userProfileMap?.get(userId);
   if (profile) return profile.label;
-  return `user ${userId.slice(0, 5)}`;
+  return t("ui3lib.activityFormat.userShort", { id: userId.slice(0, 5) });
 }
 
 function formatParticipantLabel(participant: ActivityParticipant, options: ActivityFormatOptions): string {
   if (participant.type === "agent") {
     const agentId = participant.agentId ?? "";
-    return options.agentMap?.get(agentId)?.name ?? "agent";
+    return options.agentMap?.get(agentId)?.name ?? t("ui3lib.activityFormat.agent");
   }
   return formatUserLabel(participant.userId, options);
 }
@@ -284,7 +285,7 @@ function formatIssueReferenceLabel(reference: ActivityIssueReference): string {
   if (reference.identifier) return reference.identifier;
   if (reference.title) return reference.title;
   if (reference.id) return reference.id.slice(0, 8);
-  return "task";
+  return t("ui3lib.activityFormat.task");
 }
 
 function formatChangedEntityLabel(
@@ -293,8 +294,8 @@ function formatChangedEntityLabel(
   labels: string[],
 ): string {
   if (labels.length <= 0) return plural;
-  if (labels.length === 1) return `${singular} ${labels[0]}`;
-  return `${labels.length} ${plural}`;
+  if (labels.length === 1) return t("ui3lib.activityFormat.entityOne", { singular, label: labels[0] });
+  return t("ui3lib.activityFormat.entityCount", { count: labels.length, plural });
 }
 
 function readNumber(value: unknown): number | null {
@@ -315,13 +316,13 @@ function formatAcceptedPlanDecompositionDetail(details: ActivityDetails): string
   const newlyCreated = readStringArrayLength(details.newlyCreatedChildIssueIds);
   const reused = Math.max(0, totalChildren - newlyCreated);
   const parts: string[] = [];
-  if (newlyCreated > 0) parts.push(`created ${newlyCreated} new`);
-  if (reused > 0) parts.push(`reused ${reused} existing`);
-  if (parts.length === 0 && requested !== null) parts.push(`${requested} requested`);
+  if (newlyCreated > 0) parts.push(t("ui3lib.activityFormat.decomposition.createdNew", { count: newlyCreated }));
+  if (reused > 0) parts.push(t("ui3lib.activityFormat.decomposition.reusedExisting", { count: reused }));
+  if (parts.length === 0 && requested !== null) parts.push(t("ui3lib.activityFormat.decomposition.requested", { count: requested }));
   const summary = parts.length > 0 ? parts.join(", ") : null;
-  if (status === "completed" && summary) return `decomposition completed (${summary})`;
-  if (status === "completed") return "decomposition completed";
-  if (status === "in_flight" && summary) return `decomposition in flight (${summary})`;
+  if (status === "completed" && summary) return t("ui3lib.activityFormat.decomposition.completedWith", { summary });
+  if (status === "completed") return t("ui3lib.activityFormat.decomposition.completed");
+  if (status === "in_flight" && summary) return t("ui3lib.activityFormat.decomposition.inFlightWith", { summary });
   return summary;
 }
 
@@ -332,14 +333,14 @@ function formatIssueUpdatedVerb(details: ActivityDetails): string | null {
     const from = previous.status;
     const to = humanizeValue(details.status === "in_review" && details.externalConversationState === "waiting" ? "idle" : details.status);
     return from
-      ? `changed status from ${humanizeValue(from)} to ${to} on`
-      : `changed status to ${to} on`;
+      ? t("ui3lib.activityFormat.statusFromTo", { from: humanizeValue(from), to })
+      : t("ui3lib.activityFormat.statusTo", { to });
   }
   if (details.priority !== undefined) {
     const from = previous.priority;
     return from
-      ? `changed priority from ${humanizeValue(from)} to ${humanizeValue(details.priority)} on`
-      : `changed priority to ${humanizeValue(details.priority)} on`;
+      ? t("ui3lib.activityFormat.priorityFromTo", { from: humanizeValue(from), to: humanizeValue(details.priority) })
+      : t("ui3lib.activityFormat.priorityTo", { to: humanizeValue(details.priority) });
   }
   return null;
 }
@@ -349,7 +350,7 @@ function formatAssigneeName(details: ActivityDetails, options: ActivityFormatOpt
   const agentId = details.assigneeAgentId;
   const userId = details.assigneeUserId;
   if (typeof agentId === "string" && agentId) {
-    return options.agentMap?.get(agentId)?.name ?? "agent";
+    return options.agentMap?.get(agentId)?.name ?? t("ui3lib.activityFormat.agent");
   }
   if (typeof userId === "string" && userId) {
     return formatUserLabel(userId, options);
@@ -367,29 +368,29 @@ function formatIssueUpdatedAction(details: ActivityDetails, options: ActivityFor
     const to = humanizeValue(details.status === "in_review" && details.externalConversationState === "waiting" ? "idle" : details.status);
     parts.push(
       from
-        ? `changed the status from ${humanizeValue(from)} to ${to}`
-        : `changed the status to ${to}`,
+        ? t("ui3lib.activityFormat.statusFromToPlain", { from: humanizeValue(from), to })
+        : t("ui3lib.activityFormat.statusToPlain", { to }),
     );
   }
   if (details.priority !== undefined) {
     const from = previous.priority;
     parts.push(
       from
-        ? `changed the priority from ${humanizeValue(from)} to ${humanizeValue(details.priority)}`
-        : `changed the priority to ${humanizeValue(details.priority)}`,
+        ? t("ui3lib.activityFormat.priorityFromToPlain", { from: humanizeValue(from), to: humanizeValue(details.priority) })
+        : t("ui3lib.activityFormat.priorityToPlain", { to: humanizeValue(details.priority) }),
     );
   }
   if (details.assigneeAgentId !== undefined || details.assigneeUserId !== undefined) {
     const assigneeName = formatAssigneeName(details, options);
-    parts.push(assigneeName ? `made ${assigneeName} responsible for the task` : "cleared the responsible");
+    parts.push(assigneeName ? t("ui3lib.activityFormat.madeResponsible", { name: assigneeName }) : t("ui3lib.activityFormat.clearedResponsible"));
   }
   if (details.reviewPolicy !== undefined) {
     // `null` is the default ("anyone can approve"), so it must not read as
     // "changed the review policy to none" (PAP-16506).
-    parts.push(`changed who can approve to ${formatReviewPolicyValue(details.reviewPolicy)}`);
+    parts.push(t("ui3lib.activityFormat.changedApprover", { value: formatReviewPolicyValue(details.reviewPolicy) }));
   }
-  if (details.title !== undefined) parts.push("updated the title");
-  if (details.description !== undefined) parts.push("updated the description");
+  if (details.title !== undefined) parts.push(t("ui3lib.activityFormat.updatedTitle"));
+  if (details.description !== undefined) parts.push(t("ui3lib.activityFormat.updatedDescription"));
 
   return parts.length > 0 ? parts.join(", ") : null;
 }
@@ -406,31 +407,49 @@ function formatStructuredIssueChange(input: {
   if (input.action === "issue.blockers_updated") {
     const added = readIssueReferences(details, "addedBlockedByIssues").map(formatIssueReferenceLabel);
     const removed = readIssueReferences(details, "removedBlockedByIssues").map(formatIssueReferenceLabel);
+    const blocker = t("ui3lib.activityFormat.blocker.singular");
+    const blockers = t("ui3lib.activityFormat.blocker.plural");
     if (added.length > 0 && removed.length === 0) {
-      const changed = formatChangedEntityLabel("blocker", "blockers", added);
-      return input.forIssueDetail ? `added ${changed}` : `added ${changed} to`;
+      const changed = formatChangedEntityLabel(blocker, blockers, added);
+      return input.forIssueDetail
+        ? t("ui3lib.activityFormat.addedChanged", { changed })
+        : t("ui3lib.activityFormat.addedChangedTo", { changed });
     }
     if (removed.length > 0 && added.length === 0) {
-      const changed = formatChangedEntityLabel("blocker", "blockers", removed);
-      return input.forIssueDetail ? `removed ${changed}` : `removed ${changed} from`;
+      const changed = formatChangedEntityLabel(blocker, blockers, removed);
+      return input.forIssueDetail
+        ? t("ui3lib.activityFormat.removedChanged", { changed })
+        : t("ui3lib.activityFormat.removedChangedFrom", { changed });
     }
-    return input.forIssueDetail ? "updated blockers" : "updated blockers on";
+    return input.forIssueDetail
+      ? t("ui3lib.activityFormat.updatedBlockers")
+      : t("ui3lib.activityFormat.updatedBlockersOn");
   }
 
   if (input.action === "issue.reviewers_updated" || input.action === "issue.approvers_updated") {
     const added = readParticipants(details, "addedParticipants").map((participant) => formatParticipantLabel(participant, input.options));
     const removed = readParticipants(details, "removedParticipants").map((participant) => formatParticipantLabel(participant, input.options));
-    const singular = input.action === "issue.reviewers_updated" ? "reviewer" : "approver";
-    const plural = input.action === "issue.reviewers_updated" ? "reviewers" : "approvers";
+    const singular = input.action === "issue.reviewers_updated"
+      ? t("ui3lib.activityFormat.reviewer.singular")
+      : t("ui3lib.activityFormat.approver.singular");
+    const plural = input.action === "issue.reviewers_updated"
+      ? t("ui3lib.activityFormat.reviewer.plural")
+      : t("ui3lib.activityFormat.approver.plural");
     if (added.length > 0 && removed.length === 0) {
       const changed = formatChangedEntityLabel(singular, plural, added);
-      return input.forIssueDetail ? `added ${changed}` : `added ${changed} to`;
+      return input.forIssueDetail
+        ? t("ui3lib.activityFormat.addedChanged", { changed })
+        : t("ui3lib.activityFormat.addedChangedTo", { changed });
     }
     if (removed.length > 0 && added.length === 0) {
       const changed = formatChangedEntityLabel(singular, plural, removed);
-      return input.forIssueDetail ? `removed ${changed}` : `removed ${changed} from`;
+      return input.forIssueDetail
+        ? t("ui3lib.activityFormat.removedChanged", { changed })
+        : t("ui3lib.activityFormat.removedChangedFrom", { changed });
     }
-    return input.forIssueDetail ? `updated ${plural}` : `updated ${plural} on`;
+    return input.forIssueDetail
+      ? t("ui3lib.activityFormat.updatedPlural", { plural })
+      : t("ui3lib.activityFormat.updatedPluralOn", { plural });
   }
 
   return null;
@@ -446,16 +465,24 @@ export function formatActivityVerb(
       ? details.tool
       : typeof details?.upstreamToolName === "string"
         ? details.upstreamToolName
-        : "an app action";
+        : t("ui3lib.activityFormat.appAction");
     const tool = rawTool.replace(/[._-]+/g, " ");
     const isTest = details?.source === "test";
-    if (action === "tool_gateway.call_completed") return `${isTest ? "tested" : "used"} ${tool} on`;
-    if (action === "tool_gateway.call_allowed") return `${isTest ? "started a test of" : "was allowed to use"} ${tool} on`;
-    if (action === "tool_gateway.call_denied") return `was blocked from using ${tool} on`;
-    if (action === "tool_gateway.approval_requested") return `asked to use ${tool} on`;
-    if (action === "tool_gateway.session_created") return "opened an app session for";
-    if (action === "tool_gateway.session_rejected") return "was blocked from opening an app session for";
-    if (action === "tool_gateway.discovery") return "discovered app actions for";
+    if (action === "tool_gateway.call_completed") {
+      return isTest
+        ? t("ui3lib.activityFormat.toolTested", { tool })
+        : t("ui3lib.activityFormat.toolUsed", { tool });
+    }
+    if (action === "tool_gateway.call_allowed") {
+      return isTest
+        ? t("ui3lib.activityFormat.toolTestStarted", { tool })
+        : t("ui3lib.activityFormat.toolAllowed", { tool });
+    }
+    if (action === "tool_gateway.call_denied") return t("ui3lib.activityFormat.toolDenied", { tool });
+    if (action === "tool_gateway.approval_requested") return t("ui3lib.activityFormat.toolAsked", { tool });
+    if (action === "tool_gateway.session_created") return t("ui3lib.activityFormat.toolSessionOpened");
+    if (action === "tool_gateway.session_rejected") return t("ui3lib.activityFormat.toolSessionRejected");
+    if (action === "tool_gateway.discovery") return t("ui3lib.activityFormat.toolDiscovery");
   }
 
   if (action === "issue.updated") {
@@ -466,11 +493,11 @@ export function formatActivityVerb(
   if (action === "issue.stalled_review_decided") {
     const decision = typeof details?.action === "string" ? details.action : null;
     const label = decision ? STALLED_REVIEW_DECISION_LABELS[decision] : null;
-    if (label) return `${label} on`;
+    if (label) return t("ui3lib.activityFormat.withOn", { label });
   }
 
   const outcomeLabel = formatInteractionOutcomeLabel(action, details);
-  if (outcomeLabel) return `${outcomeLabel} on`;
+  if (outcomeLabel) return t("ui3lib.activityFormat.withOn", { label: outcomeLabel });
 
   const structuredChange = formatStructuredIssueChange({
     action,
@@ -520,7 +547,7 @@ export function formatIssueActivityAction(
       ? details.serviceName.trim()
       : null;
     const base = ISSUE_ACTIVITY_LABELS[action] ?? action.replace(/[._]/g, " ");
-    return serviceName ? `${base} for ${serviceName}` : base;
+    return serviceName ? t("ui3lib.activityFormat.baseForService", { base, service: serviceName }) : base;
   }
 
   if (
@@ -533,9 +560,11 @@ export function formatIssueActivityAction(
     ) &&
     details
   ) {
-    const key = typeof details.key === "string" ? details.key : "document";
-    const title = typeof details.title === "string" && details.title ? ` (${details.title})` : "";
-    return `${ISSUE_ACTIVITY_LABELS[action] ?? action} ${key}${title}`;
+    const key = typeof details.key === "string" ? details.key : t("ui3lib.activityFormat.document");
+    const title = typeof details.title === "string" && details.title
+      ? t("ui3lib.activityFormat.documentTitle", { title: details.title })
+      : "";
+    return t("ui3lib.activityFormat.documentAction", { label: ISSUE_ACTIVITY_LABELS[action] ?? action, key, title });
   }
 
   return ISSUE_ACTIVITY_LABELS[action] ?? action.replace(/[._]/g, " ");

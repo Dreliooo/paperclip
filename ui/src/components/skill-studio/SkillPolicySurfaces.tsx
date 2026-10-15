@@ -14,6 +14,7 @@ import { useCallback, useState } from "react";
 import { InlineBanner } from "@/components/InlineBanner";
 import { Button } from "@/components/ui/button";
 import { classifySkillDenial, type SkillDenial } from "@/lib/skill-policy-denial";
+import { useTranslation } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Denial banner state hook
@@ -71,9 +72,10 @@ export function SkillPolicyDenialNotice({
   onDismiss?: () => void;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const actions = onDismiss ? (
     <Button variant="ghost" size="sm" onClick={onDismiss}>
-      Dismiss
+      {t("ui3g2.skillStudio.policy.dismiss")}
     </Button>
   ) : undefined;
 

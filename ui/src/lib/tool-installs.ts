@@ -1,4 +1,5 @@
 import type { ToolConnectionInstall } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * Shared "Permitted vs Installed" helpers (Phase 3b, PAP-13618).
@@ -45,14 +46,14 @@ export function installPayload(
 // --- Copy (verbatim from the PAP-13615 wireframe spec) ---
 
 export function installInfoNotice(appName: string): string {
-  return `Installing adds ${appName}'s tools to the agent's context on every run — install only where it will actually be used.`;
+  return t("ui3lib.toolInstalls.infoNotice", { appName });
 }
 
 export const INSTALL_ALL_WARNING =
   "Adds context cost to every run of every agent — a deliberate choice. New agents you add later are installed automatically.";
 
 export function autoExtendNotice(agentName: string): string {
-  return `Installing on ${agentName} will also grant access. A tool can't be installed on an agent that isn't allowed to use it, so we'll add ${agentName} to who can use it. This is logged.`;
+  return t("ui3lib.toolInstalls.autoExtend", { agentName });
 }
 
 export const INSTALLED_HINT =

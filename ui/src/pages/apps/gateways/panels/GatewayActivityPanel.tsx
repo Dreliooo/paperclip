@@ -8,16 +8,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/StatusBadge";
 import { queryKeys } from "@/lib/queryKeys";
 import { ErrorState, RelativeTime } from "@/pages/tools/shared";
+import { t, useTranslation } from "@/i18n";
 
 const PAGE_SIZE = 25;
 
-const OUTCOME_META: Record<ToolAuditOutcome, { label: string; status: string }> = {
-  allowed: { label: "Allowed", status: "allowed" },
-  blocked: { label: "Blocked", status: "denied" },
-  asked_first: { label: "Asked first", status: "require-approval" },
-  waiting: { label: "Waiting", status: "deferred" },
-  failed: { label: "Failed", status: "failed" },
-  unknown: { label: "Recorded", status: "unchecked" },
+const OUTCOME_META: Record<ToolAuditOutcome, { labelKey: string; status: string }> = {
+  allowed: { labelKey: "ui3g8.gatewayActivityPanel.outcomeAllowed", status: "allowed" },
+  blocked: { labelKey: "ui3g8.gatewayActivityPanel.outcomeBlocked", status: "denied" },
+  asked_first: { labelKey: "ui3g8.gatewayActivityPanel.outcomeAskedFirst", status: "require-approval" },
+  waiting: { labelKey: "ui3g8.gatewayActivityPanel.outcomeWaiting", status: "deferred" },
+  failed: { labelKey: "ui3g8.gatewayActivityPanel.outcomeFailed", status: "failed" },
+  unknown: { labelKey: "ui3g8.gatewayActivityPanel.outcomeUnknown", status: "unchecked" },
 };
 
 function detailString(details: Record<string, unknown> | null, key: string): string | null {
@@ -48,7 +49,7 @@ function durationLabel(event: ToolGatewayActivityEvent): string | null {
   const started = event.invocation?.startedAt ? new Date(event.invocation.startedAt).getTime() : Number.NaN;
   const completed = event.invocation?.completedAt ? new Date(event.invocation.completedAt).getTime() : Number.NaN;
   if (!Number.isFinite(started) || !Number.isFinite(completed) || completed < started) return null;
-  return `${completed - started} ms`;
+  return t("ui3g8.gatewayActivityPanel.durationMs", { ms: completed - started });
 }
 
 function Fact({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
@@ -63,11 +64,12 @@ function Fact({ label, value, mono = false }: { label: string; value: string; mo
 }
 
 function ActivityRow({ event }: { event: ToolGatewayActivityEvent }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const outcome = OUTCOME_META[event.normalizedOutcome] ?? OUTCOME_META.unknown;
-  const actor = event.agentDisplayName ?? "Client";
-  const app = event.appDisplayName ?? event.connectionDisplayName ?? event.applicationDisplayName ?? "App";
-  const tool = event.toolDisplayName ?? event.invocation?.toolName ?? "Tool call";
+  const actor = event.agentDisplayName ?? t("ui3g8.gatewayActivityPanel.clientFallback");
+  const app = event.appDisplayName ?? event.connectionDisplayName ?? event.applicationDisplayName ?? t("ui3g8.gatewayActivityPanel.appFallback");
+  const tool = event.toolDisplayName ?? event.invocation?.toolName ?? t("ui3g8.gatewayActivityPanel.toolFallback");
   const rawTool = event.invocation?.toolName ?? detailString(event.details, "tool") ?? detailString(event.details, "toolName");
   const reason = detailString(event.details, "reasonCode");
   const argumentsText = formatSummary(
@@ -93,11 +95,11 @@ function ActivityRow({ event }: { event: ToolGatewayActivityEvent }) {
         )}
         <span className="min-w-0 flex-1">
           <span className="block text-foreground">
-            <span className="font-medium">{actor}</span> used <span className="font-medium">{tool}</span> in {app}
+            <span className="font-medium">{actor}</span> {t("ui3g8.gatewayActivityPanel.usedVerb")} <span className="font-medium">{tool}</span> {t("ui3g8.gatewayActivityPanel.inWord")} {app}
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-2 whitespace-nowrap">
-          <StatusBadge status={outcome.status} label={outcome.label} />
+          <StatusBadge status={outcome.status} label={t(outcome.labelKey)} />
           <span className="text-xs text-muted-foreground">
             · <RelativeTime value={event.createdAt} />
           </span>
@@ -107,18 +109,18 @@ function ActivityRow({ event }: { event: ToolGatewayActivityEvent }) {
       {open ? (
         <div className="border-t border-border bg-muted/30 px-4 py-3 pl-10 text-xs">
           <dl>
-            {rawTool ? <Fact label="Tool" value={rawTool} mono /> : null}
-            {event.invocation?.status ? <Fact label="Call status" value={event.invocation.status} /> : null}
-            {event.invocation?.policyDecision ? <Fact label="Decision" value={event.invocation.policyDecision} /> : null}
-            {reason ? <Fact label="Reason" value={reason} mono /> : null}
-            {duration ? <Fact label="Duration" value={duration} /> : null}
-            {event.invocation?.id ? <Fact label="Invocation ID" value={event.invocation.id} mono /> : null}
-            {event.invocation?.errorCode ? <Fact label="Error code" value={event.invocation.errorCode} mono /> : null}
-            {event.invocation?.errorMessage ? <Fact label="Error" value={event.invocation.errorMessage} /> : null}
+            {rawTool ? <Fact label={t("ui3g8.gatewayActivityPanel.factTool")} value={rawTool} mono /> : null}
+            {event.invocation?.status ? <Fact label={t("ui3g8.gatewayActivityPanel.factCallStatus")} value={event.invocation.status} /> : null}
+            {event.invocation?.policyDecision ? <Fact label={t("ui3g8.gatewayActivityPanel.factDecision")} value={event.invocation.policyDecision} /> : null}
+            {reason ? <Fact label={t("ui3g8.gatewayActivityPanel.factReason")} value={reason} mono /> : null}
+            {duration ? <Fact label={t("ui3g8.gatewayActivityPanel.factDuration")} value={duration} /> : null}
+            {event.invocation?.id ? <Fact label={t("ui3g8.gatewayActivityPanel.factInvocationId")} value={event.invocation.id} mono /> : null}
+            {event.invocation?.errorCode ? <Fact label={t("ui3g8.gatewayActivityPanel.factErrorCode")} value={event.invocation.errorCode} mono /> : null}
+            {event.invocation?.errorMessage ? <Fact label={t("ui3g8.gatewayActivityPanel.factError")} value={event.invocation.errorMessage} /> : null}
           </dl>
           {argumentsText ? (
             <div className="mt-2 space-y-1">
-              <div className="text-muted-foreground">Arguments (redacted)</div>
+              <div className="text-muted-foreground">{t("ui3g8.gatewayActivityPanel.argumentsRedacted")}</div>
               <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-background p-3 font-mono text-xs text-foreground">
                 {argumentsText}
               </pre>
@@ -126,7 +128,7 @@ function ActivityRow({ event }: { event: ToolGatewayActivityEvent }) {
           ) : null}
           {resultText ? (
             <div className="mt-3 space-y-1">
-              <div className="text-muted-foreground">Result (redacted)</div>
+              <div className="text-muted-foreground">{t("ui3g8.gatewayActivityPanel.resultRedacted")}</div>
               <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-background p-3 font-mono text-xs text-foreground">
                 {resultText}
               </pre>
@@ -145,6 +147,7 @@ export function GatewayActivityPanel({
   companyId: string;
   gateway: ToolMcpGatewayWithTokens;
 }) {
+  const { t } = useTranslation();
   const activityQuery = useInfiniteQuery({
     queryKey: queryKeys.tools.activity(companyId, { gateway: gateway.id, window: "30d" }),
     queryFn: ({ pageParam }) =>
@@ -179,11 +182,11 @@ export function GatewayActivityPanel({
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Calls through this gateway from the last 30 days. Open a row to inspect its tool, redacted arguments, result, and decision.
+        {t("ui3g8.gatewayActivityPanel.intro")}
       </p>
       {events.length === 0 ? (
         <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-          No calls have gone through this gateway yet.
+          {t("ui3g8.gatewayActivityPanel.noCalls")}
         </div>
       ) : (
         <ul className="divide-y divide-border rounded-lg border border-border">
@@ -198,7 +201,7 @@ export function GatewayActivityPanel({
             onClick={() => activityQuery.fetchNextPage()}
             disabled={activityQuery.isFetchingNextPage}
           >
-            {activityQuery.isFetchingNextPage ? "Loading…" : "Load more"}
+            {activityQuery.isFetchingNextPage ? t("ui3g8.gatewayActivityPanel.loading") : t("ui3g8.gatewayActivityPanel.loadMore")}
           </Button>
         </div>
       ) : null}

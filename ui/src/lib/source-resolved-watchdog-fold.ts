@@ -1,4 +1,5 @@
 import type { HeartbeatRun } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export type SourceResolvedFoldCleanupOutcome =
   | "terminated"
@@ -105,12 +106,24 @@ export function readSourceResolvedWatchdogFold(
 }
 
 const CLEANUP_OUTCOME_LABELS: Record<string, string> = {
-  terminated: "terminated",
-  termination_sent_still_running: "termination sent (still running)",
-  failed: "failed",
-  not_running: "not running",
-  no_process_metadata: "no process metadata",
-  skipped_non_local_adapter: "skipped (non-local adapter)",
+  get terminated() {
+    return t("ui3lib.watchdogFold.cleanup.terminated");
+  },
+  get termination_sent_still_running() {
+    return t("ui3lib.watchdogFold.cleanup.terminationSentStillRunning");
+  },
+  get failed() {
+    return t("ui3lib.watchdogFold.cleanup.failed");
+  },
+  get not_running() {
+    return t("ui3lib.watchdogFold.cleanup.notRunning");
+  },
+  get no_process_metadata() {
+    return t("ui3lib.watchdogFold.cleanup.noProcessMetadata");
+  },
+  get skipped_non_local_adapter() {
+    return t("ui3lib.watchdogFold.cleanup.skippedNonLocalAdapter");
+  },
 };
 
 export function formatCleanupOutcome(outcome: string): string {
@@ -120,12 +133,12 @@ export function formatCleanupOutcome(outcome: string): string {
 export function formatSilenceAgeMs(ms: number | null | undefined): string | null {
   if (!ms || ms <= 0) return null;
   const totalMinutes = Math.floor(ms / 60_000);
-  if (totalMinutes < 1) return "under 1 minute";
-  if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}`;
+  if (totalMinutes < 1) return t("ui3lib.watchdogFold.underOneMinute");
+  if (totalMinutes < 60) return t("ui3lib.watchdogFold.minutes", { count: totalMinutes });
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (minutes === 0) return `${hours} hour${hours === 1 ? "" : "s"}`;
-  return `${hours}h ${minutes}m`;
+  if (minutes === 0) return t("ui3lib.watchdogFold.hours", { count: hours });
+  return t("ui3lib.watchdogFold.hoursMinutes", { hours, minutes });
 }
 
 export function shortenEvidenceId(id: string): string {

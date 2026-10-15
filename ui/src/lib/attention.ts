@@ -9,6 +9,7 @@ import type {
   AttentionSourceKind,
   AttentionWorkspaceRef,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export type AttentionListOptions = AttentionFeedQuery;
 
@@ -48,18 +49,18 @@ interface SourceMeta {
 }
 
 const SOURCE_META: Record<AttentionSourceKind, SourceMeta> = {
-  approval: { label: "Approval" },
-  decision: { label: "Decision" },
-  issue_thread_interaction: { label: "Decision requested" },
-  join_request: { label: "Join request" },
-  recovery_action: { label: "Recovery" },
+  approval: { get label() { return t("ui3lib.attention.source.approval"); } },
+  decision: { get label() { return t("ui3lib.attention.source.decision"); } },
+  issue_thread_interaction: { get label() { return t("ui3lib.attention.source.decisionRequested"); } },
+  join_request: { get label() { return t("ui3lib.attention.source.joinRequest"); } },
+  recovery_action: { get label() { return t("ui3lib.attention.source.recovery"); } },
   // Read compatibility for persisted decisions from the retired feature.
-  productivity_review: { label: "Task" },
-  blocker_attention: { label: "Blocked dependency" },
-  review: { label: "Review" },
-  failed_run: { label: "Failed run" },
-  budget_alert: { label: "Budget" },
-  agent_error_alert: { label: "Agent error" },
+  productivity_review: { get label() { return t("ui3lib.attention.source.task"); } },
+  blocker_attention: { get label() { return t("ui3lib.attention.source.blockedDependency"); } },
+  review: { get label() { return t("ui3lib.attention.source.review"); } },
+  failed_run: { get label() { return t("ui3lib.attention.source.failedRun"); } },
+  budget_alert: { get label() { return t("ui3lib.attention.source.budget"); } },
+  agent_error_alert: { get label() { return t("ui3lib.attention.source.agentError"); } },
 };
 
 export function sourceMeta(kind: AttentionSourceKind): SourceMeta {
@@ -74,10 +75,10 @@ interface SeverityStyle {
 }
 
 const SEVERITY_STYLE: Record<AttentionSeverity, SeverityStyle> = {
-  critical: { accent: "bg-red-500", dot: "bg-red-500", label: "Critical" },
-  high: { accent: "bg-orange-500", dot: "bg-orange-500", label: "High" },
-  medium: { accent: "bg-yellow-500", dot: "bg-yellow-500", label: "Medium" },
-  low: { accent: "bg-blue-500", dot: "bg-blue-500", label: "Low" },
+  critical: { accent: "bg-red-500", dot: "bg-red-500", get label() { return t("ui3lib.attention.severity.critical"); } },
+  high: { accent: "bg-orange-500", dot: "bg-orange-500", get label() { return t("ui3lib.attention.severity.high"); } },
+  medium: { accent: "bg-yellow-500", dot: "bg-yellow-500", get label() { return t("ui3lib.attention.severity.medium"); } },
+  low: { accent: "bg-blue-500", dot: "bg-blue-500", get label() { return t("ui3lib.attention.severity.low"); } },
 };
 
 export function severityStyle(severity: AttentionSeverity): SeverityStyle {
@@ -188,7 +189,7 @@ function quote(text: string | null | undefined): string | null {
 }
 
 function countNoun(count: number, singular: string): string {
-  return `${count} ${count === 1 ? singular : `${singular}s`}`;
+  return t(`ui3lib.attention.count.${singular.replace(/ /g, "_")}`, { count });
 }
 
 /**
@@ -224,7 +225,7 @@ export function attentionDetailLine(item: AttentionItem): string | null {
     }
     case "item_verdicts": {
       const q = quote(detail.promptExcerpt);
-      const label = `${countNoun(detail.itemCount, "item")} to verdict`;
+      const label = t("ui3lib.attention.itemsToVerdict", { items: countNoun(detail.itemCount, "item") });
       return q ? `${label} — ${q}` : label;
     }
     case "failed_run":
@@ -237,10 +238,18 @@ export function attentionDetailLine(item: AttentionItem): string | null {
       const b = detail.blockingIssue;
       if (!b) return null;
       const id = b.identifier ? `${b.identifier} ` : "";
-      return b.title ? `Blocked by ${id}${b.title}` : b.identifier ? `Blocked by ${b.identifier}` : null;
+      return b.title
+        ? t("ui3lib.attention.blockedBy", { ref: `${id}${b.title}` })
+        : b.identifier
+          ? t("ui3lib.attention.blockedBy", { ref: b.identifier })
+          : null;
     }
     case "budget":
-      return `${Math.round(detail.observedPercent)}% of budget used ($${detail.amountObserved} / $${detail.amountLimit})`;
+      return t("ui3lib.attention.budgetUsed", {
+        percent: Math.round(detail.observedPercent),
+        observed: detail.amountObserved,
+        limit: detail.amountLimit,
+      });
     case "generic":
       return quote(detail.summaryExcerpt);
     default:
@@ -371,9 +380,9 @@ export function buildDeskShelves(items: AttentionItem[], now: number): DeskShelf
   const earlier = rest.filter((item) => !attentionIsNewToday(item, now));
 
   const shelves: DeskShelf[] = [];
-  if (decideNow.length > 0) shelves.push({ key: "desk:decide-now", label: "Decide now", items: decideNow });
-  if (newToday.length > 0) shelves.push({ key: "desk:new-today", label: "New today", items: newToday });
-  if (earlier.length > 0) shelves.push({ key: "desk:earlier", label: "Earlier", items: earlier });
+  if (decideNow.length > 0) shelves.push({ key: "desk:decide-now", label: t("ui3lib.attention.shelf.decideNow"), items: decideNow });
+  if (newToday.length > 0) shelves.push({ key: "desk:new-today", label: t("ui3lib.attention.shelf.newToday"), items: newToday });
+  if (earlier.length > 0) shelves.push({ key: "desk:earlier", label: t("ui3lib.attention.shelf.earlier"), items: earlier });
   return shelves;
 }
 
@@ -420,10 +429,10 @@ export const DECIDE_BY_OPTIONS: ReadonlyArray<[DecideByPreset, string]> = [
 
 /** Human label for any stored `decideBy` value (preset or `YYYY-MM-DD`). */
 export function decideByLabel(decideBy: string | null): string {
-  if (!decideBy) return "Not set";
-  if (decideBy === "today") return "Today";
-  if (decideBy === "this_week") return "This week";
-  if (decideBy === "whenever") return "Whenever";
+  if (!decideBy) return t("ui3lib.attention.decideBy.notSet");
+  if (decideBy === "today") return t("ui3lib.attention.decideBy.today");
+  if (decideBy === "this_week") return t("ui3lib.attention.decideBy.thisWeek");
+  if (decideBy === "whenever") return t("ui3lib.attention.decideBy.whenever");
   if (/^\d{4}-\d{2}-\d{2}$/.test(decideBy)) {
     const parsed = new Date(`${decideBy}T00:00:00.000Z`);
     return Number.isFinite(parsed.getTime())
@@ -811,10 +820,10 @@ const DATE_BUCKET_ORDER = ["today", "yesterday", "this_week", "earlier"] as cons
 type DateBucket = (typeof DATE_BUCKET_ORDER)[number];
 
 const DATE_BUCKET_LABELS: Record<DateBucket, string> = {
-  today: "Today",
-  yesterday: "Yesterday",
-  this_week: "This week",
-  earlier: "Earlier",
+  get today() { return t("ui3lib.attention.dateBucket.today"); },
+  get yesterday() { return t("ui3lib.attention.dateBucket.yesterday"); },
+  get this_week() { return t("ui3lib.attention.dateBucket.thisWeek"); },
+  get earlier() { return t("ui3lib.attention.dateBucket.earlier"); },
 };
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -834,10 +843,10 @@ export function attentionDateBucket(activityAt: string, now: number): DateBucket
 }
 
 const SEVERITY_LABEL: Record<AttentionSeverity, string> = {
-  critical: "Critical",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
+  get critical() { return t("ui3lib.attention.severityLabel.critical"); },
+  get high() { return t("ui3lib.attention.severityLabel.high"); },
+  get medium() { return t("ui3lib.attention.severityLabel.medium"); },
+  get low() { return t("ui3lib.attention.severityLabel.low"); },
 };
 
 /**
@@ -896,7 +905,7 @@ export function groupAttentionItems(
         ? { key: `type:${item.sourceKind}`, label: sourceMeta(item.sourceKind).label }
         : item.project
           ? { key: `project:${item.project.id}`, label: item.project.name }
-          : { key: `project:${NO_GROUP_SENTINEL}`, label: "No project" };
+          : { key: `project:${NO_GROUP_SENTINEL}`, label: t("ui3lib.attention.noProject") };
     const existing = groups.get(resolved.key);
     const ts = attentionActivityTimestamp(item);
     if (existing) {

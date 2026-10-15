@@ -9,6 +9,7 @@ import {
   type TrustAuthorizationPolicy,
   type TrustPreset,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export type LowTrustBoundaryTarget =
   | { type: "project"; id: string }
@@ -16,14 +17,21 @@ export type LowTrustBoundaryTarget =
   | { type: "issue"; id: string };
 
 export const TRUST_PRESET_LABELS: Record<TrustPreset, string> = {
-  standard: "Standard",
-  low_trust_review: "Low-trust review",
+  get standard() {
+    return t("ui3lib.trustPolicy.preset.standardLabel");
+  },
+  get low_trust_review() {
+    return t("ui3lib.trustPolicy.preset.lowTrustReviewLabel");
+  },
 };
 
 export const TRUST_PRESET_DESCRIPTIONS: Record<TrustPreset, string> = {
-  standard: "Organization-visible collaboration. This is the default for normal work.",
-  low_trust_review:
-    "Contained for hostile or untrusted input. Narrow Paperclip API, quarantined output. Use for PR review and external-content triage.",
+  get standard() {
+    return t("ui3lib.trustPolicy.preset.standardDescription");
+  },
+  get low_trust_review() {
+    return t("ui3lib.trustPolicy.preset.lowTrustReviewDescription");
+  },
 };
 
 export function getTrustPreset(permissions: Partial<AgentPermissions> | null | undefined): TrustPreset {
@@ -163,11 +171,11 @@ export function summarizeLowTrustBoundaryTarget(
   boundary: LowTrustBoundary | null | undefined,
 ) {
   const target = getSingleLowTrustBoundaryTarget(boundary);
-  if (target?.type === "project") return `Project ${target.id.slice(0, 8)}`;
-  if (target?.type === "root_issue") return `Root issue ${target.id.slice(0, 8)}`;
-  if (target?.type === "issue") return `Issue ${target.id.slice(0, 8)}`;
-  if (!boundary || countBoundaryTargets(boundary) === 0) return "No boundary selected";
-  return `${countBoundaryTargets(boundary)} boundaries`;
+  if (target?.type === "project") return t("ui3lib.trustPolicy.boundary.project", { id: target.id.slice(0, 8) });
+  if (target?.type === "root_issue") return t("ui3lib.trustPolicy.boundary.rootIssue", { id: target.id.slice(0, 8) });
+  if (target?.type === "issue") return t("ui3lib.trustPolicy.boundary.issue", { id: target.id.slice(0, 8) });
+  if (!boundary || countBoundaryTargets(boundary) === 0) return t("ui3lib.trustPolicy.boundary.none");
+  return t("ui3lib.trustPolicy.boundary.count", { count: countBoundaryTargets(boundary) });
 }
 
 export function lowTrustBoundaryHasScope(boundary: LowTrustBoundary | null | undefined) {
@@ -176,6 +184,6 @@ export function lowTrustBoundaryHasScope(boundary: LowTrustBoundary | null | und
 
 export function sourceTrustLabel(sourceTrust: SourceTrustMetadata | null | undefined) {
   if (!sourceTrust || sourceTrust.preset !== LOW_TRUST_REVIEW_PRESET) return null;
-  if (sourceTrust.disposition === "promoted") return "Promoted from low-trust";
-  return "Low-trust source";
+  if (sourceTrust.disposition === "promoted") return t("ui3lib.trustPolicy.source.promoted");
+  return t("ui3lib.trustPolicy.source.lowTrust");
 }

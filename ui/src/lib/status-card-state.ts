@@ -1,4 +1,5 @@
 import type { StatusCard, StatusCardRefreshPolicy } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * The lifecycle states a status card renders as on the board (plan §7,
@@ -52,60 +53,60 @@ export const STATUS_CARD_LIFECYCLE_PRESENTATION: Record<
   StatusCardLifecyclePresentation
 > = {
   compiling: {
-    label: "Setting up",
+    get label() { return t("ui3lib.statusCard.compilingLabel"); },
     dotClassName: "bg-cyan-400 animate-pulse",
-    description: "Just created; setting up and generating the first summary.",
+    get description() { return t("ui3lib.statusCard.compilingDescription"); },
     dashedBorder: true,
     keepsLastSummary: false,
   },
   fresh: {
-    label: "Fresh",
+    get label() { return t("ui3lib.statusCard.freshLabel"); },
     dotClassName: "bg-emerald-400",
-    description: "Summary reflects all known changes; nothing pending.",
+    get description() { return t("ui3lib.statusCard.freshDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   stale: {
-    label: "Stale",
+    get label() { return t("ui3lib.statusCard.staleLabel"); },
     dotClassName: "bg-amber-400",
-    description: "Changes are pending since the last update.",
+    get description() { return t("ui3lib.statusCard.staleDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   updating: {
     // Blue (distinct from fresh-emerald and compiling-cyan) so an in-flight
     // update never reads as "fresh" on a glance-scan of the board.
-    label: "Updating",
+    get label() { return t("ui3lib.statusCard.updatingLabel"); },
     dotClassName: "bg-blue-500 animate-pulse",
-    description: "An update is streaming in now.",
+    get description() { return t("ui3lib.statusCard.updatingDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   error: {
-    label: "Error",
+    get label() { return t("ui3lib.statusCard.errorLabel"); },
     dotClassName: "bg-red-500",
-    description: "The last run failed; the last good summary stays visible.",
+    get description() { return t("ui3lib.statusCard.errorDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   paused_budget: {
-    label: "Paused — budget",
+    get label() { return t("ui3lib.statusCard.pausedBudgetLabel"); },
     dotClassName: "bg-orange-400",
-    description: "The daily token cap was hit; auto-updates are suspended.",
+    get description() { return t("ui3lib.statusCard.pausedBudgetDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   paused_hours: {
-    label: "Paused — hours",
+    get label() { return t("ui3lib.statusCard.pausedHoursLabel"); },
     dotClassName: "bg-orange-400",
-    description: "Outside active hours; changes batch into one update at window open.",
+    get description() { return t("ui3lib.statusCard.pausedHoursDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
   archived: {
-    label: "Archived",
+    get label() { return t("ui3lib.statusCard.archivedLabel"); },
     dotClassName: "bg-muted-foreground/50",
-    description: "No auto-updates and no watches. Restore to start watching again.",
+    get description() { return t("ui3lib.statusCard.archivedDescription"); },
     dashedBorder: false,
     keepsLastSummary: true,
   },
@@ -128,16 +129,16 @@ export function formatUsdFromCents(cents: number): string {
 export function describeRefreshPolicy(policy: StatusCardRefreshPolicy): string {
   switch (policy.mode) {
     case "manual":
-      return "manual";
+      return t("ui3lib.statusCard.refreshManual");
     case "interval":
       return policy.intervalMinutes
-        ? `every ${policy.intervalMinutes}m if changed`
-        : "on a schedule if changed";
+        ? t("ui3lib.statusCard.refreshEvery", { minutes: policy.intervalMinutes })
+        : t("ui3lib.statusCard.refreshSchedule");
     case "reactive": {
       const debounce = policy.debounceSeconds ?? 60;
-      return `on change (${debounce}s)`;
+      return t("ui3lib.statusCard.refreshOnChange", { seconds: debounce });
     }
     default:
-      return "manual";
+      return t("ui3lib.statusCard.refreshManual");
   }
 }

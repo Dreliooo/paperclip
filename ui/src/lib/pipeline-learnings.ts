@@ -1,5 +1,6 @@
 import type { PipelineCompanyCaseEvent } from "../api/pipelines";
 import { formatShortDate } from "./utils";
+import { t } from "@/i18n";
 
 export type LearningEventPresentation = {
   sentence: string;
@@ -23,7 +24,7 @@ function eventItemTitle(event: PipelineCompanyCaseEvent): string {
     asString(payload.itemTitle) ??
     asString(payload.caseTitle) ??
     asString(payload.title) ??
-    "Untitled item"
+    t("ui3lib.pipelineLearnings.untitledItem")
   );
 }
 
@@ -34,7 +35,7 @@ function eventActorName(event: PipelineCompanyCaseEvent): string {
     asString(payload.actorName) ??
     asString(payload.reviewerName) ??
     asString(payload.decidedByName) ??
-    "Someone"
+    t("ui3lib.pipelineLearnings.someone")
   );
 }
 
@@ -48,9 +49,9 @@ function payloadText(event: PipelineCompanyCaseEvent, ...keys: string[]): string
 }
 
 function reviewVerb(decision: string | null): string {
-  if (decision === "request_changes") return "sent back";
-  if (decision === "reject" || decision === "drop") return "declined";
-  return "approved";
+  if (decision === "request_changes") return t("ui3lib.pipelineLearnings.verb.sentBack");
+  if (decision === "reject" || decision === "drop") return t("ui3lib.pipelineLearnings.verb.declined");
+  return t("ui3lib.pipelineLearnings.verb.approved");
 }
 
 export function formatLearningEvent(event: PipelineCompanyCaseEvent): LearningEventPresentation {
@@ -62,12 +63,18 @@ export function formatLearningEvent(event: PipelineCompanyCaseEvent): LearningEv
     const decision = asString(payload.decision);
     const toStageName =
       asString(event.toStage?.name) ?? payloadText(event, "toStageName", "stageName", "targetStageName");
-    const stageCopy = toStageName ? ` moving to ${toStageName}` : "";
+    const stageCopy = toStageName ? t("ui3lib.pipelineLearnings.stageMove", { stage: toStageName }) : "";
     const note = payloadText(event, "reason", "note");
-    const noteCopy = note ? ` - note: ${note}` : "";
+    const noteCopy = note ? t("ui3lib.pipelineLearnings.noteSuffix", { note }) : "";
     return {
       kind: "review",
-      sentence: `${actor} ${reviewVerb(decision)} '${title}'${stageCopy}${noteCopy}.`,
+      sentence: t("ui3lib.pipelineLearnings.reviewSentence", {
+        actor,
+        verb: reviewVerb(decision),
+        title,
+        stageCopy,
+        noteCopy,
+      }),
     };
   }
 
@@ -75,19 +82,19 @@ export function formatLearningEvent(event: PipelineCompanyCaseEvent): LearningEv
     const fromStageName = asString(event.fromStage?.name) ?? payloadText(event, "fromStageName");
     const toStageName =
       asString(event.toStage?.name) ?? payloadText(event, "toStageName", "stageName", "targetStageName");
-    const fromCopy = fromStageName ? ` from ${fromStageName}` : "";
-    const toCopy = toStageName ? ` to ${toStageName}` : "";
+    const fromCopy = fromStageName ? t("ui3lib.pipelineLearnings.fromStage", { stage: fromStageName }) : "";
+    const toCopy = toStageName ? t("ui3lib.pipelineLearnings.toStage", { stage: toStageName }) : "";
     const reason = payloadText(event, "reason", "note");
-    const reasonCopy = reason ? ` - reason: ${reason}` : "";
+    const reasonCopy = reason ? t("ui3lib.pipelineLearnings.reasonSuffix", { reason }) : "";
     return {
       kind: "forced_move",
-      sentence: `'${title}' was moved by hand${fromCopy}${toCopy}${reasonCopy}.`,
+      sentence: t("ui3lib.pipelineLearnings.forcedMoveSentence", { title, fromCopy, toCopy, reasonCopy }),
     };
   }
 
   return {
     kind: "unknown",
-    sentence: `'${title}' changed.`,
+    sentence: t("ui3lib.pipelineLearnings.changedSentence", { title }),
   };
 }
 
@@ -99,13 +106,13 @@ export function learningDayKey(value: string | Date) {
 
 export function learningDayLabel(value: string | Date) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown";
+  if (Number.isNaN(date.getTime())) return t("ui3lib.pipelineLearnings.unknown");
   const today = new Date();
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
   const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
   const diffDays = Math.round((startOfToday - startOfDay) / 86_400_000);
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
+  if (diffDays === 0) return t("ui3lib.pipelineLearnings.today");
+  if (diffDays === 1) return t("ui3lib.pipelineLearnings.yesterday");
   return formatShortDate(date);
 }
 

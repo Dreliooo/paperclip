@@ -1,4 +1,5 @@
 import { isAgentCreatedIssue, type ExternalObjectSummary, type Issue } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export type IssueFilterWorkspaceLookup = {
   mode?: string | null;
@@ -63,13 +64,13 @@ export const externalObjectFilterOrder = [
 ];
 
 const EXTERNAL_OBJECT_FILTER_LABELS: Record<string, string> = {
-  failed: "Any failed",
-  waiting: "Any waiting",
-  running: "Any running",
-  auth_required: "Auth required",
-  unreachable: "Unreachable",
-  stale: "Stale",
-  none: "No external objects",
+  get failed() { return t("ui3lib.issueFilters.externalObject.anyFailed"); },
+  get waiting() { return t("ui3lib.issueFilters.externalObject.anyWaiting"); },
+  get running() { return t("ui3lib.issueFilters.externalObject.anyRunning"); },
+  get auth_required() { return t("ui3lib.issueFilters.externalObject.authRequired"); },
+  get unreachable() { return t("ui3lib.issueFilters.externalObject.unreachable"); },
+  get stale() { return t("ui3lib.issueFilters.externalObject.stale"); },
+  get none() { return t("ui3lib.issueFilters.externalObject.none"); },
 };
 
 export function externalObjectFilterLabel(value: string): string {
@@ -80,10 +81,10 @@ export const issueStatusOrder = ["in_progress", "todo", "backlog", "in_review", 
 export const issuePriorityOrder = ["critical", "high", "medium", "low"];
 
 export const issueQuickFilterPresets = [
-  { label: "All", statuses: [] as string[] },
-  { label: "Active", statuses: ["todo", "in_progress", "in_review", "blocked"] },
-  { label: "Backlog", statuses: ["backlog"] },
-  { label: "Done", statuses: ["done", "cancelled"] },
+  { get label() { return t("ui3lib.issueFilters.preset.all"); }, statuses: [] as string[] },
+  { get label() { return t("ui3lib.issueFilters.preset.active"); }, statuses: ["todo", "in_progress", "in_review", "blocked"] },
+  { get label() { return t("ui3lib.issueFilters.preset.backlog"); }, statuses: ["backlog"] },
+  { get label() { return t("ui3lib.issueFilters.preset.done"); }, statuses: ["done", "cancelled"] },
 ];
 
 export function issueFilterLabel(value: string): string {

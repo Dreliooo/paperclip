@@ -19,6 +19,7 @@ import type {
   WorkTimelineResult,
   WorkTimelineSpan,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export interface LayoutOptions {
   /** px per minute along the x axis (set by the zoom level). */
@@ -281,7 +282,7 @@ export function computeLayout(result: WorkTimelineResult, opts: LayoutOptions): 
     const key = s.issueId;
     if (!issueLabel.has(key)) {
       issueOrder.push(key);
-      issueLabel.set(key, s.issueIdentifier ?? s.issueTitle ?? "issue");
+      issueLabel.set(key, s.issueIdentifier ?? s.issueTitle ?? t("ui3lib.timeline.issueFallback"));
     }
   }
   const issues = issueOrder.map((key) => ({ key, label: issueLabel.get(key)!, color: issueColor(key) }));

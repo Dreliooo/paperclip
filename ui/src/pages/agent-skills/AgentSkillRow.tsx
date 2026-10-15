@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import type { ReactNode } from "react";
 import { Lock, type LucideIcon } from "lucide-react";
 import { Link } from "@/lib/router";
@@ -66,6 +67,7 @@ export function AgentSkillRow({
   accessory,
 }: AgentSkillRowProps) {
   const readOnly = variant === "readonly";
+  const { t } = useTranslation();
   const SourceIcon = data.sourceMeta?.icon;
 
   const leading = (
@@ -120,7 +122,7 @@ export function AgentSkillRow({
   );
 
   const trailing = readOnly ? (
-    <Lock className="h-4 w-4 shrink-0 text-muted-foreground/60" aria-label="Read-only" />
+    <Lock className="h-4 w-4 shrink-0 text-muted-foreground/60" aria-label={t("ui3g6.AgentSkillRow.readOnly")} />
   ) : (
     (() => {
       const toggle = (
@@ -128,7 +130,7 @@ export function AgentSkillRow({
           checked={checked}
           disabled={disabled}
           onCheckedChange={(next) => onCheckedChange?.(next)}
-          aria-label={`${checked ? "Disable" : "Enable"} ${data.name}`}
+          aria-label={checked ? t("ui3g6.AgentSkillRow.disableNamed", { name: data.name }) : t("ui3g6.AgentSkillRow.enableNamed", { name: data.name })}
         />
       );
       if (disabled && disabledReason) {
