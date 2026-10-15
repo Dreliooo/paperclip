@@ -1,5 +1,5 @@
 import { createGrokInvitationSchema, configureGrokRoutineSchema, verifyGrokRoutineSchema, recoverGrokRoutineSchema, pairGrokBindingSchema, stopGrokWorkSchema, retryGrokDeliverySchema } from "@paperclipai/shared";
-import { updateFastResponseSchema } from "@paperclipai/shared";
+import { updateFastResponseSchema, updateUserPreferencesSchema } from "@paperclipai/shared";
 import { slackTestMessageSchema, slackTestMessageResultSchema, slackManagerAuthorizationSchema, slackSetupOptionsSchema, slackManagedProvisionSchema, slackManagedResultSchema, slackRegistrationSchema, slackSetupActionSchema, slackInstallAuthorizationSchema, slackRegistrationStateSchema, slackAppConfigurationSchema, slackAvatarStateSchema, slackAccountStateSchema } from "@paperclipai/shared";
 import { experimentalApiMetadata } from "./experimental-api-metadata.js";
 import {
@@ -5737,6 +5737,33 @@ for (const segment of costSummaryPaths) {
   });
 }
 
+registry.registerPath({ method: "get", path: "/api/companies/{companyId}/costs/usage-breakdown", tags: ["costs"],
+  summary: "Tokens, reported spend and API-equivalent cost by model, agent or person",
+  description: "Requires company cost-read access. Aggregate figures only; no task or project names are returned. API-equivalent cost is a theoretical estimate from dated public rate cards, reported separately from provider spend; models without a rate card are reported as unpriced, never as zero.",
+  request: {
+    params: z.object({ companyId: z.string() }),
+    query: costReportQuerySchema.extend({
+      groupBy: z.enum(["model", "agent", "user"]).optional().describe("Defaults to model."),
+      provider: z.string().trim().min(1).max(120).optional().describe("Only usage reported by this provider."),
+    }),
+  },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({ method: "get", path: "/api/companies/{companyId}/agents/{agentId}/cache-reuse", tags: ["costs"],
+  summary: "Prompt-cache reuse for an agent's latest runs",
+  description: "Requires company cost-read access. Reads recorded token counters only; never calls a provider.",
+  request: { params: z.object({ companyId: z.string(), agentId: z.string().uuid() }) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({ method: "get", path: "/api/issues/{id}/cache-reuse", tags: ["costs"],
+  summary: "Prompt-cache reuse for a task's runs",
+  description: "Requires read access to the task and company cost-read access. Unreadable tasks answer 404. Reads recorded token counters only; never calls a provider.",
+  request: { params: z.object({ id: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden, 404: r.notFound },
+});
+
 registry.registerPath({ method: "post", path: "/api/companies/{companyId}/costs/retry-accounting", tags: ["costs"],
   summary: "Retry recording a run's saved cost data",
   description: "Requires company cost-read and board write access. Viewers and agents cannot retry. Replays accounting evidence only; never starts provider work or invents missing usage.",
@@ -6620,6 +6647,25 @@ registry.registerPath({
   summary: "Update current user sidebar preferences",
   request: { body: jsonBody(upsertSidebarOrderPreferenceSchema) },
   responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/user-preferences/me",
+  tags: ["user-preferences"],
+  summary: "Get the signed-in person's display preferences",
+  description: "Board users only. Returns interface language and usage display mode (tokens, costs or both); defaults apply when nothing is saved.",
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/user-preferences/me",
+  tags: ["user-preferences"],
+  summary: "Update the signed-in person's display preferences",
+  description: "Board users only. Keyed by the session user; there is no way to address another user.",
+  request: { body: jsonBody(updateUserPreferencesSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
 });
 
 registry.registerPath({
