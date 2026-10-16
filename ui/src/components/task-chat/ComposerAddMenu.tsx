@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { IssueWorkMode } from "@paperclipai/shared";
-import { Check, ClipboardList, MessageCircleQuestion, Lock, Paperclip, Plus, Target, X, type LucideIcon } from "lucide-react";
+import { Check, ClipboardList, MessageCircleQuestion, Lock, Network, Paperclip, Plus, Target, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMobileEntityPickerViewportStyle } from "@/hooks/useMobileEntityPickerViewportStyle";
 import { workModeMetaFor } from "@/lib/work-mode-meta";
@@ -23,6 +23,8 @@ interface ComposerAddMenuProps {
   onAttachFile?: () => void;
   attachDisabled?: boolean;
   onGoal?: () => void;
+  /** Objective mode: delegate across agents until done. */
+  onObjective?: () => void;
   privacy?: { private: boolean; inherited?: string; onChange: (value: boolean) => void };
   disabled?: boolean;
   mobile?: boolean;
@@ -31,7 +33,7 @@ interface ComposerAddMenuProps {
 }
 
 export function ComposerAddMenu({
-  mode, onModeChange, onAttachFile, attachDisabled, onGoal, privacy, disabled, mobile: mobileProp, triggerTestId, menuTestId,
+  mode, onModeChange, onAttachFile, attachDisabled, onGoal, onObjective, privacy, disabled, mobile: mobileProp, triggerTestId, menuTestId,
 }: ComposerAddMenuProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -46,10 +48,11 @@ export function ComposerAddMenu({
     return () => query.removeEventListener("change", update);
   }, []);
   const mobile = mobileProp ?? narrow;
-  if (!onModeChange && !onAttachFile && !onGoal && !privacy) return null;
+  if (!onModeChange && !onAttachFile && !onGoal && !onObjective && !privacy) return null;
   const actions: Array<{ id: string; label: string; detail?: string; Icon: LucideIcon; select: () => void; disabled?: boolean; selected?: boolean }> = [
     ...(onAttachFile ? [{ id: "composer-add-file", label: t("ui2g7.composerAddMenu.filesAndImages"), Icon: Paperclip, select: onAttachFile, disabled: attachDisabled }] : []),
     ...(privacy ? [{ id: "composer-add-private", label: t("ui2g7.composerAddMenu.privateTask"), detail: privacy.inherited, Icon: Lock, select: () => privacy.onChange(!privacy.private), selected: privacy.private, disabled: Boolean(privacy.inherited) }] : []),
+    ...(onObjective ? [{ id: "composer-add-objective", label: t("objective.menu.label"), detail: t("objective.menu.detail"), Icon: Network, select: onObjective }] : []),
     ...(onGoal ? [{ id: "composer-add-goal", label: t("ui2g7.composerAddMenu.goal"), detail: t("ui2g7.composerAddMenu.goalDetail"), Icon: Target, select: onGoal }] : []),
     ...(onModeChange ? [
       { id: "composer-add-plan", label: t("ui2g7.composerAddMenu.planMode"), detail: t("ui2g7.composerAddMenu.planModeDetail"), Icon: ClipboardList, select: () => onModeChange(mode === "planning" ? "standard" : "planning"), selected: mode === "planning" },
@@ -76,7 +79,7 @@ export function ComposerAddMenu({
         <DialogClose asChild><button type="button" aria-label={t("ui2g7.composerAddMenu.closeAddMenu")} className="grid size-11 place-items-center rounded-md text-muted-foreground hover:bg-accent"><X className="size-4" /></button></DialogClose>
       </div>
       <div className="min-h-0 overflow-y-auto overscroll-contain p-2 pt-0">{actions.map((action) => <button key={action.id} type="button" disabled={action.disabled} data-testid={action.id}
-        onClick={() => { goalFocusRef.current = action.id === "composer-add-goal"; action.select(); setOpen(false); }}
+        onClick={() => { goalFocusRef.current = action.id === "composer-add-goal" || action.id === "composer-add-objective"; action.select(); setOpen(false); }}
         className="flex min-h-11 w-full items-center gap-3 rounded-md px-2 text-left text-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50">
         {content(action)}
       </button>)}</div>

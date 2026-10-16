@@ -106,6 +106,7 @@ import {
   RunnerGoalWidget,
   useRunnerGoalControl,
 } from "@/components/task-chat/RunnerGoalWidget";
+import { useIssueObjectiveControl } from "@/components/objectives/IssueObjectiveControl";
 import { TaskChatQueuedMessages } from "@/components/task-chat/TaskChatQueuedMessages";
 import { TaskChatWindowScroll } from "@/components/task-chat/useWindowAutoFollow";
 import { useSidebar } from "@/context/SidebarContext";
@@ -620,6 +621,12 @@ export function TaskChatThread(props: TaskChatThreadProps) {
       ? effectiveComposerAssignee.slice("agent:".length) || null
       : null;
   const runnerGoal = useRunnerGoalControl(issueId, effectiveGoalAgentId);
+  const objectiveControl = useIssueObjectiveControl({
+    issueId,
+    companyId: companyId ?? null,
+    conversationMode: Boolean(conversationMode),
+    defaultCoordinatorAgentId: issueAssigneeAgentId,
+  });
 
   useEffect(() => {
     setPendingComposerAssignee(null);
@@ -3220,6 +3227,7 @@ export function TaskChatThread(props: TaskChatThreadProps) {
                 {tailTurnStatus ? (
                   <TaskChatTurnStatusIsland model={tailTurnStatus} />
                 ) : null}
+                {objectiveControl.card}
                 <RunnerGoalWidget control={runnerGoal} />
                 <div
                   className="relative isolate flex flex-col"
@@ -3307,6 +3315,7 @@ export function TaskChatThread(props: TaskChatThreadProps) {
                       runnerGoalCapability={runnerGoal.data?.capability ?? null}
                       onRunnerGoalCommand={runnerGoal.executeComposerCommand}
                       onRunnerGoalReassign={reassignForRunnerGoal}
+                      onOpenObjective={objectiveControl.open}
                       pendingTakeover={
                         pendingReminderInputs.length > 0
                           ? {
@@ -3322,6 +3331,7 @@ export function TaskChatThread(props: TaskChatThreadProps) {
                 {footer}
               </TaskChatComposerDock>
             ) : null}
+            {objectiveControl.dialog}
           </div>
         </TaskChatPresentationProvider>
       </TaskChatScrollReady.Provider>

@@ -20555,5 +20555,91 @@
       "bundled": "Bundled",
       "organization": "Organization"
     }
+  },
+  "objective": {
+    "menu": {
+      "label": "Objective",
+      "detail": "Delegate across agents until done"
+    },
+    "status": {
+      "active": "Working",
+      "paused": "Paused",
+      "limit_reached": "Limit reached",
+      "achieved": "Done",
+      "stopped": "Stopped"
+    },
+    "time": {
+      "keep": "Keep current",
+      "none": "No time limit",
+      "1h": "1 hour",
+      "4h": "4 hours",
+      "24h": "24 hours",
+      "3d": "3 days",
+      "7d": "1 week"
+    },
+    "dialog": {
+      "title": "New objective",
+      "limitsTitle": "Objective limits",
+      "description": "The coordinator splits the work into subtasks, delegates them to other agents and keeps following up until the objective is done.",
+      "descriptionFromChat": "This creates a new task for the objective. The coordinator splits the work into subtasks, delegates them and keeps following up until it is done.",
+      "limitsDescription": "Raise or remove a limit to let the objective keep going. Empty means no limit.",
+      "objectiveLabel": "What do you want to achieve?",
+      "objectivePlaceholder": "For example: monthly report ready for the 34 clients",
+      "criteriaLabel": "How will we know it is done? (optional)",
+      "criteriaPlaceholder": "One criterion per line",
+      "criteriaHint": "The coordinator shows evidence for each one when it closes the objective.",
+      "coordinatorLabel": "Coordinator",
+      "coordinatorHint": "Any agent can coordinate. It may ask another agent to validate the result, but it does not have to.",
+      "limitsLabel": "Limits (optional)",
+      "limitsHint": "When a limit is reached, the work pauses and you decide whether to continue.",
+      "dollarsLabel": "Spend (US$)",
+      "tokensLabel": "Tokens",
+      "timeLabel": "Time",
+      "noLimit": "No limit",
+      "invalidDollars": "Enter the spend limit as an amount in dollars, for example 10 or 12.50.",
+      "invalidTokens": "Enter the token limit as a number, for example 500000, 500k or 1.5M.",
+      "objectiveRequired": "Write the objective first.",
+      "coordinatorRequired": "Choose a coordinator.",
+      "noCompany": "Select an organization first.",
+      "cancel": "Cancel",
+      "start": "Start objective",
+      "saveLimits": "Save limits"
+    },
+    "card": {
+      "label": "Objective",
+      "title": "Objective",
+      "pause": "Pause",
+      "resume": "Resume",
+      "limits": "Limits",
+      "stop": "Stop",
+      "progress": "{{done}} of {{total}} subtasks done",
+      "noSubtasks": "No subtasks yet",
+      "blocked_one": "{{count}} blocked",
+      "blocked_other": "{{count}} blocked",
+      "stalled_one": "{{count}} not moving",
+      "stalled_other": "{{count}} not moving",
+      "working_one": "{{count}} working now",
+      "working_other": "{{count}} working now",
+      "spend": "Spend",
+      "tokens": "Tokens",
+      "time": "Time",
+      "ofLimit": "{{used}} of {{limit}}",
+      "noTimeLimit": "No limit",
+      "timeUp": "Time is up",
+      "hoursLeft_one": "{{count}} hour left",
+      "hoursLeft_other": "{{count}} hours left",
+      "minutesLeft_one": "{{count}} minute left",
+      "minutesLeft_other": "{{count}} minutes left",
+      "limitReached": {
+        "spend": "The spend limit was reached and the work is paused. Raise the limit to continue, or stop the objective.",
+        "tokens": "The token limit was reached and the work is paused. Raise the limit to continue, or stop the objective.",
+        "deadline": "The time limit was reached and the work is paused. Extend the time to continue, or stop the objective."
+      }
+    },
+    "toast": {
+      "started": "Objective started",
+      "limitsSaved": "Limits saved",
+      "actionFailed": "Could not update the objective"
+    }
   }
 }

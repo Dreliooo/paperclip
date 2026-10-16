@@ -1,6 +1,6 @@
 # Objective mode ("Objetivo")
 
-Status: approved 2026-10-16, building the first slice.
+Status: approved 2026-10-16; first slice built (API, supervisor, task-chat UI).
 
 ## What the person asked for
 

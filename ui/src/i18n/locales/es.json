@@ -9465,8 +9465,8 @@
       "addToComposer": "Agregar al compositor",
       "filesAndImages": "Archivos e imágenes",
       "privateTask": "Tarea privada",
-      "goal": "Objetivo",
-      "goalDetail": "Seguir avanzando",
+      "goal": "Meta del agente",
+      "goalDetail": "Que siga solo hasta terminar",
       "planMode": "Modo plan",
       "planModeDetail": "Planificar antes de actuar",
       "askMode": "Modo consulta",
@@ -20553,6 +20553,92 @@
       "projects": "Proyectos",
       "bundled": "Incluidas",
       "organization": "Organización"
+    }
+  },
+  "objective": {
+    "menu": {
+      "label": "Objetivo",
+      "detail": "Delegar entre agentes hasta terminar"
+    },
+    "status": {
+      "active": "Trabajando",
+      "paused": "En pausa",
+      "limit_reached": "Llegó a un tope",
+      "achieved": "Cumplido",
+      "stopped": "Frenado"
+    },
+    "time": {
+      "keep": "Mantener el actual",
+      "none": "Sin tope de tiempo",
+      "1h": "1 hora",
+      "4h": "4 horas",
+      "24h": "24 horas",
+      "3d": "3 días",
+      "7d": "1 semana"
+    },
+    "dialog": {
+      "title": "Nuevo objetivo",
+      "limitsTitle": "Topes del objetivo",
+      "description": "El coordinador divide el trabajo en subtareas, las reparte entre otros agentes y hace el seguimiento hasta cumplir el objetivo.",
+      "descriptionFromChat": "Se crea una tarea nueva para el objetivo. El coordinador divide el trabajo en subtareas, las reparte y hace el seguimiento hasta terminar.",
+      "limitsDescription": "Subí o sacá un tope para que el objetivo siga. Vacío significa sin tope.",
+      "objectiveLabel": "¿Qué querés lograr?",
+      "objectivePlaceholder": "Por ejemplo: informe mensual listo para los 34 clientes",
+      "criteriaLabel": "¿Cómo sabemos que está terminado? (opcional)",
+      "criteriaPlaceholder": "Un criterio por línea",
+      "criteriaHint": "El coordinador muestra la evidencia de cada uno cuando cierra el objetivo.",
+      "coordinatorLabel": "Coordinador",
+      "coordinatorHint": "Puede coordinar cualquier agente. Puede pedirle a otro agente que valide el resultado, pero no es obligatorio.",
+      "limitsLabel": "Topes (opcionales)",
+      "limitsHint": "Si se llega a un tope, el trabajo se pausa y vos decidís si sigue.",
+      "dollarsLabel": "Gasto (US$)",
+      "tokensLabel": "Tokens",
+      "timeLabel": "Tiempo",
+      "noLimit": "Sin tope",
+      "invalidDollars": "Escribí el tope de gasto como un monto en dólares, por ejemplo 10 o 12,50.",
+      "invalidTokens": "Escribí el tope de tokens como un número, por ejemplo 500000, 500k o 1,5M.",
+      "objectiveRequired": "Primero escribí el objetivo.",
+      "coordinatorRequired": "Elegí un coordinador.",
+      "noCompany": "Primero elegí una organización.",
+      "cancel": "Cancelar",
+      "start": "Empezar objetivo",
+      "saveLimits": "Guardar topes"
+    },
+    "card": {
+      "label": "Objetivo",
+      "title": "Objetivo",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "limits": "Topes",
+      "stop": "Frenar",
+      "progress": "{{done}} de {{total}} subtareas terminadas",
+      "noSubtasks": "Todavía no hay subtareas",
+      "blocked_one": "{{count}} bloqueada",
+      "blocked_other": "{{count}} bloqueadas",
+      "stalled_one": "{{count}} sin avance",
+      "stalled_other": "{{count}} sin avance",
+      "working_one": "{{count}} trabajando ahora",
+      "working_other": "{{count}} trabajando ahora",
+      "spend": "Gasto",
+      "tokens": "Tokens",
+      "time": "Tiempo",
+      "ofLimit": "{{used}} de {{limit}}",
+      "noTimeLimit": "Sin tope",
+      "timeUp": "Se terminó el tiempo",
+      "hoursLeft_one": "Queda {{count}} hora",
+      "hoursLeft_other": "Quedan {{count}} horas",
+      "minutesLeft_one": "Queda {{count}} minuto",
+      "minutesLeft_other": "Quedan {{count}} minutos",
+      "limitReached": {
+        "spend": "Se llegó al tope de gasto y el trabajo quedó en pausa. Subí el tope para seguir o frená el objetivo.",
+        "tokens": "Se llegó al tope de tokens y el trabajo quedó en pausa. Subí el tope para seguir o frená el objetivo.",
+        "deadline": "Se llegó al tope de tiempo y el trabajo quedó en pausa. Extendé el tiempo para seguir o frená el objetivo."
+      }
+    },
+    "toast": {
+      "started": "Objetivo iniciado",
+      "limitsSaved": "Topes guardados",
+      "actionFailed": "No se pudo actualizar el objetivo"
     }
   }
 }

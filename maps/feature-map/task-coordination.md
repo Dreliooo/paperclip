@@ -16,6 +16,7 @@ Agent access: [companion](../agent-access-map/task-coordination.md).
 - `dependencies`: show blocking tasks and wake eligible work when prerequisites resolve.
 - `signoff`: apply the configured implementation/review completion policy.
 - `tree-control`: pause or resume a task tree without bypassing its gates.
+- `objective-mode`: give a task an objective; a coordinator agent delegates subtasks and a supervisor keeps it moving until the coordinator closes it or a time, USD or token limit pauses it.
 
 ## How to get to it (user POV)
 
@@ -26,6 +27,10 @@ Open the task’s parent/child and dependency links in task detail.
 ### `review-and-controls`
 
 Inspect the task’s execution policy and available review, pause, resume, or stop controls.
+
+### `objective-mode`
+
+In a task chat, open the composer "+" menu and choose "Objective". Set the objective, optional criteria, coordinator and limits. The objective card above the composer shows progress, usage and pause/resume/stop controls. In an agent chat the same entry creates a new task for the objective.
 
 ## Driving it with Playwright and the Paperclip API
 
@@ -46,6 +51,12 @@ Manual: Block one task on another, finish the prerequisite, and observe the depe
 Automated: [execution policy](../../server/src/__tests__/issue-execution-policy.test.ts), [tree control](../../server/src/__tests__/issue-tree-control-service.test.ts), and [signoff browser suite](../../tests/e2e/signoff-policy.spec.ts) target these layers. A linked suite is not a claim that its current run is green.
 
 Manual: Complete implementation under a review-required policy and confirm it waits for the required review outcome. Exercise rejection and later approval. Pause the parent while child work is pending, then verify resumption respects budget and ownership gates.
+
+### `objective-mode`
+
+Automated: [objective service](../../server/src/__tests__/issue-objectives.test.ts) covers start, stall nudges, limit pause/resume and completion; [objective helpers](../../packages/shared/src/issue-objectives.test.ts) and the [composer menu](../../ui/src/components/task-chat/TaskChatComposer.test.tsx) cover the rules and entry point.
+
+Manual: Start an objective with a low USD limit on a disposable task, let the coordinator delegate, and confirm the "Objective check" comments, the limit pause, extending the limit, and the achieved state when the coordinator closes the task.
 
 ## Gotchas
 

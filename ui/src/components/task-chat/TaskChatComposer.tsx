@@ -170,6 +170,8 @@ interface TaskChatComposerProps {
   onRunnerGoalReassign?: (
     reassignment: CommentReassignment,
   ) => Promise<void> | void;
+  /** Opens the objective dialog (objective mode). */
+  onOpenObjective?: () => void;
 }
 
 export type RunnerGoalComposerCommand =
@@ -415,6 +417,7 @@ export function TaskChatComposer({
   runnerGoalCapability = null,
   onRunnerGoalCommand,
   onRunnerGoalReassign,
+  onOpenObjective,
 }: TaskChatComposerProps) {
   const { t } = useTranslation();
   const streamlined = useStreamlinedTaskChatPresentation();
@@ -1472,6 +1475,7 @@ export function TaskChatComposer({
               onGoal={!queuedEdit && !conversationMode && attachments.length === 0 &&
                 runnerGoalCapability?.availability === "available" && onRunnerGoalCommand
                 ? prepareGoal : undefined}
+              onObjective={!queuedEdit && onOpenObjective ? onOpenObjective : undefined}
               disabled={disabled || !!uncertainSubmission}
               mobile={mobile}
               triggerTestId="task-chat-composer-add"
