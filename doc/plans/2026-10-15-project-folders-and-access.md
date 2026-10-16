@@ -105,9 +105,7 @@ Implemented:
 - Projects page: My/All toggle, folder rail (create, rename, color, delete),
   mobile folder sheet, per-row **Move to…**. Folder controls are translated.
 
-Still open (needs a decision before building):
-
-- **Per-folder access.** Folders currently only organize; access stays per
-  project. If a folder should restrict who sees the projects inside it, the
-  folder would need its own access list, with the rule "folder access narrows,
-  never widens" applied to every project inside.
+Decided 2026-10-16: **no per-folder access.** Folders only organize; who can
+see a project is decided by the project alone (open, or private with its access
+list). Making a folder restrict access was considered and rejected: moving a
+project between folders must never change who can read it.
