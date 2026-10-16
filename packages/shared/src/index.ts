@@ -1751,6 +1751,39 @@ export {
 } from "./validators/user-preferences.js";
 export type { UsageDisplayMode, UserPreferences } from "./types/user-preferences.js";
 export {
+  ISSUE_OBJECTIVE_ACTIONS,
+  ISSUE_OBJECTIVE_STATUSES,
+  type IssueObjective,
+  type IssueObjectiveAction,
+  type IssueObjectiveLimitReason,
+  type IssueObjectiveLimits,
+  type IssueObjectiveProgress,
+  type IssueObjectiveStalledTask,
+  type IssueObjectiveStatus,
+  type IssueObjectiveUsage,
+} from "./types/issue-objective.js";
+export {
+  ISSUE_OBJECTIVE_MAX_CHARS,
+  ISSUE_OBJECTIVE_MAX_CRITERIA,
+  createIssueObjectiveSchema,
+  issueObjectiveActionSchema,
+  updateIssueObjectiveSchema,
+  type CreateIssueObjective,
+  type IssueObjectiveActionRequest,
+  type UpdateIssueObjective,
+} from "./validators/issue-objective.js";
+export {
+  OBJECTIVE_IDLE_CHECK_IN_MS,
+  OBJECTIVE_MIN_NUDGE_INTERVAL_MS,
+  OBJECTIVE_STALL_MS,
+  decideObjectiveNudge,
+  evaluateObjectiveLimit,
+  objectiveProgressFingerprint,
+  summarizeObjectiveTree,
+  type ObjectiveNudgeReason,
+  type ObjectiveTreeRow,
+} from "./issue-objectives.js";
+export {
   resourceMembershipStateSchema,
   updateDocumentResourceMembershipSchema,
   updateResourceMembershipSchema,

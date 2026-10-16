@@ -57,6 +57,7 @@ export {
   type StalledReviewDecisionActor,
 } from "./stalled-review-decisions.js";
 export { taskWatchdogService } from "./task-watchdogs.js";
+export { issueObjectiveService } from "./issue-objectives.js";
 export {
   issueIsInTaskWatchdogSubtree,
   resolveTaskWatchdogMutationScope,

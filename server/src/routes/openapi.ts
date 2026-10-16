@@ -195,6 +195,10 @@ import {
   evaluateSkillPolicySchema,
   replaceSkillPolicySchema,
   updateInboxAgentPolicySchema,
+  // Issue objectives
+  createIssueObjectiveSchema,
+  issueObjectiveActionSchema,
+  updateIssueObjectiveSchema,
   // Issue tree
   createIssueTreeHoldSchema,
   previewIssueTreeControlSchema,
@@ -8155,6 +8159,46 @@ registry.registerPath({
     body: jsonBody(previewIssueTreeControlSchema),
   },
   responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Get the objective on a task",
+  description: "Returns the task's objective with live progress, spend and token usage of its subtree, or null when the task has no objective. Unreadable tasks answer 404.",
+  request: { params: z.object({ id: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Start an objective on a task",
+  description: "Board users only. Assigns the task to the coordinator agent, posts the objective brief and wakes the coordinator. Optional limits on billed spend, tokens and time pause the subtree when reached. Conversations are rejected; start objectives from a task.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(createIssueObjectiveSchema) },
+  responses: { 201: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict, 422: r.unprocessable },
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Change an objective's text, criteria or limits",
+  description: "Board users only. Raising a reached limit resumes the paused subtree.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(updateIssueObjectiveSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/issues/{id}/objective/actions",
+  tags: ["issues"],
+  summary: "Pause, resume or stop an objective",
+  description: "Board users only. Pause and stop hold the whole subtree; resume releases the hold and wakes the assignees again.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(issueObjectiveActionSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict, 422: r.unprocessable },
 });
 
 registry.registerPath({

@@ -2437,6 +2437,13 @@
       "when": 1792091340833,
       "tag": "0349_project_folders",
       "breakpoints": true
+    },
+    {
+      "idx": 350,
+      "version": "7",
+      "when": 1792178832032,
+      "tag": "0350_issue_objectives",
+      "breakpoints": true
     }
   ]
 }

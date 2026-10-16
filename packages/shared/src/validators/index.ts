@@ -139,6 +139,16 @@ export {
   type UpdateUserPreferences,
 } from "./user-preferences.js";
 export {
+  ISSUE_OBJECTIVE_MAX_CHARS,
+  ISSUE_OBJECTIVE_MAX_CRITERIA,
+  createIssueObjectiveSchema,
+  issueObjectiveActionSchema,
+  updateIssueObjectiveSchema,
+  type CreateIssueObjective,
+  type IssueObjectiveActionRequest,
+  type UpdateIssueObjective,
+} from "./issue-objective.js";
+export {
   resourceMembershipStateSchema,
   updateDocumentResourceMembershipSchema,
   updateResourceMembershipSchema,
