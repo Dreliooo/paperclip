@@ -2,19 +2,23 @@ import { authApi } from "@/api/auth";
 import { accessApi } from "@/api/access";
 import { canManageProjectPrivacy } from "@/lib/issuePrivacy";
 import { useWorkspaceIsolationControls } from "@/hooks/useWorkspaceIsolationControls";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { environmentDisplayLabel, filterManagedSandboxSelectableEnvironments } from "@/lib/managed-sandbox-environment";
 import { Link } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Project, SharedWorkspaceConcurrency } from "@paperclipai/shared";
 import { ProjectRepositories } from "./ProjectRepositories";
+import { CreationAttributionRows } from "./CreationAttributionRows";
 import { cn, formatDate } from "../lib/utils";
+import { agentsApi } from "../api/agents";
 import { environmentsApi } from "../api/environments";
 import { instanceSettingsApi } from "../api/instanceSettings";
 import { projectsApi } from "../api/projects";
 import { secretsApi } from "../api/secrets";
 import { useCompany } from "../context/CompanyContext";
 import { queryKeys } from "../lib/queryKeys";
+import { buildCompanyUserLabelMap } from "../lib/company-members";
+import { formatUserLabel } from "../lib/assignees";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -272,6 +276,20 @@ export function ProjectProperties({ project, repositories, onUpdate, onFieldUpda
     queryFn: () => environmentsApi.list(selectedCompanyId!),
     enabled: !!selectedCompanyId && environmentsEnabled,
   });
+  const { data: agents } = useQuery({
+    queryKey: queryKeys.agents.list(selectedCompanyId!),
+    queryFn: () => agentsApi.list(selectedCompanyId!),
+    enabled: !!selectedCompanyId,
+  });
+  const { data: companyMembers } = useQuery({
+    queryKey: queryKeys.access.companyUserDirectory(selectedCompanyId!),
+    queryFn: () => accessApi.listUserDirectory(selectedCompanyId!),
+    enabled: !!selectedCompanyId,
+  });
+  const userLabelMap = useMemo(
+    () => buildCompanyUserLabelMap(companyMembers?.users),
+    [companyMembers?.users],
+  );
 
   const workspaces = project.workspaces ?? [];
   const codebase = project.codebase;
@@ -1070,6 +1088,32 @@ export function ProjectProperties({ project, repositories, onUpdate, onFieldUpda
         <PropertyRow label={<FieldLabel label={t("properties.project.created")} state="idle" />}>
           <span className="text-sm">{formatDate(project.createdAt)}</span>
         </PropertyRow>
+        <CreationAttributionRows
+          record={project}
+          entity="project"
+          agents={agents}
+          userLabel={(userId) => formatUserLabel(userId, userLabelMap)}
+          renderRow={(label, value, key) => (
+            <PropertyRow key={key} label={<FieldLabel label={label} state="idle" />}>{value}</PropertyRow>
+          )}
+        />
+        {project.privacyOwnerUserId ? (
+          <PropertyRow label={<FieldLabel label={t("attribution.accessOwner")} state="idle" />}>
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className="min-w-0 truncate text-sm">
+                {formatUserLabel(project.privacyOwnerUserId, userLabelMap) ?? t("attribution.unknownPerson")}
+              </span>
+              <span className="shrink-0 text-xs text-muted-foreground">{t("attribution.accessOwnerHint")}</span>
+            </span>
+          </PropertyRow>
+        ) : null}
+        {project.leadAgentId ? (
+          <PropertyRow label={<FieldLabel label={t("attribution.leadAgent")} state="idle" />}>
+            <Link to={`/agents/${project.leadAgentId}`} className="min-w-0 truncate text-sm hover:underline">
+              {agents?.find((agent) => agent.id === project.leadAgentId)?.name ?? t("attribution.unknownAgent")}
+            </Link>
+          </PropertyRow>
+        ) : null}
     </div>
   );
 }

@@ -14,7 +14,6 @@ import { copyTextToClipboard } from "@/lib/clipboard";
 import { Link } from "@/lib/router";
 import { useTranslation } from "@/i18n";
 import {
-  deriveOriginatingActor,
   isArtifactReviewDocumentKey,
   type ExecutionWorkspace,
   type Issue,
@@ -35,7 +34,7 @@ import { projectsApi } from "../../api/projects";
 import { useCompany } from "../../context/CompanyContext";
 import { useSidebar } from "../../context/SidebarContext";
 import { queryKeys } from "../../lib/queryKeys";
-import { buildCompanyUserInlineOptions, buildCompanyUserLabelMap, buildCompanyUserProfileMap, isAgentTaskTarget } from "../../lib/company-members";
+import { buildCompanyUserInlineOptions, buildCompanyUserLabelMap, isAgentTaskTarget } from "../../lib/company-members";
 import { ISSUE_OVERRIDE_ADAPTER_TYPES, type IssueModelLane } from "../../lib/issue-assignee-overrides";
 import { useProjectOrder } from "../../hooks/useProjectOrder";
 import {
@@ -65,7 +64,7 @@ import { RetryErrorBand } from "../IssueScheduledRetryCard";
 import { StatusIcon } from "../StatusIcon";
 import { PriorityIcon } from "../PriorityIcon";
 import { SHOW_TASK_PRIORITY_UI } from "../../lib/ui-flags";
-import { Identity } from "../Identity";
+import { CreationAttributionRows } from "../CreationAttributionRows";
 import { ProjectTile } from "../ProjectTile";
 import { IssueReferencePill } from "../IssueReferencePill";
 import { formatDate, formatDateTime, cn, projectUrl } from "../../lib/utils";
@@ -722,10 +721,6 @@ export function IssueProperties({
     () => buildCompanyUserLabelMap(companyMembers?.users),
     [companyMembers?.users],
   );
-  const userProfileMap = useMemo(
-    () => buildCompanyUserProfileMap(companyMembers?.users),
-    [companyMembers?.users],
-  );
   const otherUserOptions = useMemo(
     () => buildCompanyUserInlineOptions(companyMembers?.users, { excludeUserIds: [currentUserId, issue.createdByUserId] }),
     [companyMembers?.users, currentUserId, issue.createdByUserId],
@@ -946,13 +941,6 @@ export function IssueProperties({
   const actualUserLabel = (userId: string | null | undefined) => formatUserLabel(userId, userLabelMap);
   const assigneeUserLabel = userLabel(issue.assigneeUserId);
   const creatorUserLabel = actualUserLabel(issue.createdByUserId);
-  const originatingActor = deriveOriginatingActor(issue);
-  const originatingUserProfile =
-    originatingActor?.kind === "user" ? userProfileMap.get(originatingActor.id) : null;
-  const originatingViaAgentName =
-    originatingActor?.kind === "user" && originatingActor.viaAgentId
-      ? agentName(originatingActor.viaAgentId) ?? originatingActor.viaAgentId.slice(0, 8)
-      : null;
   const selectedAssigneeValue = issue.assigneeAgentId
     ? `agent:${issue.assigneeAgentId}`
     : issue.assigneeUserId
@@ -2898,31 +2886,20 @@ export function IssueProperties({
       ) : null}
 
       <PropertySection title={t("properties.issue.section.about")} streamlined={streamlinedPropertiesEnabled}>
-        {originatingActor ? (
-          <PropertyRow label={t("properties.issue.field.originating")}>
-            {originatingActor.kind === "agent" ? (
-              <Link
-                to={`/agents/${originatingActor.id}`}
-                className="hover:underline"
-              >
-                <AgentIdentity agent={agents?.find((agent) => agent.id === originatingActor.id) ?? { id: originatingActor.id, name: agentName(originatingActor.id) ?? t("properties.issue.agentFallback") }} size="sm" />
-              </Link>
-            ) : (
-              <span className="flex min-w-0 items-center gap-1.5">
-                <Identity
-                  name={actualUserLabel(originatingActor.id) ?? originatingUserProfile?.label ?? t("properties.issue.user.fallback")}
-                  avatarUrl={originatingUserProfile?.image ?? null}
-                  size="sm"
-                />
-                {originatingViaAgentName ? (
-                  <span className="shrink-0 truncate text-xs text-muted-foreground">
-                    {t("properties.issue.originating.via", { agent: originatingViaAgentName })}
-                  </span>
-                ) : null}
-              </span>
-            )}
-          </PropertyRow>
-        ) : null}
+        <CreationAttributionRows
+          record={issue}
+          entity="task"
+          agents={agents}
+          userLabel={(id) => actualUserLabel(id) ?? null}
+          noCreatorLabel={!issue.originKind || issue.originKind === "manual"
+            ? null
+            : t(issue.originKind === "routine_execution"
+              ? "attribution.system.routine"
+              : issue.originKind === "chat_channel"
+                ? "attribution.system.chatChannel"
+                : "attribution.system.other")}
+          renderRow={(label, value, key) => <PropertyRow key={key} label={label}>{value}</PropertyRow>}
+        />
         {issue.startedAt && (
           <PropertyRow label={t("properties.issue.field.started")}>
             <span

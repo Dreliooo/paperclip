@@ -3204,13 +3204,14 @@ describe("IssueDetail", () => {
     });
   });
 
-  it("attributes an agent-created issue to the transitive responsible user with a via affordance", async () => {
+  it("attributes an agent-created issue to the person who asked for it, with a via affordance", async () => {
     mockIssuesApi.get.mockResolvedValue(
       createIssue({
         assigneeAgentId: "agent-1",
         createdByAgentId: "agent-1",
         createdByUserId: null,
-        responsibleUserId: "user-1",
+        requestedByUserId: "user-1",
+        requestEvidence: "message",
       }),
     );
     mockAgentsApi.list.mockResolvedValue([createAgent({ name: "CodexCoder" })]);

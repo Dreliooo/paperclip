@@ -534,6 +534,8 @@ export const queryKeys = {
         companyId,
         { includeArchived: opts.includeArchived === true },
       ] as const,
+    /** Per person: keyed by user so a different sign-in never reuses the list. */
+    mine: (companyId: string, userId: string | null) => ["projects", companyId, "mine", userId ?? "anonymous"] as const,
     detail: (id: string) => ["projects", "detail", id] as const,
     accessMembers: (id: string) => ["projects", "access-members", id] as const,
   },

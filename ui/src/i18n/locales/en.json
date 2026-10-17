@@ -827,9 +827,13 @@
       "label": "Projects view",
       "mine": "My projects",
       "all": "All projects",
-      "mineHint": "Projects you are part of. Leave a project to take it off this list.",
-      "allHint": "Every project you can see in the organization.",
-      "mineEmpty": "You are not part of any project yet. Switch to All projects to join one."
+      "mineHint": "Projects you created or asked for, shared with you, with your tasks, or that you follow.",
+      "allHint": "Every project in the company you are allowed to see.",
+      "mineEmpty": "Nothing here yet. Projects appear when you create one, an agent creates one at your request, someone shares a private project with you, you have tasks in one, or you join or star one in All projects.",
+      "mineDescription": "My projects: the ones you created or asked an agent to create, private projects shared with you, projects with tasks assigned to, created or requested by you, and the ones you joined or starred. Leaving a project removes it from here.",
+      "allDescription": "All projects: every project in the company you are allowed to see, whoever created it. Private projects appear only for the people they are shared with.",
+      "mineLoading": "Loading your projects…",
+      "mineError": "Could not load your projects: {{message}}"
     },
     "itemsPlural": "projects",
     "allFolder": "All projects",
@@ -845,7 +849,25 @@
       "folderDeleteFailed": "Could not delete the folder",
       "moved": "Project moved",
       "moveFailed": "Could not move the project",
-      "folderCreatedMoveFailed": "Folder created, but the project could not be moved"
+      "folderCreatedMoveFailed": "Folder created, but the project could not be moved",
+      "folderHasSubfolders": "Move or delete its subfolders first"
+    },
+    "reason": {
+      "created": "Created by you",
+      "requested": "Asked by you",
+      "shared": "Shared with you",
+      "tasks": "Your tasks",
+      "following": "You follow it",
+      "personal": "Your private tasks"
+    },
+    "attribution": {
+      "you": "you",
+      "unknownPerson": "unknown person",
+      "unknownAgent": "unknown agent",
+      "unknown": "Creator unknown",
+      "createdBy": "Created by {{name}}",
+      "createdByAgent": "Created by {{agent}} (agent)",
+      "createdByAgentFor": "Created by {{agent}} (agent) for {{name}}"
     }
   },
   "issues": {
@@ -1235,7 +1257,10 @@
       "cancel": "Cancel",
       "saving": "Saving...",
       "save": "Save",
-      "create": "Create folder"
+      "create": "Create folder",
+      "parent": "Inside",
+      "topLevel": "Top level (no parent folder)",
+      "parentHint": "Up to four levels. A folder shows its projects and those in its subfolders. Folders never change who can see a project."
     },
     "deleteDialog": {
       "title": "Delete folder",
@@ -1248,7 +1273,8 @@
       "selected": "{{count}} selected",
       "deselect": "Deselect all",
       "done": "Done"
-    }
+    },
+    "newSubfolder": "New subfolder"
   },
   "documents": {
     "revision": "Revision {{number}}",
@@ -20640,6 +20666,27 @@
       "started": "Objective started",
       "limitsSaved": "Limits saved",
       "actionFailed": "Could not update the objective"
+    }
+  },
+  "attribution": {
+    "createdBy": "Created by",
+    "requestedBy": "Requested by",
+    "unknownCreator": "Unknown (created before this was recorded)",
+    "unknownPerson": "Unknown person",
+    "unknownAgent": "Unknown agent",
+    "agentSuffix": "(agent)",
+    "noEvidence": "No evidence of who asked",
+    "evidence": {
+      "message": "by their message",
+      "manualWake": "they started the run"
+    },
+    "accessOwner": "Access owner",
+    "accessOwnerHint": "manages who can see it",
+    "leadAgent": "Lead agent",
+    "system": {
+      "routine": "Created by a routine",
+      "chatChannel": "Created from a chat channel message",
+      "other": "Created automatically by Paperclip"
     }
   }
 }

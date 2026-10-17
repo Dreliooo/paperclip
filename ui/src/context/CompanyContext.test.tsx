@@ -292,6 +292,25 @@ describe("CompanyProvider", () => {
   // served whether or not it is stale, so freshness cannot stand in for
   // "belongs to the account signed in now".
   describe("when the account changes in this tab", () => {
+    it("clears the previous account's company-scoped lists", async () => {
+      const seen: Array<string | null> = [];
+      await bootWithFirstAccount(seen);
+      mockCompaniesApi.list.mockImplementation(() => new Promise(() => {}));
+      queryClient.setQueryData(queryKeys.projects.list("company-1"), [{ id: "project-of-user-1" }]);
+      queryClient.setQueryData(queryKeys.folders.list("company-1", "project"), { folders: [] });
+
+      await act(async () => {
+        queryClient.setQueryData(queryKeys.auth.session, sessionFor("user-2"));
+      });
+      await flushReact();
+
+      expect(queryClient.getQueryData(queryKeys.projects.list("company-1"))).toBeUndefined();
+      expect(queryClient.getQueryData(queryKeys.folders.list("company-1", "project"))).toBeUndefined();
+      // The session itself and the account-keyed company list are not reset.
+      expect(queryClient.getQueryData(queryKeys.auth.session)).toMatchObject(sessionFor("user-2"));
+      expect(queryClient.getQueryData(queryKeys.companies.list("user-1"))).toBeDefined();
+    });
+
     async function bootWithFirstAccount(seen: Array<string | null>) {
       mockAuthApi.getSession.mockResolvedValue(sessionFor("user-1"));
       queryClient.setQueryData(queryKeys.companies.list("user-1"), {

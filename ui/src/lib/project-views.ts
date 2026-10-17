@@ -1,10 +1,19 @@
-import type { Project, ResourceMemberships } from "@paperclipai/shared";
+import type {
+  Folder,
+  FolderListResult,
+  MyProjectsResult,
+  Project,
+  ProjectInvolvementReason,
+  ResourceMemberships,
+} from "@paperclipai/shared";
 import type { FolderSelection } from "../components/folders/FolderControls";
 
 /**
- * Projects page views, mirroring Tasks ("Mine" / "All tasks"):
- *   - `mine`: projects the viewer is part of. Everyone starts as part of every
- *     project they can see; leaving a project takes it off this list.
+ * Projects page views:
+ *   - `mine`: projects related to the viewer, computed by the server
+ *     (`GET /companies/:id/projects/mine`): created or requested by them,
+ *     shared with them privately, with tasks of theirs, followed, or their
+ *     personal project. A project they left is not included.
  *   - `all`:  every project the server returned, i.e. every project the viewer
  *     is allowed to read. Private projects never reach the client otherwise.
  */
@@ -23,19 +32,69 @@ export function hasLeftProject(memberships: ResourceMemberships | undefined, pro
   return memberships?.projectMemberships[projectId] === "left";
 }
 
+export function projectInvolvementMap(result: MyProjectsResult | undefined) {
+  return new Map((result?.projects ?? []).map((entry) => [entry.projectId, entry.reasons]));
+}
+
+/** `mine` shows nothing until the server answers, so it never flashes the full list. */
 export function filterProjectsByView(
   projects: Project[],
-  memberships: ResourceMemberships | undefined,
+  involvement: Map<string, ProjectInvolvementReason[]> | null,
   view: ProjectView,
 ): Project[] {
   if (view === "all") return projects;
-  return projects.filter((project) => !hasLeftProject(memberships, project.id));
+  if (!involvement) return [];
+  return projects.filter((project) => involvement.has(project.id));
 }
 
-export function filterProjectsByFolder(projects: Project[], selection: FolderSelection): Project[] {
+/** A folder and all of its subfolders. */
+export function folderWithDescendants(folders: Pick<Folder, "id" | "parentId">[], folderId: string): Set<string> {
+  const children = new Map<string, string[]>();
+  for (const folder of folders) {
+    if (!folder.parentId) continue;
+    children.set(folder.parentId, [...(children.get(folder.parentId) ?? []), folder.id]);
+  }
+  const ids = new Set<string>();
+  const pending = [folderId];
+  while (pending.length > 0) {
+    const id = pending.pop()!;
+    if (ids.has(id)) continue;
+    ids.add(id);
+    pending.push(...(children.get(id) ?? []));
+  }
+  return ids;
+}
+
+/** Selecting a folder shows its projects and those in its subfolders. */
+export function filterProjectsByFolder(
+  projects: Project[],
+  selection: FolderSelection,
+  folders: Pick<Folder, "id" | "parentId">[] = [],
+): Project[] {
   if (selection === "all") return projects;
   if (selection === "unfiled") return projects.filter((project) => !project.folderId);
-  return projects.filter((project) => project.folderId === selection);
+  const ids = folderWithDescendants(folders, selection);
+  return projects.filter((project) => project.folderId != null && ids.has(project.folderId));
+}
+
+/** Folder counts for what this view shows, including subfolders, so the rail always matches the list. */
+export function folderRailResult(result: FolderListResult | undefined, projects: Project[]): FolderListResult | undefined {
+  if (!result) return undefined;
+  const direct = new Map<string | null, number>();
+  for (const project of projects) {
+    const key = project.folderId ?? null;
+    direct.set(key, (direct.get(key) ?? 0) + 1);
+  }
+  return {
+    ...result,
+    folders: result.folders.map((folder) => {
+      let itemCount = 0;
+      for (const id of folderWithDescendants(result.folders, folder.id)) itemCount += direct.get(id) ?? 0;
+      return { ...folder, itemCount };
+    }),
+    allCount: projects.length,
+    unfiledCount: direct.get(null) ?? 0,
+  };
 }
 
 export function readStoredProjectView(): ProjectView | null {

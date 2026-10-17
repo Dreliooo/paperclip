@@ -11,7 +11,12 @@ import { Projects } from "./Projects";
 
 const mockProjectsApi = vi.hoisted(() => ({
   list: vi.fn(),
+  mine: vi.fn(),
 }));
+
+const mockAuthApi = vi.hoisted(() => ({ getSession: vi.fn() }));
+const mockAccessApi = vi.hoisted(() => ({ listUserDirectory: vi.fn() }));
+const mockAgentsApi = vi.hoisted(() => ({ list: vi.fn() }));
 
 const mockResourceMembershipsApi = vi.hoisted(() => ({
   listMine: vi.fn(),
@@ -68,6 +73,10 @@ vi.mock("../api/projects", () => ({
 vi.mock("../api/resourceMemberships", () => ({
   resourceMembershipsApi: mockResourceMembershipsApi,
 }));
+
+vi.mock("../api/auth", () => ({ authApi: mockAuthApi }));
+vi.mock("../api/access", () => ({ accessApi: mockAccessApi }));
+vi.mock("../api/agents", () => ({ agentsApi: mockAgentsApi }));
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -162,9 +171,26 @@ describe("Projects", () => {
         urlKey: "alpha",
         name: "Alpha",
         description: "First project",
+        createdByUserId: "u-ana",
         updatedAt: new Date("2026-01-01T00:00:00Z"),
       }),
     ]);
+    mockAuthApi.getSession.mockResolvedValue({ user: { id: "u-ana" }, session: { userId: "u-ana" } });
+    mockAccessApi.listUserDirectory.mockResolvedValue({ users: [] });
+    mockAgentsApi.list.mockResolvedValue([{ id: "agent-1", name: "Director" }]);
+    // Fictional people: Ana created Alpha and has a task in Charlie; Beto created Bravo.
+    mockProjectsApi.mine.mockImplementation(async () => {
+      const session = await mockAuthApi.getSession();
+      return session?.user?.id === "u-beto"
+        ? { userId: "u-beto", projects: [{ projectId: "project-b", reasons: ["created"] }] }
+        : {
+          userId: "u-ana",
+          projects: [
+            { projectId: "project-a", reasons: ["created"] },
+            { projectId: "project-c", reasons: ["tasks"] },
+          ],
+        };
+    });
     mockResourceMembershipsApi.listMine.mockResolvedValue({
       projectMemberships: { "project-b": "left" },
       agentMemberships: {},
@@ -266,7 +292,7 @@ describe("Projects", () => {
     return Array.from(root.querySelectorAll("button")).find((element) => element.textContent?.trim().startsWith(text));
   }
 
-  it("shows my projects by default, sorted by name, without projects I left", async () => {
+  it("shows my projects by default, from the server, sorted by name, with reasons", async () => {
     await renderProjects();
 
     const content = container.textContent ?? "";
@@ -275,6 +301,34 @@ describe("Projects", () => {
     expect(content.indexOf("Alpha")).toBeLessThan(content.indexOf("Charlie"));
     expect(content).not.toContain("Bravo");
     expect(content).toContain("in progress");
+    expect(container.querySelector('[data-testid="projects-view-description"]')?.textContent).toContain("My projects:");
+    const relations = Array.from(container.querySelectorAll('[data-testid="project-row-relation"]')).map((node) => node.textContent);
+    expect(relations).toEqual(["Created by you", "Your tasks"]);
+  });
+
+  it("shows a different list to another person, never the previous person's cached list", async () => {
+    await renderProjects();
+    expect(container.textContent).toContain("Alpha");
+
+    mockAuthApi.getSession.mockResolvedValue({ user: { id: "u-beto" }, session: { userId: "u-beto" } });
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+    });
+    await flushReact();
+    await flushReact();
+
+    const content = container.textContent ?? "";
+    expect(content).toContain("Bravo");
+    expect(content).not.toContain("Alpha");
+    expect(content).not.toContain("Charlie");
+  });
+
+  it("shows who created each project in All projects", async () => {
+    await renderProjects();
+    await click(buttonWithText("All projects"));
+    const relations = Array.from(container.querySelectorAll('[data-testid="project-row-relation"]')).map((node) => node.textContent);
+    expect(relations).toEqual(["Created by you", "Creator unknown", "Creator unknown"]);
+    expect(container.querySelector('[data-testid="projects-view-description"]')?.textContent).toContain("All projects:");
   });
 
   it("switches to all projects and keeps projects I left dimmed", async () => {
@@ -306,6 +360,36 @@ describe("Projects", () => {
     const content = container.textContent ?? "";
     expect(content).toContain("Charlie");
     expect(content).not.toContain("Alpha");
+  });
+
+  it("shows subfolders indented and includes them when a parent folder is selected", async () => {
+    const base = await mockFoldersApi.list();
+    mockFoldersApi.list.mockResolvedValue({
+      ...base,
+      folders: [
+        ...base.folders,
+        { ...base.folders[0], id: "folder-north", parentId: "folder-clients", name: "North", slug: "north", path: "clients/north", depth: 2, createdByUserId: "u-ana" },
+      ],
+    });
+    mockProjectsApi.list.mockResolvedValue([
+      makeProject({ id: "project-a", name: "Alpha", folderId: "folder-north" }),
+      makeProject({ id: "project-c", urlKey: "charlie", name: "Charlie", folderId: "folder-clients" }),
+    ]);
+    await renderProjects();
+    const rail = container.querySelector("nav")!;
+    const north = rail.querySelector('[data-folder-depth="2"]');
+    expect(north?.textContent).toContain("North");
+    expect(north?.className).toContain("pl-4");
+    // Counts include subfolders: Clients holds Charlie plus North's Alpha.
+    expect(buttonWithText("Clients", rail)?.parentElement?.textContent).toContain("2");
+
+    await click(buttonWithText("Clients", rail));
+    expect(container.textContent).toContain("Alpha");
+    expect(container.textContent).toContain("Charlie");
+
+    await click(buttonWithText("North", rail));
+    expect(container.textContent).toContain("Alpha");
+    expect(container.querySelector('[data-testid="projects-folder-created-by"]')?.textContent).toBe("Created by you");
   });
 
   it("moves a project to unfiled from its row menu", async () => {

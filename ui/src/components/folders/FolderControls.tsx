@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,6 +74,54 @@ const FOLDER_COLOR_VALUES: Record<(typeof FOLDER_COLORS)[number], string> = {
   amber: "var(--folder-color-amber)",
   slate: "var(--folder-color-slate)",
 };
+
+/** Deepest folder level the server accepts (see server/src/services/folders.ts). */
+export const MAX_FOLDER_DEPTH = 4;
+
+const DEPTH_INDENT = ["", "pl-4", "pl-8", "pl-12"];
+
+/** Indentation for a folder at `depth` (1 = top level). */
+export function folderIndentClass(depth: number | null | undefined) {
+  return DEPTH_INDENT[Math.min(Math.max((depth ?? 1) - 1, 0), DEPTH_INDENT.length - 1)];
+}
+
+/** Folders parent-first, siblings in server order, so a flat list reads as a tree. */
+export function foldersInTreeOrder<T extends Pick<FolderListItem, "id" | "parentId">>(folders: T[]): T[] {
+  const ids = new Set(folders.map((folder) => folder.id));
+  const children = new Map<string | null, T[]>();
+  for (const folder of folders) {
+    const parentKey = folder.parentId && ids.has(folder.parentId) ? folder.parentId : null;
+    children.set(parentKey, [...(children.get(parentKey) ?? []), folder]);
+  }
+  const ordered: T[] = [];
+  const seen = new Set<string>();
+  const visit = (parentId: string | null) => {
+    for (const folder of children.get(parentId) ?? []) {
+      if (seen.has(folder.id)) continue;
+      seen.add(folder.id);
+      ordered.push(folder);
+      visit(folder.id);
+    }
+  };
+  visit(null);
+  return ordered;
+}
+
+/** A folder plus every folder below it. */
+export function folderSubtreeIds(folders: Pick<FolderListItem, "id" | "parentId">[], folderId: string) {
+  const ids = new Set([folderId]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const folder of folders) {
+      if (folder.parentId && ids.has(folder.parentId) && !ids.has(folder.id)) {
+        ids.add(folder.id);
+        grew = true;
+      }
+    }
+  }
+  return ids;
+}
 
 export function normalizeFolderSelection(value: string | null | undefined): FolderSelection {
   if (!value) return "all";
@@ -168,6 +217,9 @@ export function FolderRail({
   onRename,
   onEdit,
   onDelete,
+  nested = false,
+  onCreateChild,
+  describeFolder,
 }: {
   result: FolderListResult | null | undefined;
   selection: FolderSelection;
@@ -179,9 +231,17 @@ export function FolderRail({
   onRename: (folder: FolderListItem, name: string) => void;
   onEdit: (folder: FolderListItem) => void;
   onDelete: (folder: FolderListItem) => void;
+  /** Show subfolders indented under their parent. */
+  nested?: boolean;
+  onCreateChild?: (parent: FolderListItem) => void;
+  /** Extra detail for a folder's tooltip, such as who created it. */
+  describeFolder?: (folder: FolderListItem) => string;
 }) {
   const { t } = useTranslation();
-  const folders = result?.folders ?? [];
+  const folders = useMemo(
+    () => (nested ? foldersInTreeOrder(result?.folders ?? []) : result?.folders ?? []),
+    [nested, result?.folders],
+  );
   const [renamingFolderId, setRenamingFolderId] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
 
@@ -247,6 +307,9 @@ export function FolderRail({
             <FolderRailItem
               key={folder.id}
               folder={folder}
+              depth={nested ? folder.depth : 1}
+              description={describeFolder?.(folder)}
+              onCreateChild={onCreateChild && (folder.depth ?? 1) < MAX_FOLDER_DEPTH ? () => onCreateChild(folder) : undefined}
               active={selection === folder.id}
               renaming={renamingFolderId === folder.id}
               renameDraft={renameDraft}
@@ -276,6 +339,9 @@ export function FolderRail({
  */
 export function FolderRailItem({
   folder,
+  depth = 1,
+  description,
+  onCreateChild,
   active,
   renaming,
   renameDraft,
@@ -288,6 +354,9 @@ export function FolderRailItem({
   onDelete,
 }: {
   folder: FolderListItem;
+  depth?: number;
+  description?: string;
+  onCreateChild?: () => void;
   active: boolean;
   renaming: boolean;
   renameDraft: string;
@@ -305,13 +374,16 @@ export function FolderRailItem({
       className={cn(
         "group grid grid-cols-(--gtc-folder-row-actions) items-center gap-2 rounded-md px-2 py-1 text-sm transition-colors hover:bg-accent/40",
         active ? "bg-accent/60 text-foreground" : "text-muted-foreground",
+        folderIndentClass(depth),
       )}
+      data-folder-depth={depth}
     >
       <span className="h-4 w-4" />
       <button
         type="button"
         className="flex min-w-0 items-center gap-2 text-left"
         aria-current={active ? "page" : undefined}
+        title={description ? `${folder.name} · ${description}` : undefined}
         onClick={onSelect}
         onDoubleClick={onStartRename}
       >
@@ -346,6 +418,12 @@ export function FolderRailItem({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {onCreateChild ? (
+            <DropdownMenuItem onSelect={onCreateChild}>
+              <Plus className="h-3.5 w-3.5" />
+              {t("folders.newSubfolder")}
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem onSelect={onStartRename}>{t("folders.rename")}</DropdownMenuItem>
           <DropdownMenuItem onSelect={onEdit}>{t("folders.editColor")}</DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -576,8 +654,9 @@ function MoveToMenuItems({
   const [query, setQuery] = useState("");
   const visibleFolders = useMemo(() => {
     const lowered = query.trim().toLowerCase();
-    if (!lowered) return folders;
-    return folders.filter((folder) => folder.name.toLowerCase().includes(lowered));
+    const ordered = foldersInTreeOrder(folders);
+    if (!lowered) return ordered;
+    return ordered.filter((folder) => folder.name.toLowerCase().includes(lowered));
   }, [folders, query]);
 
   return (
@@ -599,7 +678,7 @@ function MoveToMenuItems({
           {currentFolderId == null ? <Check className="ml-auto h-3.5 w-3.5" /> : null}
         </DropdownMenuItem>
         {visibleFolders.map((folder) => (
-          <DropdownMenuItem key={folder.id} onSelect={() => onMove(folder.id)}>
+          <DropdownMenuItem key={folder.id} className={query.trim() ? undefined : folderIndentClass(folder.depth)} onSelect={() => onMove(folder.id)}>
             <FolderSwatch color={folder.color} />
             <span className="min-w-0 flex-1 truncate">{folder.name}</span>
             {currentFolderId === folder.id ? <Check className="ml-auto h-3.5 w-3.5" /> : null}
@@ -624,24 +703,40 @@ export function FolderFormDialog({
   onOpenChange,
   onSubmit,
   pending = false,
+  parentOptions,
+  initialParentId = null,
 }: {
   open: boolean;
   kind: FolderKind;
   folder: FolderListItem | null;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (payload: { name: string; color: string | null }) => void;
+  onSubmit: (payload: { name: string; color: string | null; parentId?: string | null }) => void;
   pending?: boolean;
+  /** When set, the dialog offers "Inside" so folders can be nested. */
+  parentOptions?: FolderListItem[];
+  initialParentId?: string | null;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [color, setColor] = useState<string | null>(FOLDER_COLORS[0] ?? null);
+  const [parentId, setParentId] = useState<string | null>(null);
   const isEdit = Boolean(folder);
+  // A folder cannot go inside itself or below the deepest level.
+  const parentChoices = useMemo(() => {
+    if (!parentOptions) return null;
+    const excluded = folder ? folderSubtreeIds(parentOptions, folder.id) : new Set<string>();
+    return foldersInTreeOrder(parentOptions).filter((option) =>
+      !excluded.has(option.id) && (option.depth ?? 1) < MAX_FOLDER_DEPTH);
+  }, [folder, parentOptions]);
 
   useEffect(() => {
     if (!open) return;
     setName(folder?.name ?? "");
     setColor(folder?.color ?? FOLDER_COLORS[0] ?? null);
-  }, [folder, open]);
+    setParentId(folder ? folder.parentId ?? null : initialParentId);
+  }, [folder, initialParentId, open]);
+
+  const payload = () => ({ name: name.trim(), color, ...(parentChoices ? { parentId } : {}) });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -665,10 +760,28 @@ export function FolderFormDialog({
               onChange={(event) => setName(event.target.value)}
               autoFocus
               onKeyDown={(event) => {
-                if (event.key === "Enter" && name.trim()) onSubmit({ name: name.trim(), color });
+                if (event.key === "Enter" && name.trim()) onSubmit(payload());
               }}
             />
           </div>
+          {parentChoices ? (
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="folder-parent">{t("folders.form.parent")}</label>
+              <NativeSelect
+                id="folder-parent"
+                value={parentId ?? ""}
+                onChange={(event) => setParentId(event.target.value || null)}
+              >
+                <option value="">{t("folders.form.topLevel")}</option>
+                {parentChoices.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {"\u2003".repeat(Math.max((option.depth ?? 1) - 1, 0)) + option.name}
+                  </option>
+                ))}
+              </NativeSelect>
+              <p className="text-xs text-muted-foreground">{t("folders.form.parentHint")}</p>
+            </div>
+          ) : null}
           <div className="space-y-2">
             <div className="text-sm font-medium">{t("folders.form.color")}</div>
             <div className="flex flex-wrap gap-2">
@@ -702,7 +815,7 @@ export function FolderFormDialog({
           <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={pending}>
             {t("folders.form.cancel")}
           </Button>
-          <Button onClick={() => onSubmit({ name: name.trim(), color })} disabled={pending || !name.trim()}>
+          <Button onClick={() => onSubmit(payload())} disabled={pending || !name.trim()}>
             {pending ? t("folders.form.saving") : isEdit ? t("folders.form.save") : t("folders.form.create")}
           </Button>
         </DialogFooter>

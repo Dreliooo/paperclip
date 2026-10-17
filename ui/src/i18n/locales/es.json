@@ -827,9 +827,13 @@
       "label": "Vista de proyectos",
       "mine": "Mis proyectos",
       "all": "Todos los proyectos",
-      "mineHint": "Los proyectos de los que formás parte. Si salís de un proyecto, deja de aparecer acá.",
-      "allHint": "Todos los proyectos que podés ver en la organización.",
-      "mineEmpty": "Todavía no formás parte de ningún proyecto. Pasá a «Todos los proyectos» para sumarte a uno."
+      "mineHint": "Los que creaste o pediste, los compartidos con vos, los que tienen tareas tuyas y los que seguís.",
+      "allHint": "Todos los proyectos de la empresa que tenés permiso para ver.",
+      "mineEmpty": "Todavía no hay nada acá. Un proyecto aparece cuando lo creás, cuando un agente lo crea a pedido tuyo, cuando alguien comparte un proyecto privado con vos, cuando tenés tareas en él o cuando lo seguís desde «Todos los proyectos».",
+      "mineDescription": "Mis proyectos: los que creaste o le pediste a un agente que creara, los privados compartidos con vos, los que tienen tareas asignadas a vos, creadas o pedidas por vos, y los que seguís o marcaste con estrella. Si salís de un proyecto, deja de aparecer acá.",
+      "allDescription": "Todos los proyectos: todos los de la empresa que tenés permiso para ver, sin importar quién los creó. Los privados solo aparecen para las personas con las que se compartieron.",
+      "mineLoading": "Cargando tus proyectos…",
+      "mineError": "No se pudieron cargar tus proyectos: {{message}}"
     },
     "itemsPlural": "proyectos",
     "allFolder": "Todos los proyectos",
@@ -845,7 +849,25 @@
       "folderDeleteFailed": "No se pudo eliminar la carpeta",
       "moved": "Proyecto movido",
       "moveFailed": "No se pudo mover el proyecto",
-      "folderCreatedMoveFailed": "Se creó la carpeta, pero no se pudo mover el proyecto"
+      "folderCreatedMoveFailed": "Se creó la carpeta, pero no se pudo mover el proyecto",
+      "folderHasSubfolders": "Primero mové o borrá sus subcarpetas"
+    },
+    "reason": {
+      "created": "Lo creaste vos",
+      "requested": "Lo pediste vos",
+      "shared": "Compartido con vos",
+      "tasks": "Tenés tareas",
+      "following": "Lo seguís",
+      "personal": "Tus tareas privadas"
+    },
+    "attribution": {
+      "you": "vos",
+      "unknownPerson": "persona desconocida",
+      "unknownAgent": "agente desconocido",
+      "unknown": "Autoría desconocida",
+      "createdBy": "Creado por {{name}}",
+      "createdByAgent": "Creado por {{agent}} (agente)",
+      "createdByAgentFor": "Creado por {{agent}} (agente) a pedido de {{name}}"
     }
   },
   "issues": {
@@ -1235,7 +1257,10 @@
       "cancel": "Cancelar",
       "saving": "Guardando…",
       "save": "Guardar",
-      "create": "Crear carpeta"
+      "create": "Crear carpeta",
+      "parent": "Dentro de",
+      "topLevel": "Nivel principal (sin carpeta superior)",
+      "parentHint": "Hasta cuatro niveles. Una carpeta muestra sus proyectos y los de sus subcarpetas. Las carpetas nunca cambian quién puede ver un proyecto."
     },
     "deleteDialog": {
       "title": "Eliminar carpeta",
@@ -1248,7 +1273,8 @@
       "selected": "{{count}} seleccionados",
       "deselect": "Quitar selección",
       "done": "Listo"
-    }
+    },
+    "newSubfolder": "Nueva subcarpeta"
   },
   "documents": {
     "revision": "Revisión {{number}}",
@@ -20639,6 +20665,27 @@
       "started": "Objetivo iniciado",
       "limitsSaved": "Topes guardados",
       "actionFailed": "No se pudo actualizar el objetivo"
+    }
+  },
+  "attribution": {
+    "createdBy": "Creado por",
+    "requestedBy": "Pedido por",
+    "unknownCreator": "Desconocido (se creó antes de que se registrara)",
+    "unknownPerson": "Persona desconocida",
+    "unknownAgent": "Agente desconocido",
+    "agentSuffix": "(agente)",
+    "noEvidence": "Sin evidencia de quién lo pidió",
+    "evidence": {
+      "message": "por un mensaje suyo",
+      "manualWake": "inició la ejecución"
+    },
+    "accessOwner": "Propietario de acceso",
+    "accessOwnerHint": "decide quién lo puede ver",
+    "leadAgent": "Agente a cargo",
+    "system": {
+      "routine": "Creada por una rutina",
+      "chatChannel": "Creada desde un mensaje de un canal de chat",
+      "other": "Creada automáticamente por Paperclip"
     }
   }
 }

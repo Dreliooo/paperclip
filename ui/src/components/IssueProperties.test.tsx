@@ -1012,7 +1012,7 @@ describe("IssueProperties", () => {
     act(() => root.unmount());
   });
 
-  it("shows assignee and originating without responsible wording", async () => {
+  it("shows assignee and the person who created the task", async () => {
     mockAgentsApi.list.mockResolvedValue([{ id: "agent-1", name: "CodexCoder", status: "active", adapterType: "codex_local" }]);
     const root = renderProperties(container, {
       issue: createIssue({
@@ -1029,76 +1029,24 @@ describe("IssueProperties", () => {
     await waitForAssertion(() => {
       expect(container.textContent).toContain("Assignee");
       expect(container.textContent).toContain("CodexCoder");
-      expect(container.textContent).toContain("Originating");
+      expect(container.textContent).toContain("Created by");
       expect(container.textContent).toContain("Riley Board");
+      // A person creator needs no separate requester, and the responsible user is not shown as one.
+      expect(container.textContent).not.toContain("Requested by");
       expect(container.textContent).not.toContain("Morgan Product");
-      expect(container.textContent).not.toContain("Responsible");
-      expect(container.textContent).not.toContain("Kicked off by");
-      expect(container.textContent).not.toContain("Created by");
-      expect(container.querySelector('[title="CodexCoder"] [data-slot="agent-avatar"] img')?.getAttribute("src")).toContain("/api/agent-avatars/cap-v1/");
     });
 
     act(() => root.unmount());
   });
 
-  it("shows originating without merged responsible wording when responsible is derived from the creator", async () => {
-    const root = renderProperties(container, {
-      issue: createIssue({
-        createdByUserId: "user-1",
-        responsibleUserId: null,
-      }),
-      childIssues: [],
-      onUpdate: vi.fn(),
-      inline: true,
-    });
-    await flush();
-
-    await waitForAssertion(() => {
-      expect(container.textContent).toContain("Originating");
-      expect(container.textContent).toContain("Riley Board");
-      expect(container.textContent).not.toContain("Kicked off by");
-      expect(container.textContent).not.toContain("Kicked off by · responsible");
-      expect(container.textContent).not.toContain("(auto)");
-      expect(container.textContent).not.toContain("Created by");
-    });
-
-    act(() => root.unmount());
-  });
-
-  it("shows originating agent without responsible wording", async () => {
-    mockAgentsApi.list.mockResolvedValue([{ id: "agent-1", name: "CodexCoder", status: "active", adapterType: "codex_local" }]);
-    const root = renderProperties(container, {
-      issue: createIssue({
-        createdByAgentId: "agent-1",
-        createdByUserId: null,
-        responsibleUserId: null,
-      }),
-      childIssues: [],
-      onUpdate: vi.fn(),
-      inline: true,
-    });
-    await flush();
-
-    await waitForAssertion(() => {
-      expect(container.textContent).toContain("Originating");
-      expect(container.textContent).toContain("CodexCoder");
-      expect(container.textContent).toContain("Assignee");
-      expect(container.textContent).toContain("Unassigned");
-      expect(container.textContent).not.toContain("Responsible");
-      expect(container.textContent).not.toContain("Kicked off by");
-      expect(container.querySelector('[title="CodexCoder"] [data-slot="agent-avatar"] img')?.getAttribute("src")).toContain("/api/agent-avatars/cap-v1/");
-    });
-
-    act(() => root.unmount());
-  });
-
-  it("attributes an agent-created issue to the transitive responsible user with a via affordance", async () => {
+  it("shows the creating agent and that no request is proven", async () => {
     mockAgentsApi.list.mockResolvedValue([{ id: "agent-1", name: "CodexCoder", status: "active", adapterType: "codex_local" }]);
     const root = renderProperties(container, {
       issue: createIssue({
         createdByAgentId: "agent-1",
         createdByUserId: null,
         responsibleUserId: "user-2",
+        requestedByUserId: null,
       }),
       childIssues: [],
       onUpdate: vi.fn(),
@@ -1107,17 +1055,43 @@ describe("IssueProperties", () => {
     await flush();
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("Originating");
-      expect(container.textContent).toContain("Morgan Product");
-      expect(container.textContent).toContain("via CodexCoder");
-      expect(container.textContent).not.toContain("Responsible");
-      expect(container.textContent).not.toContain("Kicked off by");
+      expect(container.textContent).toContain("Created by");
+      expect(container.textContent).toContain("CodexCoder");
+      expect(container.textContent).toContain("(agent)");
+      expect(container.textContent).toContain("No evidence of who asked");
+      // The responsible user is not evidence of a request.
+      expect(container.textContent).not.toContain("Morgan Product");
     });
 
     act(() => root.unmount());
   });
 
-  it("shows originating responsible user for a routine execution with no creator", async () => {
+  it("shows the person who asked an agent to create the task", async () => {
+    mockAgentsApi.list.mockResolvedValue([{ id: "agent-1", name: "CodexCoder", status: "active", adapterType: "codex_local" }]);
+    const root = renderProperties(container, {
+      issue: createIssue({
+        createdByAgentId: "agent-1",
+        createdByUserId: null,
+        requestedByUserId: "user-2",
+        requestEvidence: "message",
+      }),
+      childIssues: [],
+      onUpdate: vi.fn(),
+      inline: true,
+    });
+    await flush();
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("Requested by");
+      expect(container.textContent).toContain("Morgan Product");
+      expect(container.textContent).toContain("by their message");
+      expect(container.textContent).toContain("CodexCoder");
+    });
+
+    act(() => root.unmount());
+  });
+
+  it("says the creator is unknown for a task with no recorded creator", async () => {
     const root = renderProperties(container, {
       issue: createIssue({
         createdByAgentId: null,
@@ -1131,9 +1105,30 @@ describe("IssueProperties", () => {
     await flush();
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("Originating");
-      expect(container.textContent).toContain("Morgan Product");
-      expect(container.textContent).not.toContain("via ");
+      expect(container.textContent).toContain("Unknown (created before this was recorded)");
+      expect(container.textContent).not.toContain("Morgan Product");
+    });
+
+    act(() => root.unmount());
+  });
+
+  it("says a routine created the task instead of naming the responsible user", async () => {
+    const root = renderProperties(container, {
+      issue: createIssue({
+        createdByAgentId: null,
+        createdByUserId: null,
+        responsibleUserId: "user-2",
+        originKind: "routine_execution",
+      }),
+      childIssues: [],
+      onUpdate: vi.fn(),
+      inline: true,
+    });
+    await flush();
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("Created by a routine");
+      expect(container.textContent).not.toContain("Morgan Product");
     });
 
     act(() => root.unmount());
