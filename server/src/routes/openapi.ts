@@ -4955,6 +4955,17 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/api/companies/{companyId}/projects/mine",
+  tags: ["projects"],
+  summary: "List the signed-in person's projects and why each is theirs",
+  description:
+    "Board users only. Returns project ids with reasons (created, requested, shared, tasks, following, personal). Every project passes the normal project read check; a project the person left is excluded.",
+  request: { params: z.object({ companyId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({
   method: "post",
   path: "/api/companies/{companyId}/projects",
   tags: ["projects"],

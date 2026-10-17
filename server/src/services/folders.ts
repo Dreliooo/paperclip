@@ -82,6 +82,12 @@ function buildFolderViews(rows: FolderRow[]) {
   return views;
 }
 
+/** Creation attribution columns, set by the route from the authenticated actor. */
+export type FolderCreationAttribution = Partial<Pick<
+  typeof folders.$inferInsert,
+  "createdByUserId" | "createdByAgentId" | "originRunId" | "originIdentityContextId" | "requestedByUserId" | "requestEvidence"
+>>;
+
 export function folderService(db: Db, mutationLockHeld = false) {
   async function withCompanyFolderLock<T>(companyId: string, operation: (lockedDb: Db) => Promise<T>) {
     if (mutationLockHeld) return operation(db);
@@ -233,9 +239,9 @@ export function folderService(db: Db, mutationLockHeld = false) {
     return parent;
   }
 
-  async function create(companyId: string, input: CreateFolder): Promise<Folder> {
+  async function create(companyId: string, input: CreateFolder, attribution: FolderCreationAttribution = {}): Promise<Folder> {
     if (!mutationLockHeld) {
-      return withCompanyFolderLock(companyId, (lockedDb) => folderService(lockedDb, true).create(companyId, input));
+      return withCompanyFolderLock(companyId, (lockedDb) => folderService(lockedDb, true).create(companyId, input, attribution));
     }
     const parentId = input.parentId ?? null;
     const parent = await validateParent(companyId, input.kind, parentId);
@@ -253,7 +259,7 @@ export function folderService(db: Db, mutationLockHeld = false) {
     try {
       row = await db
         .insert(folders)
-        .values({ companyId, kind: input.kind, parentId, name, slug, color: normalizeColor(input.color) ?? null, position })
+        .values({ ...attribution, companyId, kind: input.kind, parentId, name, slug, color: normalizeColor(input.color) ?? null, position })
         .returning()
         .then((rows) => rows[0]!);
     } catch (error) {

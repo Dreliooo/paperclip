@@ -1,5 +1,6 @@
 import {
   type AnyPgColumn,
+  check,
   index,
   integer,
   pgTable,
@@ -10,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { companies } from "./companies.js";
+import { agents } from "./agents.js";
 import type { FolderKind } from "@paperclipai/shared";
 
 export const folders = pgTable(
@@ -24,10 +26,21 @@ export const folders = pgTable(
     systemKey: text("system_key"),
     color: text("color"),
     position: integer("position").notNull().default(0),
+    /** Creation attribution. Never client-supplied; see doc/plans/2026-10-17-project-ownership-and-attribution.md. */
+    createdByUserId: text("created_by_user_id"),
+    createdByAgentId: uuid("created_by_agent_id").references(() => agents.id, { onDelete: "set null" }),
+    originRunId: uuid("origin_run_id"),
+    originIdentityContextId: uuid("origin_identity_context_id"),
+    requestedByUserId: text("requested_by_user_id"),
+    requestEvidence: text("request_evidence"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
+    requestEvidenceCheck: check(
+      "folders_request_evidence_check",
+      sql`${table.requestEvidence} is null or ${table.requestEvidence} in ('message', 'manual_wake')`,
+    ),
     companyKindPositionIdx: index("folders_company_kind_position_idx").on(
       table.companyId,
       table.kind,

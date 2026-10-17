@@ -19,6 +19,13 @@ export const projects = pgTable(
     personalOwnerUserId: text("personal_owner_user_id"),
     status: text("status").notNull().default("backlog"),
     leadAgentId: uuid("lead_agent_id").references(() => agents.id),
+    /** Creation attribution. Never client-supplied; see doc/plans/2026-10-17-project-ownership-and-attribution.md. */
+    createdByUserId: text("created_by_user_id"),
+    createdByAgentId: uuid("created_by_agent_id").references(() => agents.id, { onDelete: "set null" }),
+    originRunId: uuid("origin_run_id"),
+    originIdentityContextId: uuid("origin_identity_context_id"),
+    requestedByUserId: text("requested_by_user_id"),
+    requestEvidence: text("request_evidence"),
     /** Optional project folder (kind "project"). Organisation only; access stays per project. */
     folderId: uuid("folder_id").references(() => folders.id, { onDelete: "set null" }),
     targetDate: date("target_date"),
@@ -36,6 +43,12 @@ export const projects = pgTable(
     companyIdx: index("projects_company_idx").on(table.companyId),
     companyFolderIdx: index("projects_company_folder_idx").on(table.companyId, table.folderId),
     visibilityCheck: check("projects_visibility_check", sql`${table.visibility} in ('open', 'private')`),
+    requestEvidenceCheck: check(
+      "projects_request_evidence_check",
+      sql`${table.requestEvidence} is null or ${table.requestEvidence} in ('message', 'manual_wake')`,
+    ),
+    companyCreatedByUserIdx: index("projects_company_created_by_user_idx").on(table.companyId, table.createdByUserId),
+    companyRequestedByUserIdx: index("projects_company_requested_by_user_idx").on(table.companyId, table.requestedByUserId),
     personalOwnerUq: uniqueIndex("projects_company_personal_owner_uq")
       .on(table.companyId, table.personalOwnerUserId)
       .where(sql`${table.personalOwnerUserId} is not null`),

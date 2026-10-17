@@ -1,4 +1,5 @@
 import { Router, type Request } from "express";
+import { creationAttributionForActor } from "../services/creation-attribution.js";
 import type { Db } from "@paperclipai/db";
 import {
   createFolderSchema,
@@ -41,7 +42,7 @@ export function folderRoutes(db: Db) {
   router.post("/companies/:companyId/folders", validate(createFolderSchema), async (req, res) => {
     const companyId = req.params.companyId as string;
     assertCompanyAccess(req, companyId);
-    const created = await svc.create(companyId, req.body);
+    const created = await svc.create(companyId, req.body, await creationAttributionForActor(db, companyId, req.actor));
     const actor = getActorInfo(req);
     await logActivity(db, {
       companyId,

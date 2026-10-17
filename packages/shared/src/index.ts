@@ -143,10 +143,21 @@ export {
 export {
   deriveResponsibleUser,
   deriveOriginatingActor,
+  deriveCreationAttribution,
   type ResponsibleUserAttribution,
   type ResponsibleUserSource,
   type OriginatingActor,
+  type CreationAttribution,
+  type CreationAttributionFields,
 } from "./issue-attribution.js";
+export {
+  CREATION_REQUEST_EVIDENCE,
+  PROJECT_INVOLVEMENT_REASONS,
+  type CreationRequestEvidence,
+  type ProjectInvolvementReason,
+  type MyProjectInvolvement,
+  type MyProjectsResult,
+} from "./types/creation-attribution.js";
 export {
   ARTIFACT_REVIEW_DOCUMENT_KEY_PREFIX,
   MARKDOWN_ATTACHMENT_CONTENT_TYPES,

@@ -60,6 +60,10 @@ export const issues = pgTable(
     createdByAgentId: uuid("created_by_agent_id").references(() => agents.id),
     createdByUserId: text("created_by_user_id"),
     responsibleUserId: text("responsible_user_id"),
+    /** Person whose message or explicit run request led an agent to create this task; set only with evidence. */
+    requestedByUserId: text("requested_by_user_id"),
+    /** Why `requestedByUserId` is known: "message" or "manual_wake". */
+    requestEvidence: text("request_evidence"),
     issueNumber: integer("issue_number"),
     identifier: text("identifier"),
     originKind: text("origin_kind").notNull().default("manual"),
