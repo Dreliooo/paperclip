@@ -38,6 +38,11 @@ Open the affected task from Tasks, Inbox/Blocked, search, or a direct task link.
 Inspect the recovery notice/card in its history, expand details if needed, and
 use the currently offered action. Follow any linked repair task and return owner.
 
+In the task chat, the recovery card sits above the composer (the same card as the
+classic chat). Messages saved while recovery is pending show "See what is
+pending", which scrolls to that card or to the page notice; they are sent after
+the hold is resolved.
+
 An authorized board user can expand Recovery details on a stopped-run notice to
 read the decision that still blocks replay, including a settled recovery record.
 The notice matches the current action and run; it does not show another run's

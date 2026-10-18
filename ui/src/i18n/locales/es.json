@@ -578,7 +578,9 @@
       "interruptFailed": "No se pudo interrumpir. El mensaje sigue en la cola.",
       "reviewRetry": "La cola cambió en otra sesión. Revisarla e intentar de nuevo.",
       "discardFailed": "No se pudo descartar. El mensaje sigue en la cola.",
-      "list": "Mensajes en cola"
+      "list": "Mensajes en cola",
+      "waitRecovery": "Tu mensaje quedó guardado. Se envía cuando alguien resuelva la recuperación de la ejecución anterior.",
+      "waitRecoveryAction": "Ver qué falta"
     },
     "status": {
       "elapsedSeconds": "{{seconds}} s",

@@ -106,6 +106,7 @@ import {
   RunnerGoalWidget,
   useRunnerGoalControl,
 } from "@/components/task-chat/RunnerGoalWidget";
+import { IssueRecoveryActionCard } from "./IssueRecoveryActionCard";
 import { useIssueObjectiveControl } from "@/components/objectives/IssueObjectiveControl";
 import { TaskChatQueuedMessages } from "@/components/task-chat/TaskChatQueuedMessages";
 import { TaskChatWindowScroll } from "@/components/task-chat/useWindowAutoFollow";
@@ -3218,6 +3219,27 @@ export function TaskChatThread(props: TaskChatThreadProps) {
                   agent={assignedAgentForNotice}
                   onResume={onResumeAssignee}
                   resuming={resumeAssigneePending}
+                />
+              </div>
+            ) : null}
+            {/* Same recovery card as the classic chat. Without it a recovery hold
+                has no resolve action here, and saved messages wait indefinitely. */}
+            {showComposer && props.recoveryAction ? (
+              <div className="mx-auto w-full max-w-(--tc-shell-max-w) px-4 pt-2" id="task-chat-recovery-action" data-testid="task-chat-recovery-action">
+                <IssueRecoveryActionCard
+                  action={props.recoveryAction}
+                  agentMap={agentMap}
+                  scheduledRetry={props.scheduledRetry}
+                  onResolve={props.onResolveRecoveryAction}
+                  onReissueIsolated={props.onReissueIsolatedRecoveryAction}
+                  reissuePending={props.reissueIsolatedRecoveryActionPending}
+                  onReconcileForward={props.onReconcileForwardRecoveryAction}
+                  onBreakGlassOverride={props.onBreakGlassOverrideRecoveryAction}
+                  onQuarantineRestore={props.onQuarantineRestoreRecoveryAction}
+                  quarantineRestorePending={props.quarantineRestoreRecoveryActionPending}
+                  canBreakGlass={props.canBreakGlassRecoveryAction}
+                  reconcilePending={props.reconcileRecoveryActionPending}
+                  canFalsePositive={props.canFalsePositiveRecoveryAction}
                 />
               </div>
             ) : null}

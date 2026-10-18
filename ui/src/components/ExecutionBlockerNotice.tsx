@@ -50,7 +50,7 @@ export function ExecutionBlockerNotice({ companyId, issueId, issueStatus, canMan
     },
   });
   return (
-    <div role="status" aria-label={t("ui2g2.executionBlocker.ariaLabel")} className={cn("task-context-notice flex flex-wrap items-center justify-between gap-2", className)}>
+    <div role="status" data-execution-blocker-notice aria-label={t("ui2g2.executionBlocker.ariaLabel")} className={cn("task-context-notice flex flex-wrap items-center justify-between gap-2", className)}>
       <div className="min-w-0 flex-1 break-words">
         <p>{modelRejected ? t("ui2g2.executionBlocker.modelUnavailable") : t("ui2g2.executionBlocker.recoveryNeeded")}{blocker.runError ? ` ${blocker.runError}` : ""}</p>
         {modelRejected && <p>{t("ui2g2.executionBlocker.chooseModel")}</p>}

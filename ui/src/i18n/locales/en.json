@@ -578,7 +578,9 @@
       "interruptFailed": "Couldn’t interrupt. Message is still queued.",
       "reviewRetry": "The queue changed in another session. Review it and try again.",
       "discardFailed": "Couldn’t discard. Message is still queued.",
-      "list": "Queued messages"
+      "list": "Queued messages",
+      "waitRecovery": "Your message is saved. It is sent after someone resolves the recovery of the previous run.",
+      "waitRecoveryAction": "See what is pending"
     },
     "status": {
       "elapsedSeconds": "{{seconds}}s",

@@ -29,6 +29,7 @@ import type {
   IssueQueuedCommentQueue,
 } from "@paperclipai/shared";
 import { cn } from "@/lib/utils";
+import { messagePreviewText } from "@/lib/message-preview-text";
 import { useTranslation } from "@/i18n";
 import { TaskChatComposerBar } from "./TaskChatComposerBar";
 import {
@@ -99,7 +100,8 @@ function SortableQueuedMessage({
 }) {
   const { t } = useTranslation();
   const immutableResponse = entry.source?.kind === "interaction";
-  const label = immutableResponse ? entry.comment.body.split("\n")[0] : entry.comment.body;
+  const preview = messagePreviewText(entry.comment.body);
+  const label = immutableResponse ? messagePreviewText(entry.comment.body.split("\n")[0] ?? "") : preview;
   const sortable = useSortable({
     id: entry.comment.id,
     disabled: queueMutationDisabled || immutableResponse,
@@ -134,7 +136,7 @@ function SortableQueuedMessage({
         {...sortable.attributes}
         {...sortable.listeners}
         disabled={queueMutationDisabled || immutableResponse}
-        aria-label={t("taskChat.queued.reorderAria", { body: entry.comment.body })}
+        aria-label={t("taskChat.queued.reorderAria", { body: preview })}
         className="flex h-7 w-7 shrink-0 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-accent hover:text-foreground active:cursor-grabbing disabled:cursor-default disabled:opacity-40"
       >
         <GripVertical className="h-3.5 w-3.5" aria-hidden />
@@ -144,7 +146,7 @@ function SortableQueuedMessage({
         className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
         aria-hidden
       />
-      <span className="min-w-0 flex-1 truncate px-1" title={entry.comment.body}>
+      <span className="min-w-0 flex-1 truncate px-1" title={preview}>
         {label}
       </span>
 
@@ -191,7 +193,7 @@ function SortableQueuedMessage({
           !entry.canDiscard
         }
         title={t("taskChat.queued.discardTitle")}
-        aria-label={t("taskChat.queued.discardAria", { body: entry.comment.body })}
+        aria-label={t("taskChat.queued.discardAria", { body: preview })}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-40"
         data-testid={`task-chat-queued-discard-${entry.comment.id}`}
       >
@@ -208,7 +210,7 @@ function SortableQueuedMessage({
             type="button"
             disabled={queueMutationDisabled || immutableResponse}
             title={t("taskChat.queued.actionsTitle")}
-            aria-label={t("taskChat.queued.actionsAria", { body: entry.comment.body })}
+            aria-label={t("taskChat.queued.actionsAria", { body: preview })}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40"
           >
             <MoreHorizontal className="h-4 w-4" aria-hidden />
@@ -386,8 +388,26 @@ export function TaskChatQueuedMessages({
       aria-label={t("taskChat.queued.list")}
     >
       {queue.executionWait && (
-        <div role="status" aria-live="polite" className="px-3 py-1.5 text-xs text-muted-foreground">
-          {queue.executionWait.message}
+        <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-1.5 text-xs text-muted-foreground">
+          <span className="min-w-0 flex-1">
+            {queue.executionWait.reason === "execution_recovery"
+              ? t("taskChat.queued.waitRecovery")
+              : queue.executionWait.message}
+          </span>
+          {queue.executionWait.reason === "execution_recovery" ? (
+            <button
+              type="button"
+              className="shrink-0 font-medium text-foreground underline-offset-2 hover:underline"
+              onClick={() => {
+                // The recovery card (or the page notice) holds the actions that release the wait.
+                const target = document.getElementById("task-chat-recovery-action")
+                  ?? document.querySelector("[data-execution-blocker-notice]");
+                target?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            >
+              {t("taskChat.queued.waitRecoveryAction")}
+            </button>
+          ) : null}
         </div>
       )}
       <DndContext
