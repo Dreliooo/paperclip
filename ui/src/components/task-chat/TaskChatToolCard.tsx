@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { TaskChatToolItem } from "./task-chat-model";
 import { toolTaxonomy } from "./tool-taxonomy";
+import { useTranslation } from "@/i18n";
 
 const STATUS_ICON = {
   pending: { Icon: Loader2, spin: false, tone: "text-muted-foreground" },
@@ -30,6 +31,7 @@ const STATUS_ICON = {
  * inset). Full diff bodies stay out of the activity feed.
  */
 export function TaskChatToolCard({ item }: { item: TaskChatToolItem }) {
+  const { t } = useTranslation();
   const { Icon, spin, tone } = STATUS_ICON[item.status];
   const RowIcon = toolTaxonomy(item.rawName ?? item.name).icon;
   const [showDetail, setShowDetail] = useTaskChatExpansion(item.id, false);
@@ -96,7 +98,7 @@ export function TaskChatToolCard({ item }: { item: TaskChatToolItem }) {
           />
           {item.status === "interrupted" ? (
             <span className="text-(length:--text-micro) text-muted-foreground">
-              Interrupted
+              {t("ui2g6.taskChatToolCard.interrupted")}
             </span>
           ) : null}
         </span>
@@ -120,7 +122,7 @@ export function TaskChatToolCard({ item }: { item: TaskChatToolItem }) {
           data-testid="task-chat-tool-change-summary"
         >
           <div className="flex min-w-0 items-center gap-2 text-(length:--text-micro) text-muted-foreground">
-            <span className="shrink-0">Changed</span>
+            <span className="shrink-0">{t("ui2g6.taskChatToolCard.changed")}</span>
             {item.diff.path ? (
               <span className="min-w-0 truncate font-mono text-foreground">
                 {item.diff.path}

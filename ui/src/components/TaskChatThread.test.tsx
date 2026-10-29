@@ -754,6 +754,54 @@ function renderThread(props: ComponentProps<typeof TaskChatThread>) {
   render(<TaskChatThread {...props} />);
 }
 
+describe("TaskChatThread recovery card", () => {
+  it("shows the recovery card with its resolve action above the composer", () => {
+    const onResolveRecoveryAction = vi.fn();
+    renderThread({
+      comments: [],
+      onAdd: async () => {},
+      recoveryAction: {
+        id: "00000000-0000-0000-0000-0000000000aa",
+        companyId: "company-1",
+        sourceIssueId: "issue-1",
+        recoveryIssueId: null,
+        kind: "missing_disposition",
+        status: "active",
+        ownerType: "board",
+        ownerAgentId: null,
+        ownerUserId: null,
+        previousOwnerAgentId: null,
+        returnOwnerAgentId: null,
+        cause: "missing_disposition",
+        fingerprint: "fp",
+        evidence: { summary: "Run finished but no disposition was chosen.", sourceRunId: "7accd7a4-c9ca-4db2-9233-3228a037cc09" },
+        nextAction: "Choose and record a valid issue disposition.",
+        wakePolicy: { type: "wake_owner" },
+        monitorPolicy: null,
+        attemptCount: 1,
+        maxAttempts: 3,
+        timeoutAt: null,
+        lastAttemptAt: "2026-05-09T19:30:00.000Z",
+        outcome: null,
+        resolutionNote: null,
+        resolvedAt: null,
+        createdAt: "2026-05-09T19:30:00.000Z",
+        updatedAt: "2026-05-09T19:30:00.000Z",
+      } as unknown as ComponentProps<typeof TaskChatThread>["recoveryAction"],
+      onResolveRecoveryAction,
+    });
+
+    const card = container.querySelector('[data-testid="task-chat-recovery-action"]');
+    expect(card).not.toBeNull();
+    expect(card?.textContent).toContain("Choose and record a valid issue disposition.");
+  });
+
+  it("shows no recovery card without a recovery action", () => {
+    renderThread({ comments: [], onAdd: async () => {} });
+    expect(container.querySelector('[data-testid="task-chat-recovery-action"]')).toBeNull();
+  });
+});
+
 describe("TaskChatThread draft pass-through", () => {
   it("aligns the desktop thread header with the side-panel tab row", () => {
     renderThread({

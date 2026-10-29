@@ -32,6 +32,7 @@ import { formatDuration, TIMELINE_COLORS } from "@/lib/timeline/layout";
 import { cn } from "@/lib/utils";
 import { useLocation } from "@/lib/router";
 import { useStreamlinedUiEnabled } from "@/hooks/useStreamlinedUiEnabled";
+import { t, useTranslation } from "@/i18n";
 
 type RangePreset = "today" | "7d" | "30d" | "custom";
 const TIMELINE_PAGE_LIMIT = 500;
@@ -130,8 +131,8 @@ function rangeWindow(range: DateRangeState): Pick<WorkTimelineParams, "from" | "
 }
 
 function rangeError(range: DateRangeState): string | null {
-  if (!range.fromDate || !range.toDate) return "Choose a start and end date.";
-  if (!rangeWindow(range)) return "Start date must be before end date.";
+  if (!range.fromDate || !range.toDate) return t("ui2g6.timeline.chooseDates");
+  if (!rangeWindow(range)) return t("ui2g6.timeline.startAfterEnd");
   return null;
 }
 
@@ -245,26 +246,27 @@ function Segmented<T extends string>({
 
 /** Encoding key for the "Signal" timeline: colour = how each run started. */
 function TimelineLegend() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border px-3.5 py-2 text-xs text-muted-foreground">
       <span className="flex items-center gap-1.5">
         <span className="h-2.5 w-4 rounded-sm" style={{ backgroundColor: TIMELINE_COLORS.delegated }} />
-        Delegated
+        {t("ui2g6.timeline.legend.delegated")}
       </span>
       <span className="flex items-center gap-1.5">
         <span className="h-2.5 w-4 rounded-sm" style={{ backgroundColor: TIMELINE_COLORS.automation }} />
-        Automation
+        {t("ui2g6.timeline.legend.automation")}
       </span>
       <span className="flex items-center gap-1.5">
         <span
           className="h-2.5 w-4 rounded-sm border border-dashed bg-transparent"
           style={{ borderColor: TIMELINE_COLORS.cancelled }}
         />
-        Cancelled
+        {t("ui2g6.timeline.legend.cancelled")}
       </span>
       <span className="flex items-center gap-1.5">
         <span className="h-3.5 w-0.5" style={{ backgroundColor: TIMELINE_COLORS.now }} />
-        Now
+        {t("ui2g6.timeline.legend.now")}
       </span>
     </div>
   );
@@ -275,13 +277,14 @@ function TimelineSummaryStats({
 }: {
   summary: ReturnType<typeof timelineSummary>;
 }) {
+  const { t } = useTranslation();
   const stats: { label: string; value: string; icon: LucideIcon }[] = [
-    { label: "Runs", value: formatInteger(summary.runs), icon: GanttChartSquare },
-    { label: "Agents", value: formatInteger(summary.agents), icon: Bot },
-    { label: "Run time", value: formatDuration(0, summary.activeMs), icon: Clock3 },
+    { label: t("ui2g6.timeline.stats.runs"), value: formatInteger(summary.runs), icon: GanttChartSquare },
+    { label: t("ui2g6.timeline.stats.agents"), value: formatInteger(summary.agents), icon: Bot },
+    { label: t("ui2g6.timeline.stats.runTime"), value: formatDuration(0, summary.activeMs), icon: Clock3 },
     {
-      label: "Tokens used",
-      value: summary.totalTokens > 0 ? formatCompactInteger(summary.totalTokens) : "Not tracked",
+      label: t("ui2g6.timeline.stats.tokensUsed"),
+      value: summary.totalTokens > 0 ? formatCompactInteger(summary.totalTokens) : t("ui2g6.timeline.stats.notTracked"),
       icon: Coins,
     },
   ];
@@ -305,6 +308,7 @@ function TimelineSummaryStats({
 }
 
 export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
+  const { t } = useTranslation();
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const location = useLocation();
@@ -322,9 +326,9 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
 
   useEffect(() => {
     if (!embedded) {
-      setBreadcrumbs([{ label: scopedProjectId ? "Project Timeline" : "Timeline" }]);
+      setBreadcrumbs([{ label: scopedProjectId ? t("ui2g6.timeline.title.project") : t("ui2g6.timeline.title.work") }]);
     }
-  }, [embedded, scopedProjectId, setBreadcrumbs]);
+  }, [embedded, scopedProjectId, setBreadcrumbs, t]);
 
   const dateRangeError = rangeError(dateRange);
   const params: WorkTimelineParams | null = useMemo(() => {
@@ -362,7 +366,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
     return (
       <>
         {!embedded && <RequestCollapsedSidebar />}
-        <EmptyState icon={GanttChartSquare} message="Select an organization to view its work timeline." />
+        <EmptyState icon={GanttChartSquare} message={t("ui2g6.timeline.selectOrg")} />
       </>
     );
   }
@@ -371,7 +375,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
     <div className="flex items-center gap-2">
       <GanttChartSquare className="h-6 w-6 text-muted-foreground" />
       <h1 className="text-3xl font-semibold tracking-tight">
-        {scopedProjectId ? "Project Timeline" : "Work Timeline"}
+        {scopedProjectId ? t("ui2g6.timeline.title.project") : t("ui2g6.timeline.title.work")}
       </h1>
     </div>
   );
@@ -397,7 +401,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
 
   const rangeControls = (
     <label className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
-      Range
+      {t("ui2g6.timeline.range.label")}
       <Segmented
         value={rangePreset}
         onChange={(preset) => {
@@ -406,9 +410,9 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           setDateRange(presetRange(preset));
         }}
         options={[
-          { value: "today", label: "Today" },
-          { value: "7d", label: "7 days" },
-          { value: "30d", label: "30 days" },
+          { value: "today", label: t("ui2g6.timeline.range.today") },
+          { value: "7d", label: t("ui2g6.timeline.range.7d") },
+          { value: "30d", label: t("ui2g6.timeline.range.30d") },
         ]}
       />
       <Input
@@ -419,9 +423,9 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           setDateRange((prev) => ({ ...prev, fromDate: event.target.value }));
         }}
         className="h-8 w-(--sz-150px) text-xs"
-        aria-label="Timeline start date"
+        aria-label={t("ui2g6.timeline.range.startDate")}
       />
-      <span>to</span>
+      <span>{t("ui2g6.timeline.range.to")}</span>
       <Input
         type="date"
         value={dateRange.toDate}
@@ -430,7 +434,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           setDateRange((prev) => ({ ...prev, toDate: event.target.value }));
         }}
         className="h-8 w-(--sz-150px) text-xs"
-        aria-label="Timeline end date"
+        aria-label={t("ui2g6.timeline.range.endDate")}
       />
     </label>
   );
@@ -438,14 +442,14 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
   const toolbar = (
     <div className="flex flex-wrap items-start gap-3">
       {summary && <TimelineSummaryStats summary={summary} />}
-      <div className="ml-auto flex items-center gap-1 pt-3" aria-label="Timeline zoom controls">
+      <div className="ml-auto flex items-center gap-1 pt-3" aria-label={t("ui2g6.timeline.zoom.controls")}>
         <Button
           type="button"
           variant="outline"
           size="icon-xs"
           onClick={() => adjustZoom(0.8)}
-          aria-label="Zoom out"
-          title="Zoom out"
+          aria-label={t("ui2g6.timeline.zoom.out")}
+          title={t("ui2g6.timeline.zoom.out")}
         >
           <Minus className="h-3 w-3" />
         </Button>
@@ -454,8 +458,8 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           variant="outline"
           size="icon-xs"
           onClick={() => adjustZoom(1.25)}
-          aria-label="Zoom in"
-          title="Zoom in"
+          aria-label={t("ui2g6.timeline.zoom.in")}
+          title={t("ui2g6.timeline.zoom.in")}
         >
           <Plus className="h-3 w-3" />
         </Button>
@@ -464,8 +468,8 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           variant="outline"
           size="icon-xs"
           onClick={resetZoom}
-          aria-label="Reset zoom"
-          title="Reset zoom"
+          aria-label={t("ui2g6.timeline.zoom.reset")}
+          title={t("ui2g6.timeline.zoom.reset")}
         >
           <RotateCcw className="h-3 w-3" />
         </Button>
@@ -496,7 +500,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
       {error && (
         <EmptyState
           icon={GanttChartSquare}
-          message="Couldn't load the timeline. The aggregation endpoint may be unavailable."
+          message={t("ui2g6.timeline.loadError")}
         />
       )}
 
@@ -505,7 +509,7 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
           <div className="space-y-3">
             <EmptyState
               icon={GanttChartSquare}
-              message={scopedProjectId ? "No project activity in this window." : "No activity in this window."}
+              message={scopedProjectId ? t("ui2g6.timeline.emptyProject") : t("ui2g6.timeline.emptyAll")}
             />
             <div className="flex flex-wrap items-center justify-end gap-3">
               {rangeControls}
@@ -529,9 +533,9 @@ export function Timeline({ embedded = false }: { embedded?: boolean } = {}) {
             </Card>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-muted-foreground">
-                {data.spans.length} run{data.spans.length === 1 ? "" : "s"} ·{" "}
-                {new Date(data.window.from).toLocaleString()} to {new Date(data.window.to).toLocaleString()}
-                {data.window.capped ? " · window capped" : ""}
+                {t("ui2g6.timeline.runCount", { count: data.spans.length })} ·{" "}
+                {new Date(data.window.from).toLocaleString()} {t("ui2g6.timeline.range.to")} {new Date(data.window.to).toLocaleString()}
+                {data.window.capped ? ` · ${t("ui2g6.timeline.windowCapped")}` : ""}
               </p>
               {rangeControls}
             </div>

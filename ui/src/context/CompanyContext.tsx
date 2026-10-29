@@ -18,6 +18,7 @@ import {
   useCompanyListQuery,
 } from "../api/companies-query";
 import { queryKeys } from "../lib/queryKeys";
+import { isAccountScopedQueryKey } from "../hooks/useSignOut";
 import type { CompanySelectionSource } from "../lib/company-selection";
 type CompanySelectionOptions = { source?: CompanySelectionSource };
 
@@ -151,7 +152,17 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
 
     setSelectedCompanyIdState(null);
     setSelectionSource("bootstrap");
-  }, [isSessionSettled, sessionUserId]);
+    // Company-scoped caches (projects, folders, memberships, "mine" lists) carry
+    // no account in their keys, so a sign-in change without a sign-out would
+    // otherwise serve the previous person's data. The session and the
+    // account-keyed company list are left alone; they already follow the account.
+    void queryClient.resetQueries({
+      predicate: (query) =>
+        isAccountScopedQueryKey(query.queryKey)
+        && query.queryKey[0] !== queryKeys.auth.session[0]
+        && query.queryKey[0] !== queryKeys.companies.all[0],
+    });
+  }, [isSessionSettled, queryClient, sessionUserId]);
 
   // Auto-select first company when list loads
   useEffect(() => {

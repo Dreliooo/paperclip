@@ -57,6 +57,7 @@ export {
   type StalledReviewDecisionActor,
 } from "./stalled-review-decisions.js";
 export { taskWatchdogService } from "./task-watchdogs.js";
+export { issueObjectiveService } from "./issue-objectives.js";
 export {
   issueIsInTaskWatchdogSubtree,
   resolveTaskWatchdogMutationScope,
@@ -117,6 +118,7 @@ export { classifyIssueGraphLiveness, type IssueLivenessFinding } from "./recover
 export { dashboardService } from "./dashboard.js";
 export { sidebarBadgeService } from "./sidebar-badges.js";
 export { sidebarPreferenceService } from "./sidebar-preferences.js";
+export { userPreferenceService } from "./user-preferences.js";
 export { resourceMembershipService, type ResourceMembershipPolicyHook } from "./resource-memberships.js";
 export { inboxDismissalService } from "./inbox-dismissals.js";
 export { accessService } from "./access.js";

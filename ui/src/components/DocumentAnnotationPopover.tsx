@@ -7,6 +7,7 @@ import type { CompanyUserProfile } from "@/lib/company-members";
 import { useDocumentAnnotationMutations } from "@/hooks/useDocumentAnnotationMutations";
 import type { AnnotationAnchorRect, PendingAnchor } from "./DocumentAnnotationLayer";
 import { useCopyAnnotationLink, ThreadCard, truncate } from "./DocumentAnnotationPanel";
+import { useTranslation } from "@/i18n";
 
 export interface DocumentAnnotationPopoverProps {
   anchorRect: AnnotationAnchorRect;
@@ -28,6 +29,7 @@ export interface DocumentAnnotationPopoverProps {
 
 export function DocumentAnnotationPopover(props: DocumentAnnotationPopoverProps) {
   const copyAnnotationLink = useCopyAnnotationLink();
+  const { t } = useTranslation();
   const cardRef = useRef<HTMLDivElement | null>(null);
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const [composer, setComposer] = useState("");
@@ -79,7 +81,7 @@ export function DocumentAnnotationPopover(props: DocumentAnnotationPopoverProps)
     <div
       ref={cardRef}
       role="dialog"
-      aria-label={props.pendingAnchor ? "Add annotation comment" : "Annotation thread"}
+      aria-label={props.pendingAnchor ? t("ui2g4.documentAnnotationPopover.addCommentAria") : t("ui2g4.documentAnnotationPopover.threadAria")}
       data-testid="document-annotation-popover"
       className="absolute z-(--z-20) w-80 max-w-full rounded-lg border border-border bg-popover text-popover-foreground shadow-xl"
       style={{ top, left }}
@@ -102,14 +104,14 @@ export function DocumentAnnotationPopover(props: DocumentAnnotationPopoverProps)
                 submitComposer();
               }
             }}
-            placeholder="Write a comment…"
+            placeholder={t("ui2g4.documentAnnotationPopover.placeholder")}
             disabled={props.newCommentDisabled || createThread.isPending}
             className="resize-y text-sm"
           />
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" size="sm" variant="ghost" onClick={props.onClose}>Cancel</Button>
+            <Button type="button" size="sm" variant="ghost" onClick={props.onClose}>{t("ui2g4.documentAnnotationPopover.cancel")}</Button>
             <Button type="button" size="sm" disabled={!composer.trim() || createThread.isPending || props.newCommentDisabled || !props.baseRevisionId} onClick={submitComposer}>
-              {createThread.isPending ? "Posting…" : "Comment"}
+              {createThread.isPending ? t("ui2g4.documentAnnotationPopover.posting") : t("ui2g4.documentAnnotationPopover.comment")}
             </Button>
           </div>
         </div>

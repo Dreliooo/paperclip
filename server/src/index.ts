@@ -1878,6 +1878,12 @@ async function startServerWithDatabaseTeardown(
               }
             })
             .then(async () => {
+              const objectives = await heartbeat.reconcileIssueObjectives();
+              if (objectives.nudged > 0 || objectives.limited > 0 || objectives.failed > 0) {
+                logger.info({ ...objectives }, "periodic objective supervision changed objective state");
+              }
+            })
+            .then(async () => {
               const scanned = await heartbeat.scanSilentActiveRuns();
               if (scanned.created > 0 || scanned.escalated > 0) {
                 logger.warn({ ...scanned }, "periodic active-run output watchdog created review work");

@@ -1,3 +1,4 @@
+import type { CreationRequestEvidence } from "./creation-attribution.js";
 import type { BudgetWindowKind, PauseReason, ProjectStatus } from "../constants.js";
 import type {
   ProjectExecutionWorkspacePolicy,
@@ -117,8 +118,16 @@ export interface Project {
   personalOwnerUserId?: string | null;
   /** Only this user and administrators may change the project audience. */
   privacyOwnerUserId?: string | null;
+  /** Project folder (kind "project") the project is filed in; organisation only. */
+  folderId?: string | null;
   status: ProjectStatus;
   leadAgentId: string | null;
+  /** Creation attribution; omitted by older servers. Null on historical rows without a record. */
+  createdByUserId?: string | null;
+  createdByAgentId?: string | null;
+  /** Person who asked an agent to create the project, only with evidence. */
+  requestedByUserId?: string | null;
+  requestEvidence?: CreationRequestEvidence | null;
   targetDate: string | null;
   color: string | null;
   icon: string | null;

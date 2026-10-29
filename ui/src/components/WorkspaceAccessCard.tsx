@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { cn } from "../lib/utils";
 import type { WorkspaceAccessState } from "../lib/workspace-access-state";
 
+import { useTranslation } from "@/i18n";
 /**
  * Workspace access surface (PAP-17572).
  *
@@ -28,15 +29,6 @@ const STATE_BADGE_CLASSES: Record<ActiveWorkspaceAccessState, string> = {
   degraded: "border-(--status-task-todo) text-(--status-task-icon-todo)",
   repairing: "border-border text-muted-foreground",
   failed: "border-destructive/50 text-destructive",
-};
-
-const STATE_LABELS: Record<ActiveWorkspaceAccessState, string> = {
-  provisioning: "Provisioning",
-  validating: "Validating clone",
-  ready: "Ready",
-  degraded: "Degraded",
-  repairing: "Repairing",
-  failed: "Failed",
 };
 
 const ACTION_ICONS = {
@@ -64,8 +56,17 @@ export function WorkspaceAccessCard({
   onViewLogs: () => void;
   errorMessage?: string | null;
 }) {
+  const { t } = useTranslation();
   const Icon = ACTION_ICONS[access.action.kind];
   const isWaiting = access.action.kind === "wait";
+  const stateLabels: Record<ActiveWorkspaceAccessState, string> = {
+    provisioning: t("ui2g7.workspaceAccessCard.states.provisioning"),
+    validating: t("ui2g7.workspaceAccessCard.states.validating"),
+    ready: t("ui2g7.workspaceAccessCard.states.ready"),
+    degraded: t("ui2g7.workspaceAccessCard.states.degraded"),
+    repairing: t("ui2g7.workspaceAccessCard.states.repairing"),
+    failed: t("ui2g7.workspaceAccessCard.states.failed"),
+  };
   const handlers: Record<WorkspaceAccessState["action"]["kind"], () => void> = {
     open: onOpen,
     start: onStart,
@@ -93,7 +94,7 @@ export function WorkspaceAccessCard({
               {(access.state === "repairing" || access.state === "provisioning") && (
                 <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
               )}
-              {STATE_LABELS[access.state]}
+              {stateLabels[access.state]}
             </span>
           ) : null}
         </div>
@@ -116,12 +117,12 @@ export function WorkspaceAccessCard({
           </Button>
           {access.state === "ready" && !access.handoffAvailable ? (
             <span className="text-xs text-muted-foreground">
-              Signs in with the snapshot-local credentials captured when this clone was made.
+              {t("ui2g7.workspaceAccessCard.signsInSnapshot")}
             </span>
           ) : null}
           {access.state === "ready" && access.handoffAvailable ? (
             <span className="text-xs text-muted-foreground">
-              Uses a single-use login handoff — no password needed.
+              {t("ui2g7.workspaceAccessCard.singleUseHandoff")}
             </span>
           ) : null}
         </div>

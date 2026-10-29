@@ -11,6 +11,16 @@ export const PRESET_LABELS: Record<DatePreset, string> = {
   custom: "Custom",
 };
 
+/** i18n keys for PRESET_LABELS. Translate at render time with t(), not at module load. */
+export const PRESET_LABEL_KEYS: Record<DatePreset, string> = {
+  mtd: "costs.presets.mtd",
+  "7d": "costs.presets.7d",
+  "30d": "costs.presets.30d",
+  ytd: "costs.presets.ytd",
+  all: "costs.presets.all",
+  custom: "costs.presets.custom",
+};
+
 export const PRESET_KEYS: DatePreset[] = ["mtd", "7d", "30d", "ytd", "all", "custom"];
 
 // note: computeRange is called inside a useMemo that re-evaluates once per minute

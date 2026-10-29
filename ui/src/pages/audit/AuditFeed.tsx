@@ -25,35 +25,36 @@ import { agentsApi } from "@/api/agents";
 import { accessApi } from "@/api/access";
 import { ApiError } from "@/api/client";
 import { useToastActions } from "@/context/ToastContext";
+import { useTranslation } from "@/i18n";
 
 const PAGE_SIZE = 50;
 const ALL = "__all";
 
 /** Action-domain prefixes offered in the filter (server does a prefix match). */
 const ACTION_DOMAINS: { value: string; label: string }[] = [
-  { value: ALL, label: "All actions" },
-  { value: "issue.", label: "Tasks" },
-  { value: "agent.", label: "Agents" },
-  { value: "heartbeat.", label: "Runs" },
-  { value: "approval.", label: "Approvals" },
-  { value: "project.", label: "Projects" },
-  { value: "goal.", label: "Goals" },
-  { value: "tool_", label: "Apps & tools" },
-  { value: "cost.", label: "Costs" },
-  { value: "company.", label: "Organization" },
+  { value: ALL, label: "ui2g5.auditFeed.actions.all" },
+  { value: "issue.", label: "ui2g5.auditFeed.actions.tasks" },
+  { value: "agent.", label: "ui2g5.auditFeed.actions.agents" },
+  { value: "heartbeat.", label: "ui2g5.auditFeed.actions.runs" },
+  { value: "approval.", label: "ui2g5.auditFeed.actions.approvals" },
+  { value: "project.", label: "ui2g5.auditFeed.actions.projects" },
+  { value: "goal.", label: "ui2g5.auditFeed.actions.goals" },
+  { value: "tool_", label: "ui2g5.auditFeed.actions.tools" },
+  { value: "cost.", label: "ui2g5.auditFeed.actions.costs" },
+  { value: "company.", label: "ui2g5.auditFeed.actions.organization" },
 ];
 
 /** Entity types offered in the filter (server does an exact match). */
 const ENTITY_TYPES: { value: string; label: string }[] = [
-  { value: ALL, label: "All entities" },
-  { value: "issue", label: "Task" },
-  { value: "agent", label: "Agent" },
-  { value: "heartbeat_run", label: "Run" },
-  { value: "routine", label: "Routine" },
-  { value: "project", label: "Project" },
-  { value: "goal", label: "Goal" },
-  { value: "company", label: "Organization" },
-  { value: "tool_connection", label: "Connection" },
+  { value: ALL, label: "ui2g5.auditFeed.entities.all" },
+  { value: "issue", label: "ui2g5.auditFeed.entities.task" },
+  { value: "agent", label: "ui2g5.auditFeed.entities.agent" },
+  { value: "heartbeat_run", label: "ui2g5.auditFeed.entities.run" },
+  { value: "routine", label: "ui2g5.auditFeed.entities.routine" },
+  { value: "project", label: "ui2g5.auditFeed.entities.project" },
+  { value: "goal", label: "ui2g5.auditFeed.entities.goal" },
+  { value: "company", label: "ui2g5.auditFeed.entities.organization" },
+  { value: "tool_connection", label: "ui2g5.auditFeed.entities.connection" },
 ];
 
 /**
@@ -110,6 +111,7 @@ function AuditActor({
   agentMap: Map<string, Agent>;
   userProfileMap: Map<string, CompanyUserProfile>;
 }) {
+  const { t } = useTranslation();
   // Agent names are company-readable through the same authorization-filtered
   // directory used by this page. The basic audit tier strips privileged
   // attribution (`agentId`) but retains the acting principal (`actorId`), so
@@ -132,7 +134,7 @@ function AuditActor({
     const profile = userProfileMap.get(record.actorId);
     return (
       <Identity
-        name={profile?.label ?? "User"}
+        name={profile?.label ?? t("ui2g5.auditFeed.actor.user")}
         avatarUrl={profile?.image ?? null}
         size="sm"
         className="font-medium text-foreground"
@@ -143,12 +145,12 @@ function AuditActor({
   // deleted or authorization-filtered agents that are absent from the directory.
   const label =
     record.actorType === "plugin"
-      ? "Plugin"
+      ? t("ui2g5.auditFeed.actor.plugin")
       : record.actorType === "agent"
-        ? "Agent"
+        ? t("ui2g5.auditFeed.actor.agent")
         : record.actorType === "user"
-          ? "User"
-          : "System";
+          ? t("ui2g5.auditFeed.actor.user")
+          : t("ui2g5.auditFeed.actor.system");
   return <Identity name={label} size="sm" className="font-medium text-foreground" />;
 }
 
@@ -160,13 +162,14 @@ function AuditActor({
  * that would duplicate the verb.
  */
 function AuditEntityNode({ record }: { record: AuditActionRecord }) {
+  const { t } = useTranslation();
   const { issue, document } = record.entity;
   const issueRef = issue?.identifier ?? issue?.id ?? null;
 
   if (issueRef) {
     return (
       <Link to={`/issues/${issueRef}`} className="font-medium text-primary hover:underline">
-        {issue?.identifier ? `${issue.identifier}${issue.title ? ` · ${issue.title}` : ""}` : "the task"}
+        {issue?.identifier ? `${issue.identifier}${issue.title ? ` · ${issue.title}` : ""}` : t("ui2g5.auditFeed.theTask")}
       </Link>
     );
   }
@@ -181,7 +184,7 @@ function AuditEntityNode({ record }: { record: AuditActionRecord }) {
   if (connectionId) {
     return (
       <Link to={`/apps/${connectionId}/permissions`} className="font-medium text-primary hover:underline">
-        the connection
+        {t("ui2g5.auditFeed.theConnection")}
       </Link>
     );
   }
@@ -198,6 +201,7 @@ function AuditRow({
   agentMap: Map<string, Agent>;
   userProfileMap: Map<string, CompanyUserProfile>;
 }) {
+  const { t } = useTranslation();
   const verb = formatActivityVerb(record.action, record.details, { agentMap, userProfileMap });
   const responsible = record.responsibleUserId ? userProfileMap.get(record.responsibleUserId) : null;
   // Suppress the "on behalf of" chip when the human actor *is* the responsible user.
@@ -205,7 +209,7 @@ function AuditRow({
     record.responsibleUserId
       && !(record.actorType === "user" && record.actorId === record.responsibleUserId),
   );
-  const responsibleLabel = responsible?.label ?? (record.responsibleUserId ? "a user" : null);
+  const responsibleLabel = responsible?.label ?? (record.responsibleUserId ? t("ui2g5.auditFeed.aUser") : null);
   const excerpt = record.entity.comment?.excerpt?.trim();
   // Show the document key only when it isn't already the linked entity node.
   const documentKey = record.entity.issue && record.entity.document ? record.entity.document.key : null;
@@ -226,13 +230,13 @@ function AuditRow({
           ) : null}
           {documentKey ? (
             <p className="text-xs text-muted-foreground">
-              Document <span className="font-mono text-(length:--text-micro)">{documentKey}</span>
+              {t("ui2g5.auditFeed.document")} <span className="font-mono text-(length:--text-micro)">{documentKey}</span>
             </p>
           ) : null}
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {showOnBehalf && responsibleLabel ? (
               <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5">
-                on behalf of {responsibleLabel}
+                {t("ui2g5.auditFeed.onBehalfOf", { name: responsibleLabel })}
               </span>
             ) : null}
             {record.runId && record.agentId ? (
@@ -240,7 +244,7 @@ function AuditRow({
                 to={`/agents/${record.agentId}/runs/${record.runId}`}
                 className="text-primary hover:underline"
               >
-                View run
+                {t("ui2g5.auditFeed.viewRun")}
               </Link>
             ) : null}
             <span className="font-mono text-(length:--text-micro) opacity-70">{record.action}</span>
@@ -260,18 +264,17 @@ function AuditRow({
 
 /** The permission-denied / upsell state shown when the caller lacks the grant. */
 function AuditUpsell() {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-3 py-14 text-center">
         <ShieldAlert className="h-10 w-10 text-muted-foreground/50" />
         <div>
-          <p className="text-sm font-medium text-foreground">Agent audit is a Paperclip Enterprise view</p>
+          <p className="text-sm font-medium text-foreground">{t("ui2g5.auditFeed.upsellTitle")}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            The agent audit log gives you a searchable, exportable record of everything your agents
-            did — every comment, task change, approval, and run — with the responsible person for
-            each action. Ask an administrator to grant you the{" "}
+            {t("ui2g5.auditFeed.upsellBody1")}{" "}
             <span className="font-mono text-(length:--text-micro)">audit:view_agent_actions</span>{" "}
-            permission to view it.
+            {t("ui2g5.auditFeed.upsellBody2")}
           </p>
         </div>
       </CardContent>
@@ -290,6 +293,7 @@ export function AuditFeed({
   actionDomain: controlledActionDomain,
   onActionDomainChange,
 }: AuditFeedProps) {
+  const { t } = useTranslation();
   const { pushToast } = useToastActions();
   const [agent, setAgent] = useState<string>(ALL);
   const [responsibleUser, setResponsibleUser] = useState<string>(ALL);
@@ -480,11 +484,11 @@ export function AuditFeed({
       // Browsers may read blob URLs lazily after click(), so keep the URL alive
       // long enough for the download to start.
       window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
-      pushToast({ title: "Audit exported", body: "Your CSV download has started.", tone: "success" });
+      pushToast({ title: t("ui2g5.auditFeed.exportedTitle"), body: t("ui2g5.auditFeed.exportedBody"), tone: "success" });
     } catch (error) {
       pushToast({
-        title: "Export failed",
-        body: error instanceof Error ? error.message : "Could not export the audit log.",
+        title: t("ui2g5.auditFeed.exportFailedTitle"),
+        body: error instanceof Error ? error.message : t("ui2g5.auditFeed.exportFailedBody"),
         tone: "error",
       });
     } finally {
@@ -501,11 +505,11 @@ export function AuditFeed({
       {!hideHeader ? (
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Activity</h2>
+            <h2 className="text-lg font-semibold text-foreground">{t("ui2g5.auditFeed.title")}</h2>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               {resolvedMode === "agents"
-                ? "Every recorded agent action, newest first — with the responsible person and run behind each one."
-                : "Everything happening in your organization, newest first — people, agents, and the system. Each line is one recorded action."}
+                ? t("ui2g5.auditFeed.subtitleAgents")
+                : t("ui2g5.auditFeed.subtitleAll")}
             </p>
           </div>
         </div>
@@ -513,14 +517,14 @@ export function AuditFeed({
 
       {showModeToggle ? (
         <Tabs value={resolvedMode} onValueChange={(value) => onModeChange?.(value as AuditFeedMode)}>
-          <TabsList aria-label="Activity scope">
-            <TabsTrigger value="all">Activity</TabsTrigger>
+          <TabsList aria-label={t("ui2g5.auditFeed.scopeAria")}>
+            <TabsTrigger value="all">{t("ui2g5.auditFeed.tabActivity")}</TabsTrigger>
             <TabsTrigger
               value="agents"
               disabled={accessTier === "basic"}
-              title={accessTier === "basic" ? "Agent Actions requires audit access" : undefined}
+              title={accessTier === "basic" ? t("ui2g5.auditFeed.agentActionsNeedAccess") : undefined}
             >
-              Agent Actions
+              {t("ui2g5.auditFeed.tabAgentActions")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -529,23 +533,23 @@ export function AuditFeed({
       {hasLockedScope ? (
         <div className="border-y border-border px-1 py-2 text-xs text-muted-foreground">
           {lockedRunId
-            ? `Scoped to run ${lockedRunId.slice(0, 8)}`
+            ? t("ui2g5.auditFeed.scopedRun", { id: lockedRunId.slice(0, 8) })
             : lockedAgentId
-              ? "Scoped to one agent"
-              : `Scoped to ${lockedEntity?.label ?? lockedEntity?.type ?? "entity"}`}
+              ? t("ui2g5.auditFeed.scopedAgent")
+              : t("ui2g5.auditFeed.scopedEntity", { entity: lockedEntity?.label ?? lockedEntity?.type ?? t("ui2g5.auditFeed.entityFallback") })}
         </div>
       ) : null}
 
       <div className="flex flex-wrap items-end gap-3 border-y border-border py-3">
         {canUseAdvancedControls && !lockedAgentId && !lockedRunId ? (
           <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-            <span>Agent</span>
+            <span>{t("ui2g5.auditFeed.filterAgent")}</span>
             <Select value={agent} onValueChange={setAgent}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Agent" />
+                <SelectValue placeholder={t("ui2g5.auditFeed.filterAgent")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>All agents</SelectItem>
+                <SelectItem value={ALL}>{t("ui2g5.auditFeed.allAgents")}</SelectItem>
                 {(agents.data ?? []).map((a) => (
                   <SelectItem key={a.id} value={a.id}>
                     {a.name}
@@ -557,14 +561,14 @@ export function AuditFeed({
         ) : null}
         {canUseAdvancedControls ? (
           <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-            <span>Responsible user</span>
+            <span>{t("ui2g5.auditFeed.filterResponsible")}</span>
             <Select value={responsibleUser} onValueChange={setResponsibleUser}>
               {/* Wide enough for "All responsible users" — w-44 truncated it. */}
               <SelectTrigger className="w-52">
-                <SelectValue placeholder="Responsible user" />
+                <SelectValue placeholder={t("ui2g5.auditFeed.filterResponsible")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>All responsible users</SelectItem>
+                <SelectItem value={ALL}>{t("ui2g5.auditFeed.allResponsible")}</SelectItem>
                 {(userDirectory.data?.users ?? []).map((u) => (
                   <SelectItem key={u.principalId} value={u.principalId}>
                     {u.user?.name ?? u.user?.email ?? u.principalId.slice(0, 8)}
@@ -575,15 +579,15 @@ export function AuditFeed({
           </label>
         ) : null}
         <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-          <span>Action</span>
+          <span>{t("ui2g5.auditFeed.filterAction")}</span>
           <Select value={actionDomain} onValueChange={setActionDomain}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Action" />
+              <SelectValue placeholder={t("ui2g5.auditFeed.filterAction")} />
             </SelectTrigger>
             <SelectContent>
               {ACTION_DOMAINS.map((d) => (
                 <SelectItem key={d.value} value={d.value}>
-                  {d.label}
+                  {t(d.label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -591,15 +595,15 @@ export function AuditFeed({
         </label>
         {!lockedEntity ? (
           <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-            <span>Entity</span>
+            <span>{t("ui2g5.auditFeed.filterEntity")}</span>
             <Select value={entityType} onValueChange={setEntityType}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Entity" />
+                <SelectValue placeholder={t("ui2g5.auditFeed.filterEntity")} />
               </SelectTrigger>
               <SelectContent>
                 {ENTITY_TYPES.map((e) => (
                   <SelectItem key={e.value} value={e.value}>
-                    {e.label}
+                    {t(e.label)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -607,10 +611,10 @@ export function AuditFeed({
           </label>
         ) : null}
         <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-          <span>From</span>
+          <span>{t("ui2g5.auditFeed.from")}</span>
           <Input
             type="date"
-            aria-label="From date"
+            aria-label={t("ui2g5.auditFeed.fromDate")}
             value={dateFrom}
             max={dateTo || undefined}
             onChange={(e) => setDateFrom(e.target.value)}
@@ -618,10 +622,10 @@ export function AuditFeed({
           />
         </label>
         <label className="grid gap-1 text-(length:--text-micro) font-medium text-muted-foreground">
-          <span>To</span>
+          <span>{t("ui2g5.auditFeed.to")}</span>
           <Input
             type="date"
-            aria-label="To date"
+            aria-label={t("ui2g5.auditFeed.toDate")}
             value={dateTo}
             min={dateFrom || undefined}
             onChange={(e) => setDateTo(e.target.value)}
@@ -630,7 +634,7 @@ export function AuditFeed({
         </label>
         {hasActiveFilters ? (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
-            Clear filters
+            {t("ui2g5.auditFeed.clearFilters")}
           </Button>
         ) : null}
         {canUseAdvancedControls ? (
@@ -642,7 +646,7 @@ export function AuditFeed({
             disabled={exporting || feed.isLoading || items.length === 0}
           >
             <Download className="mr-1.5 h-4 w-4" />
-            {exporting ? "Exporting…" : "Export CSV"}
+            {exporting ? t("ui2g5.auditFeed.exporting") : t("ui2g5.auditFeed.exportCsv")}
           </Button>
         ) : null}
       </div>
@@ -650,21 +654,21 @@ export function AuditFeed({
       {recoveringFromAccessDowngrade || fallingBackToAllActivity ? (
         <Card>
           <CardContent className="py-14 text-center text-sm text-muted-foreground">
-            Refreshing audit access…
+            {t("ui2g5.auditFeed.refreshingAccess")}
           </CardContent>
         </Card>
       ) : feed.isLoading ? (
         <Card>
-          <CardContent className="py-14 text-center text-sm text-muted-foreground">Loading…</CardContent>
+          <CardContent className="py-14 text-center text-sm text-muted-foreground">{t("ui2g5.auditFeed.loading")}</CardContent>
         </Card>
       ) : feed.error ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-14 text-center">
             <p className="text-sm text-muted-foreground">
-              {feed.error instanceof Error ? feed.error.message : "Failed to load the audit log."}
+              {feed.error instanceof Error ? feed.error.message : t("ui2g5.auditFeed.loadFailed")}
             </p>
             <Button variant="outline" size="sm" onClick={() => feed.refetch()}>
-              Try again
+              {t("ui2g5.auditFeed.tryAgain")}
             </Button>
           </CardContent>
         </Card>
@@ -674,26 +678,26 @@ export function AuditFeed({
             <ScrollText className="h-10 w-10 text-muted-foreground/40" />
             <div>
               <p className="text-sm font-medium text-foreground">
-                {hasActiveFilters ? "No actions match these filters" : "Nothing here yet"}
+                {hasActiveFilters ? t("ui2g5.auditFeed.noMatches") : t("ui2g5.auditFeed.nothingYet")}
               </p>
               <p className="mt-1 max-w-md text-sm text-muted-foreground">
                 {hasActiveFilters
-                  ? "Try a wider date range or different filters."
+                  ? t("ui2g5.auditFeed.tryWider")
                   : resolvedMode === "agents"
-                    ? "As soon as your agents start doing things, their actions show up here."
-                    : "As soon as anyone in your organization does something, it shows up here."}
+                    ? t("ui2g5.auditFeed.agentsEmpty")
+                    : t("ui2g5.auditFeed.allEmpty")}
               </p>
             </div>
             {hasActiveFilters ? (
               <Button variant="outline" size="sm" onClick={clearFilters}>
-                Clear filters
+                {t("ui2g5.auditFeed.clearFilters")}
               </Button>
             ) : null}
           </CardContent>
         </Card>
       ) : (
         <div className="border-y border-border">
-          <ul className={cn("divide-y divide-border")} aria-label="Audit activity">
+          <ul className={cn("divide-y divide-border")} aria-label={t("ui2g5.auditFeed.auditActivity")}>
             {items.map((record) => (
               <AuditRow
                 key={record.id}
@@ -714,13 +718,13 @@ export function AuditFeed({
             onClick={() => feed.fetchNextPage()}
             disabled={feed.isFetchingNextPage}
           >
-            {feed.isFetchingNextPage ? "Loading…" : "Load more"}
+            {feed.isFetchingNextPage ? t("ui2g5.auditFeed.loading") : t("ui2g5.auditFeed.loadMore")}
           </Button>
         </div>
       ) : null}
 
       <p className="text-xs text-muted-foreground">
-        Recorded by Paperclip — entries can't be edited. Sensitive values are never stored.
+        {t("ui2g5.auditFeed.footer")}
       </p>
     </div>
   );

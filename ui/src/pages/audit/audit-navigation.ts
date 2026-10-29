@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 export type AuditSection = "activity" | "runs" | "costs" | "budgets" | "timeline";
 
 export const AUDIT_SECTIONS: ReadonlyArray<{
@@ -5,11 +6,11 @@ export const AUDIT_SECTIONS: ReadonlyArray<{
   label: string;
   href: string;
 }> = [
-  { value: "activity", label: "Activity", href: "/activity" },
-  { value: "runs", label: "Runs", href: "/activity/runs" },
-  { value: "costs", label: "Costs", href: "/activity/costs" },
-  { value: "budgets", label: "Budgets", href: "/activity/budgets" },
-  { value: "timeline", label: "Timeline", href: "/activity/timeline" },
+  { value: "activity", get label() { return t("ui3lib.auditNav.activity"); }, href: "/activity" },
+  { value: "runs", get label() { return t("ui3lib.auditNav.runs"); }, href: "/activity/runs" },
+  { value: "costs", get label() { return t("ui3lib.auditNav.costs"); }, href: "/activity/costs" },
+  { value: "budgets", get label() { return t("ui3lib.auditNav.budgets"); }, href: "/activity/budgets" },
+  { value: "timeline", get label() { return t("ui3lib.auditNav.timeline"); }, href: "/activity/timeline" },
 ];
 
 export interface AuditLinkScope {

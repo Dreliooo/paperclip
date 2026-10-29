@@ -18,6 +18,7 @@ import { ApiError } from "@/api/client";
 import { queryKeys } from "@/lib/queryKeys";
 import { usePageVisibility } from "@/lib/page-visibility";
 import { parseWorkspaceFileRef } from "@/lib/workspace-file-parser";
+import { t, useTranslation } from "@/i18n";
 import type {
   Project,
   WorkspaceFileListItem,
@@ -80,28 +81,28 @@ export function describeUnavailable(reason: string): { title: string; body: stri
   if (lower.includes("remote")) {
     return {
       icon: <Cloud aria-hidden="true" className="h-5 w-5 text-muted-foreground" />,
-      title: "Remote workspace preview not supported",
-      body: "This workspace is hosted remotely and is not available for inline preview yet.",
+      title: t("ui2g3.workspaceFileBrowser.remoteTitle"),
+      body: t("ui2g3.workspaceFileBrowser.remoteBody"),
     };
   }
   if (lower.includes("no_workspace") || lower.includes("no_local")) {
     return {
       icon: <FolderOpen aria-hidden="true" className="h-5 w-5 text-muted-foreground" />,
-      title: "No workspace yet",
-      body: "This issue does not have a workspace to browse. Files appear here once a run creates one.",
+      title: t("ui2g3.workspaceFileBrowser.noWorkspaceTitle"),
+      body: t("ui2g3.workspaceFileBrowser.noWorkspaceBody"),
     };
   }
   if (lower.includes("archiv") || lower.includes("cleaned") || lower.includes("unavailable")) {
     return {
       icon: <FolderOpen aria-hidden="true" className="h-5 w-5 text-muted-foreground" />,
-      title: "Workspace is no longer available",
-      body: "The isolated worktree for this issue has been cleaned up, so files cannot be previewed.",
+      title: t("ui2g3.workspaceFileBrowser.unavailableTitle"),
+      body: t("ui2g3.workspaceFileBrowser.unavailableBody"),
     };
   }
   return {
     icon: <AlertTriangle aria-hidden="true" className="h-5 w-5 text-amber-500" />,
-    title: "Workspace unavailable",
-    body: "These workspace files can't be browsed right now.",
+    title: t("ui2g3.workspaceFileBrowser.fallbackTitle"),
+    body: t("ui2g3.workspaceFileBrowser.fallbackBody"),
   };
 }
 
@@ -137,11 +138,12 @@ function WorkspaceFileBreadcrumbs({
   folderPath: string | null;
   onOpenFolder: (path: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const segments = folderPath?.split("/").filter(Boolean) ?? [];
   if (!rootLabel && segments.length === 0) return null;
 
   return (
-    <nav aria-label="Current folder" className="min-w-0 overflow-hidden text-(length:--text-micro) text-muted-foreground">
+    <nav aria-label={t("ui2g3.workspaceFileBrowser.currentFolder")} className="min-w-0 overflow-hidden text-(length:--text-micro) text-muted-foreground">
       <ol className="flex min-w-0 items-center gap-1 overflow-hidden">
         {rootLabel ? (
           <li className="min-w-0 shrink">
@@ -188,6 +190,7 @@ interface WorkspaceFileRowProps {
 }
 
 function WorkspaceFileRow({ item, treeItemId, selected, highlighted, depth, onOpen, onHover, downloadUrl }: WorkspaceFileRowProps) {
+  const { t } = useTranslation();
   const name = basename(item.relativePath);
   return (
     <div
@@ -209,8 +212,8 @@ function WorkspaceFileRow({ item, treeItemId, selected, highlighted, depth, onOp
         <a
           href={downloadUrl}
           download={name}
-          aria-label={`Download ${name}`}
-          title={`Download ${name}`}
+          aria-label={t("ui2g3.workspaceFileBrowser.downloadNamed", { name })}
+          title={t("ui2g3.workspaceFileBrowser.downloadNamed", { name })}
           onClick={(event) => event.stopPropagation()}
           className="ml-auto inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-70 hover:bg-background/70 hover:text-foreground hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
@@ -381,6 +384,7 @@ function WorkspaceFileTree({
   onHoverFile,
   getDownloadUrl,
 }: WorkspaceFileTreeProps) {
+  const { t } = useTranslation();
   function renderNode(node: WorkspaceFileTreeNode): ReactNode {
     if (node.kind === "folder") {
       const expanded = node.lazy
@@ -417,7 +421,7 @@ function WorkspaceFileTree({
                   style={{ paddingLeft: `${1 + (node.depth + 1) * 0.875}rem` }}
                 >
                   <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
-                  <span>Loading folder…</span>
+                  <span>{t("ui2g3.workspaceFileBrowser.loadingFolder")}</span>
                 </div>
               ) : null}
               {truncated ? (
@@ -428,7 +432,7 @@ function WorkspaceFileTree({
                   style={{ paddingLeft: `${1 + (node.depth + 1) * 0.875}rem` }}
                 >
                   <span className="h-3.5 w-3.5 shrink-0" />
-                  <span>Load more from this folder</span>
+                  <span>{t("ui2g3.workspaceFileBrowser.loadMoreFolder")}</span>
                 </button>
               ) : null}
             </>
@@ -453,7 +457,7 @@ function WorkspaceFileTree({
   }
 
   return (
-    <div role="tree" id={listboxId} aria-label="Workspace files" className="space-y-0.5 py-1">
+    <div role="tree" id={listboxId} aria-label={t("ui2g3.workspaceFileBrowser.workspaceFiles")} className="space-y-0.5 py-1">
       {nodes.map(renderNode)}
     </div>
   );
@@ -509,6 +513,7 @@ export function WorkspaceFileBrowser({
   active = true,
   className,
 }: WorkspaceFileBrowserProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { visible: pageVisible } = usePageVisibility();
   const source: BrowserSource =
@@ -835,12 +840,12 @@ export function WorkspaceFileBrowser({
   ]);
 
   const announcement = useMemo(() => {
-    if (listQuery.isFetching) return "Loading workspace files…";
-    if (listQuery.isError) return "Unable to load workspace files.";
+    if (listQuery.isFetching) return t("ui2g3.workspaceFileBrowser.loadingFiles");
+    if (listQuery.isError) return t("ui2g3.workspaceFileBrowser.loadFilesFailed");
     if (data?.state === "unavailable") return describeUnavailable(data.unavailableReason ?? "").title;
-    if (items.length === 0) return "No matching files.";
-    return `${items.length} item${items.length === 1 ? "" : "s"} found.`;
-  }, [data, items.length, listQuery.isError, listQuery.isFetching]);
+    if (items.length === 0) return t("ui2g3.workspaceFileBrowser.noMatchingFiles");
+    return t("ui2g3.workspaceFileBrowser.itemsFound", { count: items.length });
+  }, [data, items.length, listQuery.isError, listQuery.isFetching, t]);
 
   function openTypedPath() {
     const value = searchInput.trim();
@@ -987,24 +992,24 @@ export function WorkspaceFileBrowser({
     body = (
       <StateMessage
         icon={<FolderOpen aria-hidden="true" className="h-5 w-5 text-muted-foreground" />}
-        title="No organization selected"
-        body="Choose an organization before browsing another project workspace."
+        title={t("ui2g3.workspaceFileBrowser.noOrgSelected")}
+        body={t("ui2g3.workspaceFileBrowser.noOrgBody")}
       />
     );
   } else if (source === "other" && projectsQuery.isFetching && projectsWithWorkspaces.length === 0) {
     body = (
       <StateMessage
         icon={<Loader2 aria-hidden="true" className="h-5 w-5 animate-spin text-muted-foreground" />}
-        title="Loading project workspaces"
-        body="Registered workspaces will appear here."
+        title={t("ui2g3.workspaceFileBrowser.loadingProjectWorkspaces")}
+        body={t("ui2g3.workspaceFileBrowser.registeredWillAppear")}
       />
     );
   } else if (source === "other" && !canListFiles) {
     body = (
       <StateMessage
         icon={<FolderOpen aria-hidden="true" className="h-5 w-5 text-muted-foreground" />}
-        title="No project workspaces"
-        body="No same-organization project has a registered workspace to browse."
+        title={t("ui2g3.workspaceFileBrowser.noProjectWorkspaces")}
+        body={t("ui2g3.workspaceFileBrowser.noProjectWorkspacesBody")}
       />
     );
   } else if (listQuery.isFetching && !data) {
@@ -1032,13 +1037,13 @@ export function WorkspaceFileBrowser({
     body = (
       <StateMessage
         icon={<AlertTriangle aria-hidden="true" className="h-5 w-5 text-amber-500" />}
-        title={changedFilesTemporarilyUnavailable ? "Changed files temporarily unavailable" : "Couldn't load files"}
+        title={changedFilesTemporarilyUnavailable ? t("ui2g3.workspaceFileBrowser.changedUnavailable") : t("ui2g3.workspaceFileBrowser.loadFailedTitle")}
         body={
           changedFilesTemporarilyUnavailable
-            ? "Paperclip is limiting workspace scans to keep the server responsive. Try again in a moment."
+            ? t("ui2g3.workspaceFileBrowser.changedRateLimited")
             : status === 404
-            ? "Workspace browsing isn't available for this issue."
-            : "Something went wrong loading workspace files."
+            ? t("ui2g3.workspaceFileBrowser.notAvailableForIssue")
+            : t("ui2g3.workspaceFileBrowser.genericLoadError")
         }
         actions={changedFilesTemporarilyUnavailable ? (
           <Button
@@ -1048,7 +1053,7 @@ export function WorkspaceFileBrowser({
             disabled={!queriesEnabled}
             onClick={() => void listQuery.refetch()}
           >
-            <RefreshCcw aria-hidden="true" className="mr-1 h-3 w-3" /> Retry
+            <RefreshCcw aria-hidden="true" className="mr-1 h-3 w-3" /> {t("ui2g3.workspaceFileBrowser.retry")}
           </Button>
         ) : null}
       />
@@ -1060,8 +1065,8 @@ export function WorkspaceFileBrowser({
     body = (
       <StateMessage
         icon={<Search aria-hidden="true" className="h-5 w-5 text-muted-foreground" />}
-        title={isSearch ? `No files match “${q}”` : "No recently changed files yet"}
-        body="Try searching by name or path."
+        title={isSearch ? t("ui2g3.workspaceFileBrowser.noFilesMatch", { query: q }) : t("ui2g3.workspaceFileBrowser.noRecentFiles")}
+        body={t("ui2g3.workspaceFileBrowser.tryNameOrPath")}
       />
     );
   } else {
@@ -1100,8 +1105,8 @@ export function WorkspaceFileBrowser({
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
             onKeyDown={handleSearchKeyDown}
-            placeholder="Search files by name or path…"
-            aria-label="Search workspace files"
+            placeholder={t("ui2g3.workspaceFileBrowser.searchPlaceholder")}
+            aria-label={t("ui2g3.workspaceFileBrowser.searchLabel")}
             role="combobox"
             aria-expanded={items.length > 0}
             aria-controls={items.length > 0 ? listboxId : undefined}
@@ -1118,8 +1123,8 @@ export function WorkspaceFileBrowser({
           size="icon-sm"
           onClick={() => void listQuery.refetch()}
           disabled={!queriesEnabled || listQuery.isFetching}
-          aria-label="Refresh workspace files"
-          title="Refresh workspace files"
+          aria-label={t("ui2g3.workspaceFileBrowser.refreshLabel")}
+          title={t("ui2g3.workspaceFileBrowser.refreshLabel")}
           className="h-8 w-8 shrink-0"
         >
           <RefreshCcw aria-hidden="true" className={cn("h-3.5 w-3.5", listQuery.isFetching && "animate-spin")} />
@@ -1146,10 +1151,10 @@ export function WorkspaceFileBrowser({
               onClick={() => loadMoreFolder(currentFolderKey)}
               className="rounded px-1 py-0.5 text-left hover:bg-accent hover:text-foreground"
             >
-              Load more from this folder
+              {t("ui2g3.workspaceFileBrowser.loadMoreFolder")}
             </button>
           ) : (
-            <>Showing first {items.length} — refine the search to narrow.</>
+            <>{t("ui2g3.workspaceFileBrowser.showingFirst", { count: items.length })}</>
           )}
         </div>
       ) : null}

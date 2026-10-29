@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useId, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
@@ -17,6 +18,7 @@ function CredentialSettings({
   companyId: string;
   grantId: string;
 }) {
+  const { t } = useTranslation();
   const id = useId();
   const saved = useQuery({
     queryKey: ["browser-use-cloud-settings", grantId],
@@ -49,7 +51,7 @@ function CredentialSettings({
     <div className="space-y-3">
       <div className="space-y-2">
         <Label htmlFor={`${id}-limit`}>
-          Maximum cost per browser run (USD)
+          {t("ui3g6.BrowserUseSettingsPanel.maximumCostPerBrowserRun")}
         </Label>
         <Input
           id={`${id}-limit`}
@@ -57,12 +59,11 @@ function CredentialSettings({
           min="0"
           step="0.01"
           value={limit}
-          placeholder="Use the remaining Paperclip budget"
+          placeholder={t("ui3g6.BrowserUseSettingsPanel.budgetPlaceholder")}
           onChange={(e) => setLimit(e.target.value)}
         />
         <p className="text-sm text-muted-foreground">
-          The agent can choose a lower limit. Paperclip also applies any
-          remaining hard budget limit.
+          {t("ui3g6.BrowserUseSettingsPanel.theAgentCanChooseA")}
         </p>
       </div>
       <fieldset className="space-y-2">
@@ -76,7 +77,7 @@ function CredentialSettings({
             rel="noreferrer"
             className="underline"
           >
-            Browser Use Cloud
+            {t("ui3g6.BrowserUseSettingsPanel.browserUseCloud")}
           </a>
           .
         </p>
@@ -109,20 +110,19 @@ function CredentialSettings({
               variant="ghost"
               onClick={() => void profiles.refetch()}
             >
-              Retry
+              {t("ui3g6.BrowserUseSettingsPanel.retry")}
             </Button>
           </p>
         )}
       </fieldset>
       {saved.isError || save.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          Could not save or load browser settings. Check your credential access
-          and try again.
+          {t("ui3g6.BrowserUseSettingsPanel.couldNotSaveOrLoad")}
         </p>
       ) : null}
       {save.isSuccess && (
         <p role="status" className="text-sm text-muted-foreground">
-          Browser settings saved.
+          {t("ui3g6.BrowserUseSettingsPanel.browserSettingsSaved")}
         </p>
       )}
       <div className="flex justify-end">
@@ -137,7 +137,7 @@ function CredentialSettings({
           }
           onClick={() => save.mutate()}
         >
-          Save browser settings
+          {t("ui3g6.BrowserUseSettingsPanel.saveBrowserSettings")}
         </Button>
       </div>
     </div>
@@ -150,6 +150,7 @@ export function BrowserUseSettingsPanel({
   connection: ToolConnection;
   grants?: ConnectionGrantsResponse;
 }) {
+  const { t } = useTranslation();
   const eligible =
     grants?.grants.filter(
       (g) =>
@@ -165,7 +166,7 @@ export function BrowserUseSettingsPanel({
       <h2 className="text-lg font-semibold">Browser settings</h2>
       {eligible.length > 1 && (
         <Label className="flex flex-col gap-2">
-          Credential
+          {t("ui3g6.BrowserUseSettingsPanel.credential")}
           <select
             value={grantId}
             onChange={(e) => setSelected(e.target.value)}
@@ -173,7 +174,7 @@ export function BrowserUseSettingsPanel({
           >
             {eligible.map((g, i) => (
               <option key={g.id} value={g.id}>
-                {g.kind === "user" ? "Personal" : "Shared"} credential {i + 1}
+                {g.kind === "user" ? t("ui3g6.BrowserUseSettingsPanel.personal") : t("ui3g6.BrowserUseSettingsPanel.shared")} {t("ui3g6.BrowserUseSettingsPanel.credentialN", { n: i + 1 })}
               </option>
             ))}
           </select>
@@ -187,8 +188,7 @@ export function BrowserUseSettingsPanel({
         />
       ) : (
         <p className="text-sm text-muted-foreground">
-          The credential owner or a shared connection manager can configure
-          saved profiles and cost limits.
+          {t("ui3g6.BrowserUseSettingsPanel.theCredentialOwnerOrA")}
         </p>
       )}
     </section>

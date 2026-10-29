@@ -366,13 +366,21 @@ describe("AttentionQueueRow", () => {
   });
 
   // The eyebrow carries the decision kind and the task key only. Project
-  // identity was removed from the card: the queue is filtered and grouped by
-  // project from the toolbar, so repeating it on every row spent the eyebrow's
-  // width on a fact the operator had usually just chosen.
-  it("keeps project identity off the card", () => {
+  // identity lives in the origin strip below the headline, next to the task it
+  // belongs to, so the operator can see where a decision comes from.
+  it("shows project identity in the origin strip, not in the eyebrow", () => {
     render(
       <AttentionQueueRow
         item={buildItem({
+          relatedIssue: {
+            kind: "issue",
+            id: "issue-1",
+            companyId: "c1",
+            title: "Hire a research analyst",
+            identifier: "PAP-9",
+            status: "in_progress",
+            href: "/PAP/issues/PAP-9",
+          },
           project: { id: "project-1", name: "Alpha", urlKey: "alpha", color: null, icon: "rocket" },
         })}
         companyId="c1"
@@ -383,7 +391,78 @@ describe("AttentionQueueRow", () => {
     );
 
     expect(container?.querySelector('[data-testid="attention-project-meta"]')).toBeNull();
-    expect(container?.textContent).not.toContain("Alpha");
+    const projectSlot = container?.querySelector("[data-attention-origin-project]");
+    expect(projectSlot?.textContent).toContain("Alpha");
+    expect(projectSlot?.querySelector("a")?.getAttribute("href")).toBe("/projects/alpha");
+    expect(container?.querySelector("[data-attention-origin-task]")?.textContent).toContain("Hire a research analyst");
+  });
+
+  it("names the requester and links to the exact origin", () => {
+    render(
+      <AttentionQueueRow
+        item={buildItem({
+          sourceKind: "issue_thread_interaction",
+          subject: {
+            kind: "interaction",
+            id: "interaction-1",
+            companyId: "c1",
+            title: "Which provider?",
+            identifier: null,
+            status: "pending",
+            href: "/PAP/issues/PAP-9#interaction-interaction-1",
+            metadata: { kind: "ask_user_questions", createdByAgentId: "agent-1", sourceCommentId: "comment-1" },
+          },
+          relatedIssue: {
+            kind: "issue",
+            id: "issue-1",
+            companyId: "c1",
+            title: "Pick a provider",
+            identifier: "PAP-9",
+            status: "in_progress",
+            href: "/PAP/issues/PAP-9",
+          },
+        })}
+        companyId="c1"
+        expanded={false}
+        onToggleExpand={noop}
+        onDismiss={noop}
+        agentMap={new Map([["agent-1", { id: "agent-1", name: "Researcher" } as never]])}
+      />,
+    );
+
+    expect(container?.querySelector("[data-attention-origin-requester]")?.textContent).toContain("Researcher");
+    const viewContext = container?.querySelector('a[data-attention-view-context="comment"]');
+    expect(viewContext?.getAttribute("href")).toBe("/PAP/issues/PAP-9#comment-comment-1");
+    expect(container?.querySelector("[data-attention-origin-project]")?.textContent).toContain("No project");
+  });
+
+  it("says when the origin is unknown instead of guessing", () => {
+    render(
+      <AttentionQueueRow
+        item={buildItem({
+          sourceKind: "decision",
+          subject: {
+            kind: "decision",
+            id: "decision-1",
+            companyId: "c1",
+            title: "Ship it?",
+            identifier: null,
+            status: "open",
+            href: "/PAP/decisions?decisionId=decision-1",
+            metadata: { originIssueId: null, originAgentId: "agent-gone" },
+          },
+        })}
+        companyId="c1"
+        expanded={false}
+        onToggleExpand={noop}
+        onDismiss={noop}
+      />,
+    );
+
+    const strip = container?.querySelector("[data-attention-origin]");
+    expect(strip?.textContent).toContain("Requester not recorded");
+    expect(strip?.textContent).toContain("No linked task");
+    expect(container?.querySelector('[data-attention-view-context="none"]')?.textContent).toBe("No origin recorded");
   });
 
   it("separates eyebrow facts with a middle dot, not a slash", () => {

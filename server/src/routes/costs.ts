@@ -33,10 +33,20 @@ import {
 } from "../services/index.js";
 import { assertBoard, assertCompanyAccess, getAccessibleResource, getActorInfo } from "./authz.js";
 import { fetchCompanyQuotaWindows } from "../services/quota-windows.js";
+import { usageBreakdownService } from "../services/usage-breakdown.js";
+import { cacheReuseService } from "../services/cache-reuse.js";
+import { projectReadSqlCondition } from "../services/authorization.js";
+import { projects as projectsTable } from "@paperclipai/db";
+import { and, eq, inArray } from "drizzle-orm";
 import { badRequest, forbidden } from "../errors.js";
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
 const reportDateSchema = z.union([z.iso.datetime({ offset: true }), z.iso.date()]);
+
+const usageBreakdownQuerySchema = z.object({
+  groupBy: z.enum(["model", "agent", "user"]).default("model"),
+  provider: z.string().trim().min(1).max(120).optional(),
+}).passthrough();
 
 export function parseCostDateRange(query: Record<string, unknown>) {
   if (query.period !== undefined && query.period !== "all" && query.period !== "month") throw badRequest("invalid 'period'");
@@ -239,12 +249,45 @@ export function costRoutes(
     res.json(summary);
   });
 
+  // Prompt-cache reuse for one agent's latest runs. Counters only.
+  router.get("/companies/:companyId/agents/:agentId/cache-reuse", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
+    const agentId = z.string().uuid().safeParse(req.params.agentId);
+    if (!agentId.success) throw badRequest("Invalid agent id");
+    res.json(await cacheReuseService(db).assess(companyId, { agentId: agentId.data }));
+  });
+
+  // Prompt-cache reuse for one conversation/task, behind the task's cost read check.
+  router.get("/issues/:id/cache-reuse", async (req, res) => {
+    const issue = await getAccessibleResource(req, res, resolveIssueByRef(req.params.id as string), "Issue not found");
+    if (!issue) return;
+    if (!(await assertIssueCostReadAllowed(req, res, issue))) return;
+    res.json(await cacheReuseService(db).assess(issue.companyId, { issueId: issue.id }));
+  });
+
   router.get("/companies/:companyId/costs/by-user", async (req, res) => {
     const companyId = req.params.companyId as string;
     assertCompanyAccess(req, companyId);
     if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
     const range = parseCostDateRange(req.query);
     res.json(await costs.byUser(companyId, range));
+  });
+
+  // Tokens, provider-reported spend and API-equivalent cost by model, agent or
+  // person. Aggregate figures only; no task or project names are returned.
+  router.get("/companies/:companyId/costs/usage-breakdown", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
+    const query = usageBreakdownQuerySchema.safeParse(req.query);
+    if (!query.success) throw badRequest("Invalid usage breakdown query");
+    res.json(await usageBreakdownService(db).report(companyId, {
+      groupBy: query.data.groupBy,
+      provider: query.data.provider ?? null,
+      range: parseCostDateRange(req.query),
+    }));
   });
 
   router.get("/companies/:companyId/costs/by-agent", async (req, res) => {
@@ -382,7 +425,19 @@ export function costRoutes(
     if (!(await assertCompanyCostReadAllowed(req, res, companyId))) return;
     const range = parseCostDateRange(req.query);
     const rows = await costs.byProject(companyId, range);
-    res.json(rows);
+    // Totals stay company-wide, but a private project's identity is only
+    // shown to people who can read that project.
+    const projectIds = rows.map((row) => row.projectId).filter((id): id is string => Boolean(id));
+    const readable = projectIds.length === 0
+      ? new Set<string>()
+      : new Set((await db.select({ id: projectsTable.id }).from(projectsTable).where(and(
+        eq(projectsTable.companyId, companyId),
+        inArray(projectsTable.id, projectIds),
+        await projectReadSqlCondition(db, req.actor),
+      ))).map((row) => row.id));
+    res.json(rows.map((row) => (row.projectId && !readable.has(row.projectId)
+      ? { ...row, projectId: null, projectName: null, restricted: true }
+      : row)));
   });
 
   router.patch("/companies/:companyId/budgets", validate(updateBudgetSchema), async (req, res) => {

@@ -1,8 +1,30 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+const englishMessages = JSON.parse(
+  readFileSync(new URL("../../../i18n/locales/en.json", import.meta.url), "utf8"),
+) as Record<string, unknown>;
+
+function englishMessage(key: string): string | undefined {
+  let node: unknown = englishMessages;
+  for (const part of key.split(".")) {
+    if (!node || typeof node !== "object") return undefined;
+    node = (node as Record<string, unknown>)[part];
+  }
+  return typeof node === "string" ? node : undefined;
+}
+
+/**
+ * Source text with each `t("key")`/`translate("key")` call replaced by its quoted English
+ * message, so the copy contracts below keep checking the words people see
+ * after the UI moved its strings into the locale files.
+ */
 function source(relativePath: string) {
-  return readFileSync(new URL(relativePath, import.meta.url), "utf8");
+  const text = readFileSync(new URL(relativePath, import.meta.url), "utf8");
+  return text.replace(/\b(?:t|translate)\("([\w.]+)"(?:,[^)]*)?\)/g, (call, key: string) => {
+    const message = englishMessage(key);
+    return message === undefined ? call : JSON.stringify(message);
+  });
 }
 
 describe("chat connector UI contract", () => {
@@ -185,7 +207,7 @@ describe("chat connector UI contract", () => {
     expect(setup).toContain("/task@bot_username");
     expect(setup).toContain("registers its command menu automatically");
     expect(setup).toContain(
-      "ordinary\n          mentions are not delivered to bots",
+      "ordinary mentions are not delivered to bots",
     );
     expect(setup).toContain("Create Azure Bot");
     expect(setup).toContain("Microsoft 365 work or school organization");

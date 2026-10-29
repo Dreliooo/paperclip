@@ -11,6 +11,7 @@ import type { FileViewerUrlState } from "@/context/FileViewerContext";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { queryKeys } from "@/lib/queryKeys";
 import type { TaskSidePanelTabPayload } from "@/lib/task-side-panel-state";
+import { useTranslation } from "@/i18n";
 
 type WorkspaceFilePayload = Extract<TaskSidePanelTabPayload, { kind: "workspace-file" }>;
 
@@ -23,6 +24,7 @@ export function TaskWorkspaceFilePanel({
   payload: WorkspaceFilePayload;
   onFallbackToProject?: () => void;
 }) {
+  const { t } = useTranslation();
   const [previewMode, setPreviewMode] = useState<"raw" | "rendered">("rendered");
   useEffect(() => setPreviewMode("rendered"), [payload.path, payload.workspace, payload.workspaceId, payload.projectId]);
   const [copied, setCopied] = useState(false);
@@ -67,8 +69,8 @@ export function TaskWorkspaceFilePanel({
               type="button"
               variant="ghost"
               size="icon-sm"
-              aria-label="Copy file contents"
-              title={copied ? "Copied" : "Copy file contents"}
+              aria-label={t("ui2g3.workspaceFilePanel.copyContents")}
+              title={copied ? t("ui2g3.workspaceFilePanel.copied") : t("ui2g3.workspaceFilePanel.copyContents")}
               onClick={() => {
                 void copyTextToClipboard(contentQuery.data!.content.data).then(() => {
                   setCopied(true);
@@ -79,10 +81,10 @@ export function TaskWorkspaceFilePanel({
               {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
             </Button>
           ) : null}
-          {renderedPreview && contentQuery.data ? <FilePreviewModeToggle mode={previewMode} onChange={setPreviewMode} label="File preview mode" /> : null}
+          {renderedPreview && contentQuery.data ? <FilePreviewModeToggle mode={previewMode} onChange={setPreviewMode} label={t("ui2g3.workspaceFilePanel.previewMode")} /> : null}
           {downloadUrl ? (
             <Button asChild variant="ghost" size="icon-sm">
-              <a href={downloadUrl} download={resource?.title} aria-label="Download file" title="Download file">
+              <a href={downloadUrl} download={resource?.title} aria-label={t("ui2g3.workspaceFilePanel.downloadFile")} title={t("ui2g3.workspaceFilePanel.downloadFile")}>
                 <Download aria-hidden />
               </a>
             </Button>

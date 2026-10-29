@@ -22,6 +22,7 @@ import { humanizeSystemNotice } from "@/lib/system-notice-humanizer";
 import { mapCommentMetadataToSystemNoticeSections } from "@/lib/system-notice-comment";
 import { timeAgo } from "@/lib/timeAgo";
 import type { TaskChatMessageItem } from "./task-chat-model";
+import { useTranslation } from "@/i18n";
 
 const TONE_ICON: Record<SystemNoticeTone, LucideIcon> = {
   neutral: Info,
@@ -57,6 +58,7 @@ export function TaskChatSystemNotice({
   onTryAgainNoLiveExecutionPath?: () => Promise<void> | void;
   tryAgainNoLiveExecutionPathPending?: boolean;
 }) {
+  const { t } = useTranslation();
   const recoverySnapshot = useDispositionRecoverySnapshot(item.metadata);
   const branchRecovery = useWorkspaceBaseRefRecovery(item.metadata);
   const streamlined = useStreamlinedTaskChatPresentation();
@@ -99,7 +101,7 @@ export function TaskChatSystemNotice({
       data-testid="task-chat-system-notice"
       data-tone={streamlined ? tone : undefined}
       role={streamlined ? "group" : undefined}
-      aria-label={streamlined ? `System update: ${title}` : undefined}
+      aria-label={streamlined ? t("ui2g4.taskChatSystemNotice.systemUpdateAria", { title }) : undefined}
     >
       <div className="flex max-w-(--pct-85) items-center gap-1.5">
         <button
@@ -131,7 +133,7 @@ export function TaskChatSystemNotice({
             disabled={tryAgainNoLiveExecutionPathPending}
             data-testid="task-chat-no-live-path-try-again"
           >
-            {tryAgainNoLiveExecutionPathPending ? "Trying again..." : "Try again"}
+            {tryAgainNoLiveExecutionPathPending ? t("ui2g4.taskChatSystemNotice.tryingAgain") : t("ui2g4.taskChatSystemNotice.tryAgain")}
           </Button>
         ) : null}
       </div>
@@ -167,7 +169,7 @@ export function TaskChatSystemNotice({
                 disabled={tryAgainNoLiveExecutionPathPending}
                 data-testid="task-chat-no-live-path-try-again"
               >
-                {tryAgainNoLiveExecutionPathPending ? "Trying again..." : "Try again"}
+                {tryAgainNoLiveExecutionPathPending ? t("ui2g4.taskChatSystemNotice.tryingAgain") : t("ui2g4.taskChatSystemNotice.tryAgain")}
               </Button>
             </div>
           ) : null}

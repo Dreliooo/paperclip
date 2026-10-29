@@ -14,6 +14,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CloudSignIn } from "@/components/CloudSignIn";
 import { clearCloudSignInAttempt } from "@/lib/cloud-sign-in";
+import { LocalePreferenceSync } from "@/hooks/useUserPreferences";
+import { useTranslation } from "@/i18n";
 
 const RECONNECT_INTERVAL_MS = 5_000;
 
@@ -26,22 +28,23 @@ export function CloudAccessError({
   retrying: boolean;
   onRetry: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-16">
       <RefreshCw className="size-6 text-muted-foreground" aria-hidden="true" />
       <div className="flex flex-col gap-2" role="status">
         <h1 className="text-xl font-semibold">
-          {temporary ? "Reconnecting to Paperclip" : "Unable to load Paperclip"}
+          {temporary ? t("ui2g3.cloudAccess.reconnectingTitle") : t("ui2g3.cloudAccess.unableTitle")}
         </h1>
         <p className="text-sm text-muted-foreground">
           {temporary
-            ? "The server may be restarting or your connection was interrupted. We’ll try again every few seconds and reconnect automatically."
-            : "We couldn’t check your access to this instance. Try again, or contact your instance administrator if this continues."}
+            ? t("ui2g3.cloudAccess.reconnectingBody")
+            : t("ui2g3.cloudAccess.unableBody")}
         </p>
       </div>
       <div>
         <Button variant="outline" onClick={onRetry} disabled={retrying}>
-          {retrying ? "Connecting…" : "Try again"}
+          {retrying ? t("ui2g3.cloudAccess.connecting") : t("ui2g3.cloudAccess.tryAgain")}
         </Button>
       </div>
     </div>
@@ -49,16 +52,16 @@ export function CloudAccessError({
 }
 
 function NoBoardAccessPage() {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-xl py-10">
       <Card className="block p-6">
-        <h1 className="text-xl font-semibold">No organization access</h1>
+        <h1 className="text-xl font-semibold">{t("ui2g3.cloudAccess.noAccessTitle")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          This account is signed in, but it does not have an active organization membership or instance-admin access on
-          this Paperclip instance.
+          {t("ui2g3.cloudAccess.noAccessBody")}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Use an organization invite or sign in with an account that already belongs to this org.
+          {t("ui2g3.cloudAccess.noAccessHint")}
         </p>
       </Card>
     </div>
@@ -66,6 +69,7 @@ function NoBoardAccessPage() {
 }
 
 export function CloudAccessGate({ allowMembershipRequest = false }: { allowMembershipRequest?: boolean } = {}) {
+  const { t } = useTranslation();
   const location = useLocation();
   const queryClient = useQueryClient();
   const [hasOpenedBoard, setHasOpenedBoard] = useState(false);
@@ -214,9 +218,10 @@ export function CloudAccessGate({ allowMembershipRequest = false }: { allowMembe
     <>
       {isReconnecting && (
         <div role="status" className="bg-muted px-4 py-2 text-center text-sm text-muted-foreground">
-          Connection interrupted. Reconnecting automatically…
+          {t("ui2g3.cloudAccess.connectionInterrupted")}
         </div>
       )}
+      <LocalePreferenceSync />
       <Outlet />
     </>
   );

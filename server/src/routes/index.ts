@@ -12,6 +12,7 @@ export { agentRoutes } from "./agents.js";
 export { projectRoutes } from "./projects.js";
 export { issueRoutes } from "./issues.js";
 export { issueTreeControlRoutes } from "./issue-tree-control.js";
+export { issueObjectiveRoutes } from "./issue-objectives.js";
 export {
   fileResourceRoutes,
   createFileResourceAvailabilityLimiter,
@@ -33,6 +34,7 @@ export { decisionRoutes } from "./decisions.js";
 export { decisionQueueRoutes } from "./decision-queues.js";
 export { sidebarBadgeRoutes } from "./sidebar-badges.js";
 export { sidebarPreferenceRoutes } from "./sidebar-preferences.js";
+export { userPreferenceRoutes } from "./user-preferences.js";
 export { resourceMembershipRoutes } from "./resource-memberships.js";
 export { inboxDismissalRoutes } from "./inbox-dismissals.js";
 export { llmRoutes } from "./llms.js";

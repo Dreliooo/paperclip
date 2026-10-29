@@ -6,6 +6,7 @@ import { useDialogState } from "@/context/DialogContext";
 import { useOptionalToastActions, useOptionalToastState } from "@/context/ToastContext";
 import { useAnnouncement } from "@/hooks/useAnnouncement";
 import { AnnouncementCard } from "./AnnouncementCard";
+import { useTranslation } from "@/i18n";
 
 // Includes the command palette, sheets and dialogs created outside DialogContext.
 const MODAL_SELECTOR = '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [aria-modal="true"]:not([data-state="closed"]), dialog[open]';
@@ -26,6 +27,7 @@ export function AnnouncementWell({ health }: { health?: HealthStatus }) {
   const { userId: accountId, settled } = useAccountIdentity();
   const { selectedCompanyId, loading } = useCompany();
   const { onboardingOpen } = useDialogState();
+  const { t } = useTranslation();
   const toastActions = useOptionalToastActions();
   const toasts = useOptionalToastState();
   const userId = health?.deploymentMode === "local_trusted" ? "local-board" : (settled ? accountId : null);
@@ -33,15 +35,15 @@ export function AnnouncementWell({ health }: { health?: HealthStatus }) {
     userId, companyId: selectedCompanyId,
     enabled: Boolean(userId && !loading && selectedCompanyId && !onboardingOpen),
     onSaveFailure: (savedLocally) => toastActions?.pushToast({
-      title: savedLocally ? "Dismissed in this browser" : "Dismissed for this visit",
-      body: "Couldn’t save across devices. We’ll retry when you reconnect or return.",
+      title: savedLocally ? t("ui2g1.announcementWell.dismissedLocally") : t("ui2g1.announcementWell.dismissedForVisit"),
+      body: t("ui2g1.announcementWell.saveFailedBody"),
       tone: "info", dedupeKey: "announcement-dismissal-sync",
     }),
   });
   const modalOpen = useModalOpen(Boolean(announcement));
   if (!announcement || modalOpen || (toasts?.length ?? 0) > 0) return null;
   return (
-    <aside aria-label="Paperclip announcements" className="announcement-well fixed left-3 bottom-(--announcement-mobile-bottom) z-40 w-(--announcement-available-width) max-w-(--announcement-width) max-h-(--announcement-mobile-max-height) overflow-y-auto md:bottom-3 md:max-h-(--announcement-max-height)">
+    <aside aria-label={t("ui2g1.announcementWell.ariaLabel")} className="announcement-well fixed left-3 bottom-(--announcement-mobile-bottom) z-40 w-(--announcement-available-width) max-w-(--announcement-width) max-h-(--announcement-mobile-max-height) overflow-y-auto md:bottom-3 md:max-h-(--announcement-max-height)">
       <AnnouncementCard key={announcement.id} announcement={announcement} onDismiss={() => dismiss(announcement.id)} />
     </aside>
   );

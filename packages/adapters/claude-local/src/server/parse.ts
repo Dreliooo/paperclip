@@ -41,6 +41,8 @@ export function claudeModelUsageTotals(modelUsage: unknown): UsageSummary | null
   let inputTokens = 0;
   let outputTokens = 0;
   let cachedInputTokens = 0;
+  let cacheWriteTokens = 0;
+  let sawCacheWrites = false;
   let sawEntry = false;
   for (const value of Object.values(byModel)) {
     const entry = parseObject(value);
@@ -49,9 +51,15 @@ export function claudeModelUsageTotals(modelUsage: unknown): UsageSummary | null
     inputTokens += asNumber(entry.inputTokens, 0) + asNumber(entry.cacheCreationInputTokens, 0);
     outputTokens += asNumber(entry.outputTokens, 0);
     cachedInputTokens += asNumber(entry.cacheReadInputTokens, 0);
+    if (typeof entry.cacheCreationInputTokens === "number") {
+      sawCacheWrites = true;
+      cacheWriteTokens += asNumber(entry.cacheCreationInputTokens, 0);
+    }
   }
   if (!sawEntry) return null;
-  return { inputTokens, outputTokens, cachedInputTokens };
+  // Cache writes stay inside inputTokens (they are billed prompt tokens); the
+  // separate count only says how much of that input was written to the cache.
+  return { inputTokens, outputTokens, cachedInputTokens, ...(sawCacheWrites ? { cacheWriteTokens } : {}) };
 }
 
 export function claudeModelReceipts(modelUsage: unknown) {
@@ -78,7 +86,12 @@ export function createClaudeStreamParser() {
   const assistantTexts: string[] = [];
   const messageUsage = new Map<string, UsageSummary>();
   let anonymousMessage = 0;
-  const observedTotals = { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0 };
+  const observedTotals = { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0, cacheWriteTokens: 0 };
+  let observedCacheWrites = false;
+  const observedUsage = (): UsageSummary => {
+    const { cacheWriteTokens, ...rest } = observedTotals;
+    return observedCacheWrites ? { ...rest, cacheWriteTokens } : rest;
+  };
 
   return (stdout: string) => {
     for (const rawLine of stdout.split(/\r?\n/)) {
@@ -105,10 +118,13 @@ export function createClaudeStreamParser() {
             inputTokens: Math.max(previous?.inputTokens ?? 0, asNumber(observed.input_tokens, 0) + asNumber(observed.cache_creation_input_tokens, 0)),
             cachedInputTokens: Math.max(previous?.cachedInputTokens ?? 0, asNumber(observed.cache_read_input_tokens, 0)),
             outputTokens: Math.max(previous?.outputTokens ?? 0, asNumber(observed.output_tokens, 0)),
+            cacheWriteTokens: Math.max(previous?.cacheWriteTokens ?? 0, asNumber(observed.cache_creation_input_tokens, 0)),
           };
+          if (typeof observed.cache_creation_input_tokens === "number") observedCacheWrites = true;
           observedTotals.inputTokens += next.inputTokens - (previous?.inputTokens ?? 0);
           observedTotals.outputTokens += next.outputTokens - (previous?.outputTokens ?? 0);
           observedTotals.cachedInputTokens += next.cachedInputTokens - (previous?.cachedInputTokens ?? 0);
+          observedTotals.cacheWriteTokens += next.cacheWriteTokens - (previous?.cacheWriteTokens ?? 0);
           messageUsage.set(key, next);
         }
         const content = Array.isArray(message.content) ? message.content : [];
@@ -134,7 +150,7 @@ export function createClaudeStreamParser() {
         sessionId,
         model,
         costUsd: null as number | null,
-        usage: messageUsage.size ? { ...observedTotals } : null,
+        usage: messageUsage.size ? observedUsage() : null,
         usageBasis: "per_run" as const,
         summary: assistantTexts.join("\n\n").trim(),
         resultJson: null as Record<string, unknown> | null,
@@ -147,6 +163,9 @@ export function createClaudeStreamParser() {
       inputTokens: asNumber(usageObj.input_tokens, 0) + asNumber(usageObj.cache_creation_input_tokens, 0),
       cachedInputTokens: asNumber(usageObj.cache_read_input_tokens, 0),
       outputTokens: asNumber(usageObj.output_tokens, 0),
+      ...(typeof usageObj.cache_creation_input_tokens === "number"
+        ? { cacheWriteTokens: asNumber(usageObj.cache_creation_input_tokens, 0) }
+        : {}),
     };
     const costRaw = finalResult.total_cost_usd;
     const costUsd = typeof costRaw === "number" && Number.isFinite(costRaw) ? costRaw : null;

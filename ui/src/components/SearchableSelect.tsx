@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { fuzzyTextMatchesQuery, normalizeSearchText, scoreFuzzyTextFields } from "@/lib/searchable-select";
 import { cn } from "@/lib/utils";
 import { useMobileEntityPickerViewportStyle } from "@/hooks/useMobileEntityPickerViewportStyle";
+import { useTranslation } from "@/i18n";
 
 export interface SearchableSelectOption<TValue extends string = string> {
   key: string;
@@ -98,9 +99,9 @@ export function SearchableSelect<
   groups,
   onValueChange,
   placeholder,
-  searchPlaceholder = "Search...",
-  emptyMessage = "No options found.",
-  loadingMessage = "Loading...",
+  searchPlaceholder: searchPlaceholderProp,
+  emptyMessage: emptyMessageProp,
+  loadingMessage: loadingMessageProp,
   loading = false,
   disabled = false,
   className,
@@ -126,6 +127,10 @@ export function SearchableSelect<
   const mobileViewportStyle = useMobileEntityPickerViewportStyle();
   const pointerFocusRef = useRef(false);
   const suppressNextTriggerFocusRef = useRef(false);
+  const { t } = useTranslation();
+  const searchPlaceholder = searchPlaceholderProp ?? t("ui2g1.searchableSelect.searchPlaceholder");
+  const emptyMessage = emptyMessageProp ?? t("ui2g1.searchableSelect.emptyMessage");
+  const loadingMessage = loadingMessageProp ?? t("ui2g1.searchableSelect.loadingMessage");
 
   const selectedOption = useMemo(() => {
     for (const group of groups) {
@@ -272,7 +277,7 @@ export function SearchableSelect<
           <button
             type="button"
             className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-            aria-label="Close selector"
+            aria-label={t("ui2g1.searchableSelect.closeSelector")}
             onClick={() => closePopover({ suppressTriggerFocus: true })}
           >
             <X className="size-5" />

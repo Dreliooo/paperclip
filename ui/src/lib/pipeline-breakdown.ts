@@ -1,4 +1,5 @@
 import type { PipelineStage } from "../api/pipelines";
+import { t } from "@/i18n";
 
 /**
  * UI-side reader + copy helpers for the "Break into pieces" stage primitive.
@@ -125,8 +126,8 @@ export function joinWithAnd(items: string[]): string {
   const list = items.filter((item) => item.trim().length > 0);
   if (list.length === 0) return "";
   if (list.length === 1) return list[0]!;
-  if (list.length === 2) return `${list[0]} and ${list[1]}`;
-  return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+  if (list.length === 2) return t("ui4.pipelineBreakdown.joinPair", { a: list[0], b: list[1] });
+  return t("ui4.pipelineBreakdown.joinLast", { rest: list.slice(0, -1).join(", "), last: list[list.length - 1] });
 }
 
 export interface BreakdownCopyNames {
@@ -151,17 +152,17 @@ export function breakdownSummarySentence(
   }
   const noun = config.pieceNoun;
   const parts: string[] = [
-    `Paperclip will create one ${noun} per item in ${names.targetPipelineName} → ${names.entryStageName}`,
+    t("ui4.pipelineBreakdown.summaryCreate", { noun, target: names.targetPipelineName, entry: names.entryStageName }),
   ];
   if (names.inheritedFieldLabels.length > 0) {
-    parts.push(`carry over ${joinWithAnd(names.inheritedFieldLabels)}`);
+    parts.push(t("ui4.pipelineBreakdown.summaryCarryOver", { fields: joinWithAnd(names.inheritedFieldLabels) }));
   }
   if (names.advanceToName) {
-    parts.push(`move this case to ${names.advanceToName}`);
+    parts.push(t("ui4.pipelineBreakdown.summaryAdvance", { name: names.advanceToName }));
   }
   let sentence = parts.join(", ");
   if (config.waitForPieces && names.whenFinishedName) {
-    sentence += `, then wait until every ${noun} is finished before moving it to ${names.whenFinishedName}`;
+    sentence += t("ui4.pipelineBreakdown.summaryWait", { noun, name: names.whenFinishedName });
   }
   return `${sentence}.`;
 }
@@ -176,18 +177,22 @@ export function breakdownMechanicsBullets(
 ): string[] {
   const noun = config.pieceNoun;
   const bullets: string[] = [
-    `Creates one ${noun} per item the agent returns, in ${names.targetPipelineName || "the destination pipeline"} → ${names.entryStageName || "its entry step"}.`,
-    `Links every ${noun} to this case so progress rolls up here.`,
+    t("ui4.pipelineBreakdown.mechanicsCreate", {
+      noun,
+      target: names.targetPipelineName || t("ui4.pipelineBreakdown.destinationPipeline"),
+      entry: names.entryStageName || t("ui4.pipelineBreakdown.entryStep"),
+    }),
+    t("ui4.pipelineBreakdown.mechanicsLink", { noun }),
   ];
   if (names.inheritedFieldLabels.length > 0) {
-    bullets.push(`Carries over ${joinWithAnd(names.inheritedFieldLabels)} from this case onto each ${noun}.`);
+    bullets.push(t("ui4.pipelineBreakdown.mechanicsCarryOver", { fields: joinWithAnd(names.inheritedFieldLabels), noun }));
   }
   if (names.advanceToName) {
-    bullets.push(`Moves this case to ${names.advanceToName} as soon as the pieces are created.`);
+    bullets.push(t("ui4.pipelineBreakdown.mechanicsAdvance", { name: names.advanceToName }));
   }
   if (config.waitForPieces && names.whenFinishedName) {
-    bullets.push(`Waits until every ${noun} is finished, then moves this case to ${names.whenFinishedName}.`);
-    bullets.push(`If the agent returns an empty list, this case skips ahead to ${names.whenFinishedName}.`);
+    bullets.push(t("ui4.pipelineBreakdown.mechanicsWait", { noun, name: names.whenFinishedName }));
+    bullets.push(t("ui4.pipelineBreakdown.mechanicsEmpty", { name: names.whenFinishedName }));
   }
   return bullets;
 }

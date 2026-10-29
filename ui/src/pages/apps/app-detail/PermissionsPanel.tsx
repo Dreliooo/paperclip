@@ -1,3 +1,4 @@
+import { t, useTranslation } from "@/i18n";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Ban, Check, FlaskConical, Loader2, RefreshCw, Search, ShieldQuestion } from "lucide-react";
@@ -114,6 +115,7 @@ function AgentAccessSection({
   disabled: boolean;
   onSave: (next: AccessDraft) => void;
 }) {
+  const { t } = useTranslation();
   const liveAgents = agents.filter((agent) => agent.status !== "terminated");
   const canManage = capabilities?.canConfigure ?? false;
   const editableAgentIds = capabilities?.editableAgentIds;
@@ -126,14 +128,14 @@ function AgentAccessSection({
   return (
     <section className="space-y-4 border-t border-border pt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-foreground">Which agents can use this connection?</h2>
-        {disabled ? <span className="text-xs text-muted-foreground">Saving…</span> : null}
+        <h2 className="text-sm font-semibold text-foreground">{t("ui3g6.PermissionsPanel.whichAgentsCanUseThis")}</h2>
+        {disabled ? <span className="text-xs text-muted-foreground">{t("ui3g6.PermissionsPanel.saving")}</span> : null}
       </div>
 
       {canManage ? (
         <div className="space-y-3">
           <RadioCardGroup
-            ariaLabel="Which agents can use this connection"
+            ariaLabel={t("ui3g6.PermissionsPanel.whichAgentsCanUseThis2")}
             value={access.mode}
             disabled={disabled}
             className="sm:grid-cols-2"
@@ -147,16 +149,16 @@ function AgentAccessSection({
             options={[
               {
                 value: "specific",
-                title: "Just agents I pick",
+                title: t("ui3g6.PermissionsPanel.justAgentsIPick"),
                 description: install.onAll
-                  ? "Unavailable while this connection is installed for every agent."
-                  : "Available only to selected agents.",
+                  ? t("ui3g6.PermissionsPanel.unavailableWhileThisConnectionIs")
+                  : t("ui3g6.PermissionsPanel.availableOnlyToSelectedAgents"),
                 disabled: install.onAll,
               },
               {
                 value: "all",
-                title: "Any agent",
-                description: "Available across your company.",
+                title: t("ui3g6.PermissionsPanel.anyAgent"),
+                description: t("ui3g6.PermissionsPanel.availableAcrossYourCompany"),
               },
             ]}
           />
@@ -167,11 +169,11 @@ function AgentAccessSection({
               selectedAgentIds={access.agentIds}
               disabled={disabled}
               triggerLabel={access.agentIds.size === 0
-                ? "Choose agents"
+                ? t("ui3g6.PermissionsPanel.chooseAgents")
                 : `${access.agentIds.size} ${access.agentIds.size === 1 ? "agent" : "agents"} selected`}
-              emptyMessage="You cannot edit any agents yet."
+              emptyMessage={t("ui3g6.PermissionsPanel.youCannotEditAnyAgents")}
               isAgentDisabled={(agent) => requiredAgentIds.has(agent.id)}
-              getDescription={(agent) => requiredAgentIds.has(agent.id) ? "Required by this connection's install setting" : agent.title}
+              getDescription={(agent) => requiredAgentIds.has(agent.id) ? t("ui3g6.PermissionsPanel.requiredByThisConnectionS") : agent.title}
               onChange={(agentIds) => onSave({
                 mode: "specific",
                 agentIds: new Set([...agentIds, ...requiredAgentIds]),
@@ -180,9 +182,9 @@ function AgentAccessSection({
           ) : null}
         </div>
       ) : access.mode === "all" ? (
-        <p className="text-sm text-muted-foreground">Any agent can use this connection.</p>
+        <p className="text-sm text-muted-foreground">{t("ui3g6.PermissionsPanel.anyAgentCanUseThis")}</p>
       ) : selectedAgents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No agents can use this connection.</p>
+        <p className="text-sm text-muted-foreground">{t("ui3g6.PermissionsPanel.noAgentsCanUseThis")}</p>
       ) : (
         <div className="space-y-0.5">
           {selectedAgents.map((agent) => (
@@ -230,6 +232,7 @@ export function ActionsSection({
   onReviewQuarantined: (enabledIds: string[]) => void;
   onRefreshActions: () => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [kindFilter, setKindFilter] = useState<ActionKindFilter>("all");
   const [showPermissionChangeWarning, setShowPermissionChangeWarning] = useState(false);
@@ -250,10 +253,10 @@ export function ActionsSection({
   return (
     <section className="space-y-6 border-t border-border pt-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-foreground">Actions</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("ui3g6.PermissionsPanel.actions")}</h2>
         {canConfigure ? (
           <div className="flex items-center gap-2">
-            {disabled ? <span className="text-xs text-muted-foreground">Saving…</span> : null}
+            {disabled ? <span className="text-xs text-muted-foreground">{t("ui3g6.PermissionsPanel.saving")}</span> : null}
             <Button
               variant="outline"
               size="sm"
@@ -290,16 +293,16 @@ export function ActionsSection({
           <div className="relative min-w-(--sz-12rem) flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="Find an action"
-              placeholder="Find an action…"
+              aria-label={t("ui3g6.PermissionsPanel.findAnAction")}
+              placeholder={t("ui3g6.PermissionsPanel.findAnAction2")}
               className="pl-9"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </div>
-          <FilterChip label={`All ${readOnly.length + canChange.length}`} active={kindFilter === "all"} onClick={() => setKindFilter("all")} />
-          <FilterChip label={`Read ${readOnly.length}`} active={kindFilter === "read"} onClick={() => setKindFilter("read")} />
-          <FilterChip label={`Write ${canChange.length}`} active={kindFilter === "write"} onClick={() => setKindFilter("write")} />
+          <FilterChip label={t("ui3g6.PermissionsPanel.allCount", { n: readOnly.length + canChange.length })} active={kindFilter === "all"} onClick={() => setKindFilter("all")} />
+          <FilterChip label={t("ui3g6.PermissionsPanel.readCount", { n: readOnly.length })} active={kindFilter === "read"} onClick={() => setKindFilter("read")} />
+          <FilterChip label={t("ui3g6.PermissionsPanel.writeCount", { n: canChange.length })} active={kindFilter === "write"} onClick={() => setKindFilter("write")} />
         </div>
         <p className="text-xs text-muted-foreground">{visibleCount} matches · sorted A–Z</p>
       </div>
@@ -387,6 +390,7 @@ function ActionGroup({
   canConfigure: boolean;
   onSetPermission: (ids: string[], next: ActionPermission) => void;
 }) {
+  const { t } = useTranslation();
   if (actions.length === 0) return null;
   const groupValue = (() => {
     const first = actionPermission(actions[0]!.id, enabledIds, askFirstIds);
@@ -405,7 +409,7 @@ function ActionGroup({
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="sr-only">{`Set every action in ${title}`}</span>
             <select
-              aria-label={`Set every action in ${title}`}
+              aria-label={t("ui3g6.PermissionsPanel.setEvery", { title })}
               value={groupValue}
               disabled={disabled}
               onChange={(event) => {
@@ -416,9 +420,9 @@ function ActionGroup({
               }}
               className="h-7 rounded-md border border-input bg-background px-2 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
             >
-              {groupValue === "" ? <option value="">Mixed</option> : null}
+              {groupValue === "" ? <option value="">{t("ui3g6.PermissionsPanel.mixed")}</option> : null}
               {PERMISSION_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{`Set all: ${option.label}`}</option>
+                <option key={option.value} value={option.value}>{t("ui3g6.PermissionsPanel.setAll", { label: t(option.label) })}</option>
               ))}
             </select>
           </label>
@@ -449,10 +453,16 @@ const PERMISSION_OPTIONS: Array<{
   description: string;
   icon: typeof Ban;
 }> = [
-  { value: "off", label: "Off", description: "Agents cannot run this action.", icon: Ban },
-  { value: "ask", label: "Ask first", description: "A human must approve each call.", icon: ShieldQuestion },
-  { value: "allowed", label: "Allowed", description: "Runs without approval.", icon: Check },
+  { value: "off", label: "ui3g6.PermissionsPanel.off", description: "ui3g6.PermissionsPanel.agentsCannotRunThisAction", icon: Ban },
+  { value: "ask", label: "ui3g6.PermissionsPanel.askFirst", description: "ui3g6.PermissionsPanel.aHumanMustApproveEach", icon: ShieldQuestion },
+  { value: "allowed", label: "ui3g6.PermissionsPanel.allowed", description: "ui3g6.PermissionsPanel.runsWithoutApproval", icon: Check },
 ];
+
+/** Translated label for a permission value; looked up at render time. */
+function permissionOptionLabel(permission: unknown): string | undefined {
+  const option = PERMISSION_OPTIONS.find((candidate) => candidate.value === permission);
+  return option ? t(option.label) : undefined;
+}
 
 function ActionRow({
   action,
@@ -473,6 +483,7 @@ function ActionRow({
   canConfigure: boolean;
   onSetPermission: (ids: string[], next: ActionPermission) => void;
 }) {
+  const { t } = useTranslation();
   const rowRef = useRef<HTMLDivElement | null>(null);
   const [testOpen, setTestOpen] = useState(false);
   const title = action.title ?? action.toolName;
@@ -499,7 +510,7 @@ function ActionRow({
                 glance to spot and one click to move. */}
             <span
               className="rounded-full border border-border px-1.5 py-px text-xs font-medium uppercase tracking-wide text-muted-foreground"
-              title={`Paperclip classified this action as ${action.riskLevel}`}
+              title={t("ui3g6.PermissionsPanel.riskClassified", { risk: action.riskLevel })}
             >
               {action.riskLevel}
             </span>
@@ -513,7 +524,7 @@ function ActionRow({
             <TooltipProvider>
               <div
                 role="radiogroup"
-                aria-label={`${title} permission`}
+                aria-label={t("ui3g6.PermissionsPanel.permissionLabel", { title })}
                 className="inline-flex rounded-md border border-border bg-muted/40 p-0.5"
               >
               {PERMISSION_OPTIONS.map((option) => {
@@ -526,7 +537,7 @@ function ActionRow({
                         type="button"
                         role="radio"
                         aria-checked={selected}
-                        aria-label={`${title}: ${option.label}`}
+                        aria-label={t("ui3g6.PermissionsPanel.optionLabel", { title, label: t(option.label) })}
                         disabled={disabled}
                         onClick={() => onSetPermission([action.id], option.value)}
                         className={cn(
@@ -540,7 +551,7 @@ function ActionRow({
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="top">
-                      <span className="font-medium">{option.label}</span> — {option.description}
+                      <span className="font-medium">{t(option.label)}</span> — {t(option.description)}
                     </TooltipContent>
                   </Tooltip>
                 );
@@ -549,12 +560,12 @@ function ActionRow({
             </TooltipProvider>
           ) : (
             <span className="text-sm text-muted-foreground">
-              {PERMISSION_OPTIONS.find((option) => option.value === value)?.label}
+              {permissionOptionLabel(value)}
             </span>
           )}
           <Button type="button" size="sm" variant="outline" onClick={() => setTestOpen(true)}>
             <FlaskConical className="mr-1.5 h-3.5 w-3.5" />
-            Test
+            {t("ui3g6.PermissionsPanel.test")}
           </Button>
         </div>
       </div>

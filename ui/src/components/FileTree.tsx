@@ -13,6 +13,7 @@ import { statusBadge, statusBadgeDefault } from "../lib/status-colors";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { t, useTranslation } from "@/i18n";
 
 // -- Tree types --------------------------------------------------------------
 
@@ -215,18 +216,18 @@ export function parseFrontmatter(content: string): { data: FrontmatterData; body
 }
 
 export const FRONTMATTER_FIELD_LABELS: Record<string, string> = {
-  name: "Name",
-  title: "Title",
-  kind: "Kind",
-  reportsTo: "Reports to",
-  skills: "Skills",
-  status: "Status",
-  description: "Description",
-  priority: "Priority",
-  assignee: "Responsible",
-  project: "Project",
-  recurring: "Recurring",
-  targetDate: "Target date",
+  get name() { return t("ui4.fileTree.frontmatter.name"); },
+  get title() { return t("ui4.fileTree.frontmatter.title"); },
+  get kind() { return t("ui4.fileTree.frontmatter.kind"); },
+  get reportsTo() { return t("ui4.fileTree.frontmatter.reportsTo"); },
+  get skills() { return t("ui4.fileTree.frontmatter.skills"); },
+  get status() { return t("ui4.fileTree.frontmatter.status"); },
+  get description() { return t("ui4.fileTree.frontmatter.description"); },
+  get priority() { return t("ui4.fileTree.frontmatter.priority"); },
+  get assignee() { return t("ui4.fileTree.frontmatter.assignee"); },
+  get project() { return t("ui4.fileTree.frontmatter.project"); },
+  get recurring() { return t("ui4.fileTree.frontmatter.recurring"); },
+  get targetDate() { return t("ui4.fileTree.frontmatter.targetDate"); },
 };
 
 // -- File tree component -----------------------------------------------------
@@ -291,8 +292,10 @@ export function FileTree({
   loading = false,
   error,
   empty,
-  ariaLabel = "Files",
+  ariaLabel,
 }: FileTreeProps) {
+  const { t } = useTranslation();
+  const treeLabel = ariaLabel ?? t("ui2g2.fileTree.files");
   const effectiveCheckedFiles = checkedFiles ?? new Set<string>();
   const visibleNodes = useMemo(
     () => flattenVisibleNodes(nodes, expandedDirs).filter(({ node }) => !visiblePaths || visiblePaths.has(node.path)),
@@ -357,7 +360,7 @@ export function FileTree({
 
   if (loading) {
     return (
-      <div aria-busy="true" aria-label={ariaLabel} role="tree" className="py-1">
+      <div aria-busy="true" aria-label={treeLabel} role="tree" className="py-1">
         {[0, 1, 2, 3].map((row) => (
           <div key={row} className={cn("flex items-center gap-2 px-4", TREE_ROW_HEIGHT_CLASS)}>
             <Skeleton className="h-4 w-4 shrink-0 rounded-sm" />
@@ -370,7 +373,7 @@ export function FileTree({
 
   if (error) {
     return (
-      <div aria-label={ariaLabel} role="tree" className="p-3">
+      <div aria-label={treeLabel} role="tree" className="p-3">
         <div
           role="treeitem"
           aria-level={1}
@@ -383,13 +386,13 @@ export function FileTree({
                 statusBadge.error ?? statusBadgeDefault,
               )}
             >
-              error
+              {t("ui2g2.fileTree.errorBadge")}
             </Badge>
             <span className="min-w-0 text-destructive">{error.message}</span>
           </div>
           {error.retry && (
             <Button type="button" size="xs" variant="outline" onClick={error.retry}>
-              Retry
+              {t("ui2g2.fileTree.retry")}
             </Button>
           )}
         </div>
@@ -399,11 +402,11 @@ export function FileTree({
 
   if (visibleNodes.length === 0) {
     return (
-      <div aria-label={ariaLabel} role="tree" className="p-3">
+      <div aria-label={treeLabel} role="tree" className="p-3">
         <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
-          <div className="text-sm font-medium">{empty?.title ?? "No files"}</div>
+          <div className="text-sm font-medium">{empty?.title ?? t("ui2g2.fileTree.noFiles")}</div>
           <div className="mt-1 text-xs text-muted-foreground">
-            {empty?.description ?? "Files will appear here when they are available."}
+            {empty?.description ?? t("ui2g2.fileTree.noFilesDescription")}
           </div>
         </div>
       </div>
@@ -411,7 +414,7 @@ export function FileTree({
   }
 
   return (
-    <div aria-label={ariaLabel} role="tree">
+    <div aria-label={treeLabel} role="tree">
       {visibleNodes.map(({ node, depth }, index) => {
         const expanded = node.kind === "dir" && expandedDirs.has(node.path);
         const customCheck = getCheckboxState?.(node);
@@ -465,7 +468,7 @@ export function FileTree({
             {layout === "explorer" && (node.kind === "dir" ? (
               <button type="button" disabled={disabled} className="flex size-4 shrink-0 items-center justify-center rounded-sm hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
                 onClick={event => { event.stopPropagation(); onToggleDir(node.path); }}
-                aria-label={expanded ? `Collapse ${node.name}` : `Expand ${node.name}`}>
+                aria-label={expanded ? t("ui2g2.fileTree.collapse", { name: node.name }) : t("ui2g2.fileTree.expand", { name: node.name })}>
                 {expanded ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
               </button>
             ) : <span className="size-4 shrink-0" aria-hidden="true" />)}
@@ -473,7 +476,7 @@ export function FileTree({
               <label className={cn("flex items-center", layout === "explorer" ? "size-4 shrink-0 justify-center" : "pl-2")} onClick={(event) => event.stopPropagation()}>
                 <input
                   type="checkbox"
-                  aria-label={checkboxLabel?.(node) ?? `Select ${node.path}`}
+                  aria-label={checkboxLabel?.(node) ?? t("ui2g2.fileTree.select", { path: node.path })}
                   disabled={disabled}
                   checked={allChecked}
                   ref={(element) => {
@@ -522,7 +525,7 @@ export function FileTree({
                   event.stopPropagation();
                   onToggleDir(node.path);
                 }}
-                aria-label={expanded ? `Collapse ${node.name}` : `Expand ${node.name}`}
+                aria-label={expanded ? t("ui2g2.fileTree.collapse", { name: node.name }) : t("ui2g2.fileTree.expand", { name: node.name })}
               >
                 {expanded ? (
                   <ChevronDown className="h-3.5 w-3.5" />

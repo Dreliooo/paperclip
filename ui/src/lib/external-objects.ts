@@ -23,6 +23,7 @@ import type {
   ExternalObjectSummary,
   ExternalObjectSummaryItem,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * Lucide icon for each status category. The mapping is host-owned per the
@@ -75,17 +76,17 @@ export function externalObjectIconForLiveness(liveness: string): LucideIcon | nu
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  unknown: "Not yet resolved",
-  open: "Open",
-  waiting: "Waiting",
-  running: "Running",
-  succeeded: "Succeeded",
-  failed: "Failed",
-  blocked: "Blocked",
-  closed: "Closed",
-  archived: "Archived",
-  auth_required: "Authorization required",
-  unreachable: "Unreachable",
+  get unknown() { return t("ui3lib.externalObjects.category.unknown"); },
+  get open() { return t("ui3lib.externalObjects.category.open"); },
+  get waiting() { return t("ui3lib.externalObjects.category.waiting"); },
+  get running() { return t("ui3lib.externalObjects.category.running"); },
+  get succeeded() { return t("ui3lib.externalObjects.category.succeeded"); },
+  get failed() { return t("ui3lib.externalObjects.category.failed"); },
+  get blocked() { return t("ui3lib.externalObjects.category.blocked"); },
+  get closed() { return t("ui3lib.externalObjects.category.closed"); },
+  get archived() { return t("ui3lib.externalObjects.category.archived"); },
+  get auth_required() { return t("ui3lib.externalObjects.category.authRequired"); },
+  get unreachable() { return t("ui3lib.externalObjects.unreachable"); },
 };
 
 export function externalObjectCategoryLabel(category: string): string {
@@ -93,11 +94,11 @@ export function externalObjectCategoryLabel(category: string): string {
 }
 
 const LIVENESS_LABELS: Record<string, string> = {
-  unknown: "Not yet refreshed",
-  fresh: "Fresh",
-  stale: "Stale",
-  auth_required: "Requires auth",
-  unreachable: "Unreachable",
+  get unknown() { return t("ui3lib.externalObjects.liveness.unknown"); },
+  get fresh() { return t("ui3lib.externalObjects.liveness.fresh"); },
+  get stale() { return t("ui3lib.externalObjects.liveness.stale"); },
+  get auth_required() { return t("ui3lib.externalObjects.liveness.requiresAuth"); },
+  get unreachable() { return t("ui3lib.externalObjects.unreachable"); },
 };
 
 export function externalObjectLivenessLabel(liveness: string): string {
@@ -116,7 +117,7 @@ export function externalObjectDisplayStatusLabel(input: {
   const isGenericUrl = input.providerKey === "url" && input.objectType === "link";
   const hasKnownObjectType = Boolean(input.providerKey && input.objectType);
   if (input.statusCategory === "unknown" && hasKnownObjectType && !isGenericUrl) {
-    if (input.liveness === "fresh") return "Status unavailable";
+    if (input.liveness === "fresh") return t("ui3lib.externalObjects.statusUnavailable");
     return externalObjectLivenessLabel(input.liveness);
   }
   return externalObjectCategoryLabel(input.statusCategory);
@@ -172,7 +173,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 export function externalObjectProviderLabel(providerKey: string | null | undefined): string {
-  if (!providerKey) return "External";
+  if (!providerKey) return t("ui3lib.externalObjects.external");
   const lookup = PROVIDER_LABELS[providerKey];
   if (lookup) return lookup;
   return providerKey
@@ -182,17 +183,17 @@ export function externalObjectProviderLabel(providerKey: string | null | undefin
 }
 
 const OBJECT_TYPE_LABELS: Record<string, string> = {
-  pull_request: "pull request",
-  issue: "issue",
-  deployment: "deployment",
-  workflow_run: "workflow run",
-  ticket: "ticket",
-  lead: "lead",
-  url_link: "URL",
+  get pull_request() { return t("ui3lib.externalObjects.type.pullRequest"); },
+  get issue() { return t("ui3lib.externalObjects.type.issue"); },
+  get deployment() { return t("ui3lib.externalObjects.type.deployment"); },
+  get workflow_run() { return t("ui3lib.externalObjects.type.workflowRun"); },
+  get ticket() { return t("ui3lib.externalObjects.type.ticket"); },
+  get lead() { return t("ui3lib.externalObjects.type.lead"); },
+  get url_link() { return t("ui3lib.externalObjects.type.urlLink"); },
 };
 
 export function externalObjectTypeLabel(objectType: string | null | undefined): string {
-  if (!objectType) return "object";
+  if (!objectType) return t("ui3lib.externalObjects.object");
   return OBJECT_TYPE_LABELS[objectType] ?? objectType.replace(/_/g, " ");
 }
 
@@ -203,7 +204,7 @@ export function externalObjectDisplayLabel(
 ): string {
   const trimmedDisplayKey = displayKey?.trim();
   if (trimmedDisplayKey) return trimmedDisplayKey;
-  if (providerKey === "url" && objectType === "link") return "URL";
+  if (providerKey === "url" && objectType === "link") return t("ui3lib.externalObjects.url");
   return `${externalObjectProviderLabel(providerKey)} ${externalObjectTypeLabel(objectType)}`;
 }
 

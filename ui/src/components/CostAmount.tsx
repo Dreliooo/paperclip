@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { CostByAgent } from "@paperclipai/shared";
 import { formatCents } from "../lib/utils";
+import { useTranslation } from "@/i18n";
 import { CostEstimateLabel } from "./CostEstimateLabel";
 import { Badge } from "./ui/badge";
 
@@ -16,6 +17,7 @@ export function CostAmount({
   showUnavailableCount?: boolean;
   suffix?: ReactNode;
 }) {
+  const { t } = useTranslation();
   const entirelyUnpriced = costCents === 0 && (eventCount ?? 0) > 0 && unpricedEventCount === eventCount;
   return (
     <div className="flex flex-col items-end gap-1 text-right">
@@ -25,7 +27,7 @@ export function CostAmount({
       </div>
       <CostEstimateLabel eventCount={eventCount} estimatedEventCount={estimatedEventCount} />
       {showUnavailableCount && !!unpricedEventCount && <Badge variant="outline" className="font-normal text-muted-foreground">
-        {unpricedEventCount} {unpricedEventCount === 1 ? "cost" : "costs"} unavailable
+        {t("costs.amount.unavailable", { count: unpricedEventCount })}
       </Badge>}
     </div>
   );

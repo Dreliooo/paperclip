@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import {
   CircleCheck,
   CircleAlert,
@@ -11,39 +12,19 @@ import { cn } from "@/lib/utils";
 export type TestState = "idle" | "running" | "pass" | "fail";
 
 const copy = {
-  idle: {
-    title: "Test your agent",
-    description: "Check that your runtime and model can respond.",
-    action: "Run test",
-  },
-  running: {
-    title: "Testing connection",
-    description: "Checking the runtime and waiting for a model response…",
-    action: "Testing…",
-  },
-  pass: {
-    title: "Connection successful",
-    description: "Your runtime checks passed. Review the details below.",
-    action: "Test again",
-  },
-  warn: {
-    title: "Connection needs attention",
-    description: "Review the test details before running your agent.",
-    action: "Test again",
-  },
-  fail: {
-    title: "Couldn't connect",
-    description: "Check your model and provider connection, then try again.",
-    action: "Retry test",
-  },
+  idle: { title: "ui2g2.runtimeTest.idle.title", description: "ui2g2.runtimeTest.idle.description", action: "ui2g2.runtimeTest.action.run" },
+  running: { title: "ui2g2.runtimeTest.running.title", description: "ui2g2.runtimeTest.running.description", action: "ui2g2.runtimeTest.action.testing" },
+  pass: { title: "ui2g2.runtimeTest.pass.title", description: "ui2g2.runtimeTest.pass.description", action: "ui2g2.runtimeTest.action.testAgain" },
+  warn: { title: "ui2g2.runtimeTest.warn.title", description: "ui2g2.runtimeTest.warn.description", action: "ui2g2.runtimeTest.action.testAgain" },
+  fail: { title: "ui2g2.runtimeTest.fail.title", description: "ui2g2.runtimeTest.fail.description", action: "ui2g2.runtimeTest.action.retryTest" },
 } as const;
 
 const prerequisiteCopy = {
-  idle: { title: "Check prerequisites", description: "Check instance settings and public connection configuration.", action: "Check setup" },
-  running: { title: "Checking prerequisites", description: "Checking instance settings and public connection configuration…", action: "Checking…" },
-  pass: { title: "Setup checks passed", description: "Review the setup details before assigning work.", action: "Check again" },
-  warn: { title: "Pairing required", description: "Create this agent, then pair it and verify event delivery.", action: "Check again" },
-  fail: { title: "Prerequisite check failed", description: "Review the setup details and retry.", action: "Retry check" },
+  idle: { title: "ui2g2.runtimePrereq.idle.title", description: "ui2g2.runtimePrereq.idle.description", action: "ui2g2.runtimePrereq.action.check" },
+  running: { title: "ui2g2.runtimePrereq.running.title", description: "ui2g2.runtimePrereq.running.description", action: "ui2g2.runtimePrereq.action.checking" },
+  pass: { title: "ui2g2.runtimePrereq.pass.title", description: "ui2g2.runtimePrereq.pass.description", action: "ui2g2.runtimePrereq.action.checkAgain" },
+  warn: { title: "ui2g2.runtimePrereq.warn.title", description: "ui2g2.runtimePrereq.warn.description", action: "ui2g2.runtimePrereq.action.checkAgain" },
+  fail: { title: "ui2g2.runtimePrereq.fail.title", description: "ui2g2.runtimePrereq.fail.description", action: "ui2g2.runtimePrereq.action.retryCheck" },
 } as const;
 
 export function RuntimeTestCard({
@@ -61,12 +42,14 @@ export function RuntimeTestCard({
   disabled?: boolean;
   variant?: "connection" | "prerequisites";
 }) {
+  const { t } = useTranslation();
   const missingRuntime = state === "fail"
     ? result?.checks.find(check => check.code === "acpx_runtime_package_missing")
     : undefined;
+  const base = (variant === "prerequisites" ? prerequisiteCopy : copy)[state];
   const content = missingRuntime
-    ? { ...copy.fail, title: "Runtime missing", description: missingRuntime.message }
-    : (variant === "prerequisites" ? prerequisiteCopy : copy)[state];
+    ? { title: t("ui2g2.runtimeTest.runtimeMissing"), description: missingRuntime.message, action: t(copy.fail.action) }
+    : { title: t(base.title), description: t(base.description), action: t(base.action) };
   const Icon =
     state === "running"
       ? Loader2
@@ -77,7 +60,7 @@ export function RuntimeTestCard({
           : Play;
   return (
     <section
-      aria-label="Runtime test"
+      aria-label={t("ui2g2.runtimeTest.aria")}
       className="rounded-lg border border-border bg-card"
     >
       <div className="flex items-start gap-3 p-4 sm:items-center">
@@ -132,7 +115,7 @@ export function RuntimeTestCard({
               aria-hidden="true"
               className="size-3 transition-transform group-open:rotate-90"
             />
-            Test details
+            {t("ui2g2.runtimeTest.details")}
           </summary>
           <ul className="space-y-3 px-4 pb-4">
             {result.checks.map((check) => (

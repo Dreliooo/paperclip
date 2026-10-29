@@ -115,3 +115,27 @@ own policy and access review.
 
 Gaps: Even reads/state/preview require board. There is no agent tree-control path just
 from company/task permissions.
+
+## `objective-mode`
+
+Review: `baseline`.
+
+API: `present` — representative operation IDs:
+
+- `GET /api/issues/{id}/objective`.
+- `POST /api/issues/{id}/objective`.
+- `PATCH /api/issues/{id}/objective`.
+- `POST /api/issues/{id}/objective/actions`.
+
+Agent access: `restricted` — agents read the objective; create, limits and pause/resume/stop are board-only.
+
+Policy: Task read access for reads; board actor for mutations; coordinator must be an assignable agent in the same company; activity logged for each mutation.
+
+Evidence: `source-only` —
+[implementation](../../server/src/routes/issue-objectives.ts#L83) in this change.
+
+Verification: `not-run` — read an objective with agent credentials and assert the agent
+denial on create and actions with an owned test fixture.
+
+Gaps: The coordinator works through ordinary task, subtask and comment APIs; there is no
+agent-side action to extend limits or close the objective other than completing the task.

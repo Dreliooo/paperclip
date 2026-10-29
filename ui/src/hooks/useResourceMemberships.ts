@@ -192,9 +192,13 @@ export function useResourceMembershipMutation(companyId: string | null | undefin
         }),
       );
     },
-    onSettled: () => {
+    onSettled: (_result, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["primary-agent", companyId] });
       queryClient.invalidateQueries({ queryKey });
+      // Joining, leaving and starring change who counts a project as theirs.
+      if (variables.resourceType === "project") {
+        queryClient.invalidateQueries({ queryKey: ["projects", companyId, "mine"] });
+      }
     },
   });
 }

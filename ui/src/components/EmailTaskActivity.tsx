@@ -6,6 +6,7 @@ import { useEmailThread } from "@/hooks/useEmailThread";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { EmailPublicationSummary } from "@paperclipai/shared";
+import { useTranslation } from "@/i18n";
 
 // Email actions belong to the agent's task conversation. Only surface mail
 // without a task comment yet and delivery outcomes that need attention here.
@@ -68,6 +69,7 @@ function EmailDelivery({
   publication: EmailPublicationSummary;
   onResolved: () => void;
 }) {
+  const { t } = useTranslation();
   const [messageId, setMessageId] = useState("");
   const resolve = useMutation({
     mutationFn: (outcome: "sent" | "failed") =>
@@ -78,35 +80,34 @@ function EmailDelivery({
     <div className="space-y-2 text-xs text-muted-foreground">
       {p.request && !p.providerMessageId && (
         <article
-          aria-label="Email send intent"
+          aria-label={t("ui2g3.emailTask.sendIntent")}
           className="task-context-notice space-y-3"
         >
-          <p className="font-semibold">{p.request.subject ?? "Email reply"}</p>
-          {p.request.to && <p>To: {p.request.to.join(", ")}</p>}
+          <p className="font-semibold">{p.request.subject ?? t("ui2g3.emailTask.defaultSubject")}</p>
+          {p.request.to && <p>{t("ui2g3.emailTask.to", { recipients: p.request.to.join(", ") })}</p>}
           <div className="whitespace-pre-wrap break-words text-sm text-foreground">
             {p.request.text}
           </div>
         </article>
       )}
       <p>
-        Email {p.outcome}
+        {t("ui2g3.emailTask.outcome", { outcome: p.outcome })}
         {p.error ? ` — ${p.error}` : ""}
       </p>
       {p.outcome === "uncertain" && (
         <details>
           <summary className="cursor-pointer">
-            Resolve delivery after checking AgentMail
+            {t("ui2g3.emailTask.resolveSummary")}
           </summary>
           <div className="space-y-2 py-2">
             <p>
-              Confirm the outcome in AgentMail before resolving. This action
-              does not resend.
+              {t("ui2g3.emailTask.confirmBefore")}
             </p>
             <Input
-              aria-label="Provider message ID"
+              aria-label={t("ui2g3.emailTask.providerMessageId")}
               value={messageId}
               onChange={(e) => setMessageId(e.target.value)}
-              placeholder="Provider message ID"
+              placeholder={t("ui2g3.emailTask.providerMessageId")}
             />
             <div className="flex gap-2">
               <Button
@@ -115,7 +116,7 @@ function EmailDelivery({
                 disabled={!messageId || resolve.isPending}
                 onClick={() => resolve.mutate("sent")}
               >
-                Confirm sent
+                {t("ui2g3.emailTask.confirmSent")}
               </Button>
               <Button
                 size="sm"
@@ -123,7 +124,7 @@ function EmailDelivery({
                 disabled={resolve.isPending}
                 onClick={() => resolve.mutate("failed")}
               >
-                Confirm not sent
+                {t("ui2g3.emailTask.confirmNotSent")}
               </Button>
             </div>
             {resolve.error && (

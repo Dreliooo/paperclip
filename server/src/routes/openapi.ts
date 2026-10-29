@@ -1,5 +1,5 @@
 import { createGrokInvitationSchema, configureGrokRoutineSchema, verifyGrokRoutineSchema, recoverGrokRoutineSchema, pairGrokBindingSchema, stopGrokWorkSchema, retryGrokDeliverySchema } from "@paperclipai/shared";
-import { updateFastResponseSchema } from "@paperclipai/shared";
+import { updateFastResponseSchema, updateUserPreferencesSchema } from "@paperclipai/shared";
 import { slackTestMessageSchema, slackTestMessageResultSchema, slackManagerAuthorizationSchema, slackSetupOptionsSchema, slackManagedProvisionSchema, slackManagedResultSchema, slackRegistrationSchema, slackSetupActionSchema, slackInstallAuthorizationSchema, slackRegistrationStateSchema, slackAppConfigurationSchema, slackAvatarStateSchema, slackAccountStateSchema } from "@paperclipai/shared";
 import { experimentalApiMetadata } from "./experimental-api-metadata.js";
 import {
@@ -195,6 +195,10 @@ import {
   evaluateSkillPolicySchema,
   replaceSkillPolicySchema,
   updateInboxAgentPolicySchema,
+  // Issue objectives
+  createIssueObjectiveSchema,
+  issueObjectiveActionSchema,
+  updateIssueObjectiveSchema,
   // Issue tree
   createIssueTreeHoldSchema,
   previewIssueTreeControlSchema,
@@ -4951,6 +4955,17 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/api/companies/{companyId}/projects/mine",
+  tags: ["projects"],
+  summary: "List the signed-in person's projects and why each is theirs",
+  description:
+    "Board users only. Returns project ids with reasons (created, requested, shared, tasks, following, personal). Every project passes the normal project read check; a project the person left is excluded.",
+  request: { params: z.object({ companyId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({
   method: "post",
   path: "/api/companies/{companyId}/projects",
   tags: ["projects"],
@@ -5736,6 +5751,33 @@ for (const segment of costSummaryPaths) {
     responses: { 200: r.ok(), 401: r.unauthorized },
   });
 }
+
+registry.registerPath({ method: "get", path: "/api/companies/{companyId}/costs/usage-breakdown", tags: ["costs"],
+  summary: "Tokens, reported spend and API-equivalent cost by model, agent or person",
+  description: "Requires company cost-read access. Aggregate figures only; no task or project names are returned. API-equivalent cost is a theoretical estimate from dated public rate cards, reported separately from provider spend; models without a rate card are reported as unpriced, never as zero.",
+  request: {
+    params: z.object({ companyId: z.string() }),
+    query: costReportQuerySchema.extend({
+      groupBy: z.enum(["model", "agent", "user"]).optional().describe("Defaults to model."),
+      provider: z.string().trim().min(1).max(120).optional().describe("Only usage reported by this provider."),
+    }),
+  },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({ method: "get", path: "/api/companies/{companyId}/agents/{agentId}/cache-reuse", tags: ["costs"],
+  summary: "Prompt-cache reuse for an agent's latest runs",
+  description: "Requires company cost-read access. Reads recorded token counters only; never calls a provider.",
+  request: { params: z.object({ companyId: z.string(), agentId: z.string().uuid() }) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({ method: "get", path: "/api/issues/{id}/cache-reuse", tags: ["costs"],
+  summary: "Prompt-cache reuse for a task's runs",
+  description: "Requires read access to the task and company cost-read access. Unreadable tasks answer 404. Reads recorded token counters only; never calls a provider.",
+  request: { params: z.object({ id: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden, 404: r.notFound },
+});
 
 registry.registerPath({ method: "post", path: "/api/companies/{companyId}/costs/retry-accounting", tags: ["costs"],
   summary: "Retry recording a run's saved cost data",
@@ -6620,6 +6662,25 @@ registry.registerPath({
   summary: "Update current user sidebar preferences",
   request: { body: jsonBody(upsertSidebarOrderPreferenceSchema) },
   responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/user-preferences/me",
+  tags: ["user-preferences"],
+  summary: "Get the signed-in person's display preferences",
+  description: "Board users only. Returns interface language and usage display mode (tokens, costs or both); unsaved values use the defaults.",
+  responses: { 200: r.ok(), 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/user-preferences/me",
+  tags: ["user-preferences"],
+  summary: "Update the signed-in person's display preferences",
+  description: "Board users only. Keyed by the session user; there is no way to address another user.",
+  request: { body: jsonBody(updateUserPreferencesSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
 });
 
 registry.registerPath({
@@ -8109,6 +8170,46 @@ registry.registerPath({
     body: jsonBody(previewIssueTreeControlSchema),
   },
   responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Get the objective on a task",
+  description: "Returns the task's objective with live progress, spend and token usage of its subtree, or null when the task has no objective. Unreadable tasks answer 404.",
+  request: { params: z.object({ id: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Start an objective on a task",
+  description: "Board users only. Assigns the task to the coordinator agent, posts the objective brief and wakes the coordinator. Optional limits on billed spend, tokens and time pause the subtree when reached. Conversations are rejected; start objectives from a task.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(createIssueObjectiveSchema) },
+  responses: { 201: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict, 422: r.unprocessable },
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/issues/{id}/objective",
+  tags: ["issues"],
+  summary: "Change an objective's text, criteria or limits",
+  description: "Board users only. Raising a reached limit resumes the paused subtree.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(updateIssueObjectiveSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/issues/{id}/objective/actions",
+  tags: ["issues"],
+  summary: "Pause, resume or stop an objective",
+  description: "Board users only. Pause and stop hold the whole subtree; resume releases the hold and wakes the assignees again.",
+  request: { params: z.object({ id: z.string() }), body: jsonBody(issueObjectiveActionSchema) },
+  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden, 404: r.notFound, 409: r.conflict, 422: r.unprocessable },
 });
 
 registry.registerPath({

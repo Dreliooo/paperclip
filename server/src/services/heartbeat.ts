@@ -475,6 +475,7 @@ import {
 } from "../modules/wake-queue/index.js";
 
 import { taskWatchdogService } from "./task-watchdogs.js";
+import { issueObjectiveService } from "./issue-objectives.js";
 
 import {
   evaluateAgentInvokabilityFromDb,
@@ -1492,6 +1493,10 @@ export function heartbeatService(
   }
 
   const taskWatchdogs = taskWatchdogService(db, { enqueueWakeup });
+  const issueObjectives = issueObjectiveService(db, {
+    enqueueWakeup,
+    cancelRun: (runId, reason) => cancelRunInternal(runId, reason),
+  });
   async function getAgentInvokability(
     agent: typeof agents.$inferSelect | null | undefined,
   ) {
@@ -4106,6 +4111,9 @@ export function heartbeatService(
     scanSilentActiveRuns,
 
     reconcileTaskWatchdogs,
+
+    reconcileIssueObjectives: (opts?: { now?: Date; companyId?: string | null }) =>
+      issueObjectives.reconcile(opts),
     reconcileCostAccounting: async () => {
       await decisionModelService(db, { budgetHooks }).recoverInterrupted();
       return createCostAccountingReconciler(db, budgetHooks)();

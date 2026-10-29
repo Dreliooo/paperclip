@@ -1,4 +1,6 @@
-export type FolderKind = "routine" | "skill";
+import type { CreationRequestEvidence } from "./creation-attribution.js";
+
+export type FolderKind = "routine" | "skill" | "project";
 
 export interface Folder {
   id: string;
@@ -12,6 +14,11 @@ export interface Folder {
   depth: number;
   color: string | null;
   position: number;
+  /** Creation attribution; omitted by older servers. Null on historical rows without a record. */
+  createdByUserId?: string | null;
+  createdByAgentId?: string | null;
+  requestedByUserId?: string | null;
+  requestEvidence?: CreationRequestEvidence | null;
   createdAt: Date;
   updatedAt: Date;
 }

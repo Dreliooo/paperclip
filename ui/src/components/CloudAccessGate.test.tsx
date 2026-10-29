@@ -25,6 +25,8 @@ const responses: Record<string, unknown> = {
     sentryDsn: null,
   },
   "/api/cli-auth/me": { isInstanceAdmin: false, companyIds: ["company"] },
+  // Loaded once the board opens, to apply the user's saved language.
+  "/api/user-preferences/me": { locale: null, usageDisplay: null, updatedAt: null },
 };
 const checks = [
   ["/api/health", queryKeys.health],

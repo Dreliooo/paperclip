@@ -89,6 +89,40 @@ describe("TaskChatQueuedMessages", () => {
     expect(container.textContent).not.toContain(message);
   });
 
+  it("explains a recovery wait and points to the actions that release it", () => {
+    const target = document.createElement("div");
+    target.id = "task-chat-recovery-action";
+    target.scrollIntoView = vi.fn();
+    document.body.appendChild(target);
+    render({
+      queue: {
+        ...queue,
+        executionWait: { reason: "execution_recovery", message: "Waiting for execution recovery. Your message is saved." },
+      },
+    });
+    const status = container.querySelector('[role="status"]');
+    expect(status?.textContent).toContain("Your message is saved. It is sent after someone resolves the recovery of the previous run.");
+    const button = Array.from(status?.querySelectorAll("button") ?? []).find((element) => element.textContent === "See what is pending");
+    expect(button).toBeTruthy();
+    flushSync(() => button!.click());
+    expect(target.scrollIntoView).toHaveBeenCalled();
+    target.remove();
+  });
+
+  it("shows mentions by name instead of their link", () => {
+    render({
+      queue: {
+        ...queue,
+        entries: [{
+          ...queue.entries[0]!,
+          comment: { ...queue.entries[0]!.comment, body: "Handoff to the [@Lead Agent](agent://86fbfeeb-0eed-4d4e-b31b-a2c4d5e6f7a8) team" },
+        }],
+      },
+    });
+    expect(container.textContent).toContain("Handoff to the @Lead Agent team");
+    expect(container.textContent).not.toContain("agent://");
+  });
+
   it("renders each queued message once as a compact one-line row", () => {
     render();
     const pane = container.querySelector(

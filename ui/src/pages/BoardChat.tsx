@@ -33,6 +33,7 @@ import {
 import { cn, formatDateTime } from "../lib/utils";
 import type { FeedbackVoteValue } from "@paperclipai/shared";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { t as translate, useTranslation } from "@/i18n";
 
 /**
  * Board Concierge Chat — a chat interface powered by the board-member skill.
@@ -90,11 +91,12 @@ function TypingBubble() {
 export function BoardChat() {
   const { selectedCompanyId, selectedCompany } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Conference Room" }]);
-  }, [setBreadcrumbs]);
+    setBreadcrumbs([{ label: t("ui2g4.boardChat.conferenceRoom") }]);
+  }, [setBreadcrumbs, t]);
 
   const splitContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -542,7 +544,7 @@ export function BoardChat() {
       setInput("");
       setStreamingText("");
       setErrorText("");
-      setStatusText("Connecting...");
+      setStatusText(translate("ui2g4.boardChat.connecting"));
 
       try {
         const controller = new AbortController();
@@ -563,7 +565,7 @@ export function BoardChat() {
           throw new Error("Board chat stream not available");
         }
 
-        setStatusText("Thinking...");
+        setStatusText(translate("ui2g4.boardChat.thinking"));
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -593,7 +595,7 @@ export function BoardChat() {
               } else if (event.type === "error") {
                 setErrorText(
                   event.message ||
-                    "The board assistant couldn't respond. Please try again.",
+                    translate("ui2g4.boardChat.assistantError"),
                 );
                 setStatusText("");
               } else if (event.type === "done") {
@@ -621,7 +623,7 @@ export function BoardChat() {
         console.error("Board chat error:", err);
         setStatusText("");
         setErrorText(
-          "The board assistant is unavailable right now. Please try again in a moment.",
+          translate("ui2g4.boardChat.assistantUnavailable"),
         );
       } finally {
         setSending(false);
@@ -645,9 +647,9 @@ export function BoardChat() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center max-w-sm">
-          <h2 className="text-lg font-semibold">No organization selected</h2>
+          <h2 className="text-lg font-semibold">{t("ui2g4.boardChat.noOrganization")}</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            Select an organization to start chatting with your board concierge.
+            {t("ui2g4.boardChat.selectOrganization")}
           </p>
         </div>
       </div>
@@ -676,10 +678,10 @@ export function BoardChat() {
             />
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-semibold">
-                {ceoAgent?.name ?? "Conference Room"}
+                {ceoAgent?.name ?? t("ui2g4.boardChat.conferenceRoom")}
               </h3>
               <p className="text-xs text-muted-foreground">
-                {selectedCompany?.name ?? "Your organization"}
+                {selectedCompany?.name ?? t("ui2g4.boardChat.yourOrganization")}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-0.5">
@@ -690,12 +692,12 @@ export function BoardChat() {
                     variant="ghost"
                     size="icon-sm"
                     className="text-muted-foreground"
-                    aria-label="chat history"
+                    aria-label={t("ui2g4.boardChat.chatHistory")}
                   >
                     <History className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">chat history</TooltipContent>
+                <TooltipContent side="bottom">{t("ui2g4.boardChat.chatHistory")}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -704,12 +706,12 @@ export function BoardChat() {
                     variant="ghost"
                     size="icon-sm"
                     className="text-muted-foreground"
-                    aria-label="new chat"
+                    aria-label={t("ui2g4.boardChat.newChat")}
                   >
                     <MessageSquarePlus className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">new chat</TooltipContent>
+                <TooltipContent side="bottom">{t("ui2g4.boardChat.newChat")}</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -730,12 +732,12 @@ export function BoardChat() {
               {welcomeRevealed && ceoAgent && selectedCompany && (() => {
                 const ceoName = ceoAgent.name;
                 const companyName = selectedCompany.name;
-                const missionLine = missionText
-                  ? ` — your mission is "${missionText}".`
-                  : ".";
-                const welcomeBody =
-                  `Welcome to **${companyName}**! I'm ${ceoName}, your team lead. I've read through what you shared in the wizard${missionLine}\n\n` +
-                  `Here are a few things I can help you put on paper right now. Pick one below and I'll draft it for you using everything you told us.`;
+                const welcomeBody = [
+                  missionText
+                    ? t("ui2g4.boardChat.welcomeWithMission", { companyName, ceoName, missionText })
+                    : t("ui2g4.boardChat.welcomeNoMission", { companyName, ceoName }),
+                  t("ui2g4.boardChat.welcomeSecond"),
+                ].join("\n\n");
 
                 const userHasReplied = sortedComments.some(
                   (c) => !c.authorAgentId && c.authorUserId !== "board-concierge",
@@ -743,19 +745,19 @@ export function BoardChat() {
 
                 const chips: Array<{ label: string; prompt: string }> = [
                   {
-                    label: "Draft an Organization Brief",
+                    label: t("ui2g4.boardChat.chipBrief"),
                     prompt: `Draft a one-page Organization Brief for ${companyName} — include our mission, team roster, and first priorities.`,
                   },
                   {
-                    label: "Create a hiring plan",
+                    label: t("ui2g4.boardChat.chipHiringPlan"),
                     prompt: `Create a hiring plan for ${companyName}. List the next roles to hire, in priority order, with a short rationale for each.`,
                   },
                   {
-                    label: "Outline our first 30 days",
+                    label: t("ui2g4.boardChat.chipFirstDays"),
                     prompt: `Outline our first 30 days. Break it into weekly priorities with who owns what.`,
                   },
                   {
-                    label: "Write an intro pitch",
+                    label: t("ui2g4.boardChat.chipIntroPitch"),
                     prompt: `Write a short intro pitch for ${companyName} that I could reuse for investors, customers, or recruits.`,
                   },
                 ];
@@ -816,7 +818,7 @@ export function BoardChat() {
                 const agent = comment.authorAgentId
                   ? agentMap.get(comment.authorAgentId) ?? null
                   : ceoAgent ?? null;
-                const agentName = agent?.name ?? "Assistant";
+                const agentName = agent?.name ?? t("ui2g4.boardChat.assistant");
                 const agentIconValue = agent?.icon ?? null;
                 return (
                   <div key={comment.id} className="flex flex-col items-start">
@@ -833,6 +835,7 @@ export function BoardChat() {
                     </div>
                     <AgentBubbleActionRow
                       copyText={comment.body ?? ""}
+                      speakId={comment.id}
                       dateLabel={agentBubbleDateLabel(comment.createdAt)}
                       dateTitle={formatDateTime(comment.createdAt)}
                       anchorHref={`#comment-${comment.id}`}
@@ -928,7 +931,7 @@ export function BoardChat() {
             <button
               type="button"
               onClick={() => scrollToLatest("smooth")}
-              aria-label="Jump to latest messages"
+              aria-label={t("ui2g4.boardChat.jumpToLatest")}
               // design-allow(card-pattern): floating scroll-to-bottom <button>, not a content card (C5a Run 3)
               className="absolute bottom-24 left-1/2 z-20 grid h-8 w-8 -translate-x-1/2 place-items-center rounded-full border border-border bg-card text-foreground shadow-md transition-colors duration-150 hover:bg-accent hover:border-muted-foreground/30"
             >
@@ -954,12 +957,12 @@ export function BoardChat() {
               value={input}
               onChange={setInput}
               onSubmit={handleSend}
-              placeholder="Ask anything about your organization..."
+              placeholder={t("ui2g4.boardChat.composerPlaceholder")}
               submitKey="enter"
               surface="translucent"
               submitting={sending}
               disabled={sending}
-              sendLabel="Send message"
+              sendLabel={t("ui2g4.boardChat.sendMessage")}
               className="pointer-events-auto"
             />
           </div>
@@ -969,7 +972,7 @@ export function BoardChat() {
         <div
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize board chat and agent feed"
+          aria-label={t("ui2g4.boardChat.resizeAria")}
           className="group relative hidden w-3 shrink-0 cursor-col-resize bg-background md:flex"
           onMouseDown={handleSplitDragStart}
         >
@@ -994,7 +997,7 @@ export function BoardChat() {
               size="icon"
               variant="secondary"
               className="fixed bottom-20 right-4 z-20 h-10 w-10 rounded-full shadow-lg"
-              aria-label="Open agent feed"
+              aria-label={t("ui2g4.boardChat.openFeed")}
             >
               <Activity className="h-4 w-4" />
             </Button>

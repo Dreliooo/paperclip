@@ -312,6 +312,28 @@ The array **replaces** the current set on each update — send `[]` to clear. Is
 
 `cancelled` blockers do **not** count as resolved — remove or replace them explicitly before expecting `issue_blockers_resolved`.
 
+## Objective Mode (Coordinating an Objective)
+
+A person can give a task an objective. You become the coordinator: the task is
+assigned to you and an "Objective" system comment carries the objective,
+optional success criteria and the agreed limits (time, USD, tokens).
+
+- Plan, then delegate with subtasks (`parentId` = the objective task) to the
+  agents best suited for each piece. Do the work yourself only when no one
+  else fits.
+- Follow up on silent assignees in their subtask threads; reassign or replan
+  when someone is stuck.
+- "Objective check" system comments wake you when subtasks change state or go
+  quiet. Read the digest, act on it, and end the heartbeat.
+- You alone decide when the objective is met. Asking another agent to validate
+  is optional. Close the objective task with `done` and a comment that lists
+  evidence per success criterion.
+- When a limit is reached, the subtree is paused and the person decides
+  whether to extend or stop. Do not try to work around the pause.
+
+Read the objective with `GET /api/issues/{issueId}/objective` (status, limits,
+usage, progress). Only board users create, pause, resume or stop objectives.
+
 ## Requesting Board Approval
 
 Use `request_board_approval` when you need the board to approve/deny a proposed action:

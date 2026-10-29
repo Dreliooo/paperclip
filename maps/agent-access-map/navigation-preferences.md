@@ -44,6 +44,8 @@ API: `present` — representative operation IDs:
 
 - `GET /api/sidebar-preferences/me`.
 - `PUT /api/sidebar-preferences/me`.
+- `GET /api/user-preferences/me` / `PATCH /api/user-preferences/me` (UI language,
+  usage display: tokens / costs / both).
 
 Agent access: `restricted` — Board-user preference API; browser section collapse.
 

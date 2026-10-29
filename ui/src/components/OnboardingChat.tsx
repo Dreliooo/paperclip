@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MarkdownBody } from "./MarkdownBody";
 import { cn } from "../lib/utils";
 import { Loader2, Send, CheckCircle2, ArrowRight } from "lucide-react";
+import { t as translate, useTranslation } from "@/i18n";
 
 interface OnboardingChatProps {
   taskId: string;
@@ -33,31 +34,32 @@ function detectHiringPlan(body: string): boolean {
   return planPatterns.some((pattern) => pattern.test(body));
 }
 
+// Translation keys; resolved at render time so the UI language can change.
 const QUEUED_MESSAGES = [
-  "Heartbeat triggered, waking up...",
-  "Initializing...",
-  "Getting ready...",
+  "ui2g4.onboardingChat.queued1",
+  "ui2g4.onboardingChat.queued2",
+  "ui2g4.onboardingChat.queued3",
 ];
 
 const RUNNING_MESSAGES = [
-  "Working on a response...",
-  "Reading the conversation...",
-  "Thinking through the plan...",
-  "Drafting a response...",
-  "Still working...",
-  "Almost there...",
+  "ui2g4.onboardingChat.running1",
+  "ui2g4.onboardingChat.running2",
+  "ui2g4.onboardingChat.running3",
+  "ui2g4.onboardingChat.running4",
+  "ui2g4.onboardingChat.running5",
+  "ui2g4.onboardingChat.running6",
 ];
 
 const WAITING_MESSAGES = [
-  "Waiting to wake up...",
-  "Heartbeat pending...",
-  "Should wake up soon...",
+  "ui2g4.onboardingChat.waiting1",
+  "ui2g4.onboardingChat.waiting2",
+  "ui2g4.onboardingChat.waiting3",
 ];
 
-function getCyclingMessage(messages: string[], elapsed: number, agentName: string): string {
+function getCyclingMessage(messageKeys: string[], elapsed: number, agentName: string): string {
   // Cycle through messages every 5 seconds
-  const idx = Math.floor(elapsed / 5) % messages.length;
-  return `${agentName} · ${messages[idx]}`;
+  const idx = Math.floor(elapsed / 5) % messageKeys.length;
+  return translate("ui2g4.onboardingChat.cycling", { agentName, message: translate(messageKeys[idx]) });
 }
 
 function getRunStatusMessage(status: string, agentName: string, elapsed: number): string {
@@ -67,15 +69,15 @@ function getRunStatusMessage(status: string, agentName: string, elapsed: number)
     case "running":
       return getCyclingMessage(RUNNING_MESSAGES, elapsed, agentName);
     case "succeeded":
-      return `${agentName} finished`;
+      return translate("ui2g4.onboardingChat.finished", { agentName });
     case "failed":
-      return `${agentName} encountered an error`;
+      return translate("ui2g4.onboardingChat.failed", { agentName });
     case "cancelled":
-      return `${agentName}'s run was cancelled`;
+      return translate("ui2g4.onboardingChat.cancelled", { agentName });
     case "timed_out":
-      return `${agentName}'s run timed out`;
+      return translate("ui2g4.onboardingChat.timedOut", { agentName });
     default:
-      return `${agentName} is thinking...`;
+      return translate("ui2g4.onboardingChat.thinking", { agentName });
   }
 }
 
@@ -88,6 +90,7 @@ export function OnboardingChat({
   onPlanDetected,
   onReviewPlan,
 }: OnboardingChatProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -249,7 +252,7 @@ export function OnboardingChat({
     return (
       <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-        Loading conversation...
+        {t("ui2g4.onboardingChat.loading")}
       </div>
     );
   }
@@ -296,12 +299,12 @@ export function OnboardingChat({
                       : "text-foreground/70",
                   )}
                 >
-                  {isAgent ? agentName : "You"}
+                  {isAgent ? agentName : t("ui2g4.onboardingChat.you")}
                 </span>
                 {isPlan && (
                   <span className="inline-flex items-center gap-0.5 text-(length:--text-nano) text-green-600 dark:text-green-400 font-medium">
                     <CheckCircle2 className="h-3 w-3" />
-                    Hiring plan detected
+                    {t("ui2g4.onboardingChat.planDetected")}
                   </span>
                 )}
               </div>
@@ -350,15 +353,15 @@ export function OnboardingChat({
               <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
               <div>
                 <p className="text-sm font-medium">
-                  {agentName} has prepared a hiring plan
+                  {t("ui2g4.onboardingChat.planPrepared", { agentName })}
                 </p>
                 <p className="text-(length:--text-micro) text-muted-foreground">
-                  Review it, make edits, then approve.
+                  {t("ui2g4.onboardingChat.reviewIt")}
                 </p>
               </div>
             </div>
             <Button size="sm" onClick={onReviewPlan}>
-              Review plan
+              {t("ui2g4.onboardingChat.reviewPlan")}
               <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
@@ -371,7 +374,9 @@ export function OnboardingChat({
           ref={inputRef}
           type="text"
           className="flex-1 rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
-          placeholder={detectedPlanCommentId ? `Ask ${agentName} to revise the plan...` : `Message ${agentName}...`}
+          placeholder={detectedPlanCommentId
+            ? t("ui2g4.onboardingChat.askRevise", { agentName })
+            : t("ui2g4.onboardingChat.messageAgent", { agentName })}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -409,6 +414,7 @@ function WelcomeMessage({
   onDiscuss: () => void;
   onStart: () => void;
 }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<"waking" | "composing" | "message" | "chips">("waking");
 
   useEffect(() => {
@@ -432,13 +438,13 @@ function WelcomeMessage({
             </span>
           </div>
           <p>
-            Hi! Thanks for bringing me on to lead <strong>{companyName}</strong>.
+            {t("ui2g4.onboardingChat.welcomeIntro")} <strong>{companyName}</strong>{t("ui2g4.onboardingChat.welcomeIntroEnd")}
           </p>
           <p className="mt-1">
-            Our mission is: <em>{companyGoal}</em>
+            {t("ui2g4.onboardingChat.welcomeMission")} <em>{companyGoal}</em>
           </p>
           <p className="mt-1">
-            I'm ready to put together a plan for who we should bring on. Want me to get started?
+            {t("ui2g4.onboardingChat.welcomeReady")}
           </p>
         </div>
       )}
@@ -450,13 +456,13 @@ function WelcomeMessage({
             className="rounded-full border border-border px-3 py-1 text-xs hover:bg-accent/50 transition-colors text-muted-foreground hover:text-foreground"
             onClick={onDiscuss}
           >
-            Let's discuss first
+            {t("ui2g4.onboardingChat.discussFirst")}
           </button>
           <button
             className="rounded-full border border-foreground bg-foreground text-background px-3 py-1 text-xs hover:opacity-90 transition-opacity"
             onClick={onStart}
           >
-            Yes, get started!
+            {t("ui2g4.onboardingChat.startNow")}
           </button>
         </div>
       )}
@@ -472,8 +478,8 @@ function WelcomeMessage({
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
           </span>
           {phase === "waking"
-            ? `${agentName} is waking up...`
-            : `${agentName} is composing a message...`}
+            ? t("ui2g4.onboardingChat.wakingUp", { agentName })
+            : t("ui2g4.onboardingChat.composing", { agentName })}
         </div>
       )}
     </>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/issue-blockers";
 import { Link } from "@/lib/router";
 import { useStreamlinedTaskChatPresentation } from "./presentation-mode";
+import { useTranslation } from "@/i18n";
 
 function isUnresolved(blocker: IssueRelationIssueSummary): boolean {
   return blocker.status !== "done" && blocker.status !== "cancelled";
@@ -130,7 +131,8 @@ function BlockerRow({
 }
 
 function LiveWorkGlyph({ status }: { status: WaitingBlockerStatus }) {
-  const label = status === "done" ? "Done" : status === "running" ? "Running" : "Waiting";
+  const { t } = useTranslation();
+  const label = status === "done" ? t("ui2g6.taskChatBlockerLinks.done") : status === "running" ? t("ui2g6.taskChatBlockerLinks.running") : t("ui2g6.taskChatBlockerLinks.waiting");
   if (status === "done") {
     return (
       <CheckCircle2
@@ -193,13 +195,14 @@ export function TaskChatBlockerLinks({
   placement: "top" | "bottom";
 }) {
   const streamlined = useStreamlinedTaskChatPresentation();
-  const directLabel = streamlined && placement === "bottom" ? "Still blocked by" : "Blocked by";
+  const { t } = useTranslation();
+  const directLabel = streamlined && placement === "bottom" ? t("ui2g6.taskChatBlockerLinks.stillBlockedBy") : t("ui2g6.taskChatBlockerLinks.blockedBy");
   const rootLabel = streamlined
-    ? placement === "bottom" ? "Root blocker remains" : "Root blocker"
-    : "Ultimately blocked by";
+    ? placement === "bottom" ? t("ui2g6.taskChatBlockerLinks.rootRemains") : t("ui2g6.taskChatBlockerLinks.rootBlocker")
+    : t("ui2g6.taskChatBlockerLinks.ultimatelyBlockedBy");
   return (
     <div
-      aria-label="Task blockers"
+      aria-label={t("ui2g6.taskChatBlockerLinks.taskBlockers")}
       data-placement={placement}
       data-testid="task-chat-blocker-links"
       className="flex min-w-0 flex-col gap-1 overflow-hidden text-(length:--text-micro) leading-4 text-amber-700 dark:text-amber-300"
@@ -219,11 +222,12 @@ export function TaskChatLiveWorkLinks({
   liveWork: ResolvedTaskChatLiveWork;
   placement: "top" | "bottom";
 }) {
+  const { t } = useTranslation();
   const streamlined = useStreamlinedTaskChatPresentation();
-  const heading = streamlined && placement === "bottom" ? "Still waiting on live work" : "Waiting on live work";
+  const heading = streamlined && placement === "bottom" ? t("ui2g6.taskChatBlockerLinks.stillWaitingLiveWork") : t("ui2g6.taskChatBlockerLinks.waitingLiveWork");
   return (
     <div
-      aria-label="Tasks waiting on live work"
+      aria-label={t("ui2g6.taskChatBlockerLinks.tasksWaitingLiveWork")}
       data-placement={placement}
       data-testid="task-chat-live-work-links"
       className="flex min-w-0 flex-col gap-1.5 overflow-hidden text-(length:--text-micro) leading-4 text-blue-700 dark:text-blue-300"
@@ -254,10 +258,10 @@ export function TaskChatLiveWorkLinks({
         ))}
       </ol>
       {liveWork.nowRunning.map((blocker) => streamlined ? (
-        <LiveWorkLink key={blocker.id} blocker={blocker} status="running" label="Now running" />
+        <LiveWorkLink key={blocker.id} blocker={blocker} status="running" label={t("ui2g6.taskChatBlockerLinks.nowRunning")} />
       ) : (
         <div key={blocker.id} className="flex min-w-0 items-center gap-1.5 whitespace-nowrap">
-          <span className="shrink-0 font-medium">Now running</span>
+          <span className="shrink-0 font-medium">{t("ui2g6.taskChatBlockerLinks.nowRunning")}</span>
           <LiveWorkLink blocker={blocker} status="running" />
         </div>
       ))}

@@ -56,6 +56,8 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useCopyAction } from "@/lib/use-copy-action";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 
 type TraceEntry = Record<string, unknown>;
 type InspectorView = "overview" | "pipeline" | "trace";
@@ -85,12 +87,12 @@ type TraceOperation = {
 
 const VIEW_OPTIONS: Array<{
   value: InspectorView;
-  label: string;
+  labelKey: string;
   icon: typeof Layers3;
 }> = [
-  { value: "overview", label: "Overview", icon: Layers3 },
-  { value: "pipeline", label: "Pipeline", icon: ArrowRight },
-  { value: "trace", label: "Exact trace", icon: FileJson2 },
+  { value: "overview", labelKey: "ui3g1.RunnerInspector.overview", icon: Layers3 },
+  { value: "pipeline", labelKey: "ui3g1.RunnerInspector.pipeline", icon: ArrowRight },
+  { value: "trace", labelKey: "ui3g1.RunnerInspector.exactTrace", icon: FileJson2 },
 ];
 
 const RAW_TRACE_ACCESS_REVALIDATION_MS = 1_000;
@@ -150,16 +152,16 @@ function statusVariant(status: string | undefined) {
   return "outline" as const;
 }
 
-function traceBadgeLabel(status: string, expiresAt: string | Date) {
-  if (status === "capturing") return "Raw trace enabled";
-  if (status === "incomplete") return "Incomplete";
-  if (status === "truncated") return "Truncated";
-  if (status === "deleted") return "Deleted";
-  if (status === "expired") return "Expired";
+function traceBadgeLabel(status: string, expiresAt: string | Date, translate: TFunction) {
+  if (status === "capturing") return translate("ui3g1.RunnerInspector.rawTraceEnabled");
+  if (status === "incomplete") return translate("ui3g1.RunnerInspector.incomplete");
+  if (status === "truncated") return translate("ui3g1.RunnerInspector.truncated");
+  if (status === "deleted") return translate("ui3g1.RunnerInspector.deleted");
+  if (status === "expired") return translate("ui3g1.RunnerInspector.expired");
   const remainingMs = new Date(expiresAt).getTime() - Date.now();
-  if (!Number.isFinite(remainingMs) || remainingMs <= 0) return "Expired";
+  if (!Number.isFinite(remainingMs) || remainingMs <= 0) return translate("ui3g1.RunnerInspector.expired");
   const hours = Math.max(1, Math.ceil(remainingMs / (60 * 60 * 1_000)));
-  return `Expires in ${hours}h`;
+  return translate("ui3g1.RunnerInspector.expiresIn", { hours });
 }
 
 function frameParsed(entry: TraceEntry) {
@@ -214,20 +216,21 @@ function visibilityDecision(event: HeartbeatRunEvent) {
     return {
       visible: false,
       surface: "run_debug",
-      container: "Runner Inspector",
+      containerKey: "ui3g1.RunnerInspector.runnerInspector",
       state: "hidden",
       action: "none",
       reasonCode: "presentation_surface_unregistered",
       reason: "No production surface registration exists for this event type.",
+      reasonKey: "ui3g1.RunnerInspector.noSurfaceRegistration",
     };
   }
   return {
     visible: registration.disposition !== "debug-only",
     surface: registration.surface,
-    container:
+    containerKey:
       registration.disposition === "inline"
-        ? "primary run turn"
-        : "collapsed activity",
+        ? "ui3g1.RunnerInspector.primaryRunTurn"
+        : "ui3g1.RunnerInspector.collapsedActivity",
     state: registration.disposition,
     action:
       registration.disposition === "inline"
@@ -271,6 +274,7 @@ function buildOperations(
   frames: TraceEntry[],
   interpretations: TraceEntry[],
   events: HeartbeatRunEvent[],
+  translate: TFunction,
 ): TraceOperation[] {
   const sortedFrames = [...frames].sort(
     (left, right) => Number(left.frameId) - Number(right.frameId),
@@ -315,19 +319,19 @@ function buildOperations(
     groupEvents.forEach((event) => claimedEvents.add(event.id));
     const methods = unique(groupFrames.map(frameMethod));
     const itemTypes = unique(groupFrames.map(frameItemType));
-    const title = itemTypes.at(-1) || methods.at(-1) || text(groupFrames[0]?.direction) || "Provider frame";
+    const title = itemTypes.at(-1) || methods.at(-1) || text(groupFrames[0]?.direction) || translate("ui3g1.RunnerInspector.providerFrame");
     const firstFrame = groupFrames[0];
     const lastFrame = groupFrames.at(-1);
     const range = firstFrame === lastFrame
-      ? `frame ${firstFrame?.frameId}`
-      : `frames ${firstFrame?.frameId}–${lastFrame?.frameId}`;
+      ? translate("ui3g1.RunnerInspector.frameRange", { id: String(firstFrame?.frameId) })
+      : translate("ui3g1.RunnerInspector.framesRange", { start: String(firstFrame?.frameId), end: String(lastFrame?.frameId) });
     operations.push({
       key: `frames:${firstFrame?.frameId}`,
       frames: groupFrames,
       interpretations: stages,
       events: groupEvents,
       title,
-      subtitle: `${range} · ${groupEvents.length} PRP event${groupEvents.length === 1 ? "" : "s"}`,
+      subtitle: translate("ui3g1.RunnerInspector.operationSubtitle", { range, count: groupEvents.length }),
       itemType: itemTypes.at(-1) ?? "",
       nativeMethods: methods,
       directions: unique(groupFrames.map((frame) => text(frame.direction))),
@@ -346,7 +350,9 @@ function buildOperations(
       interpretations: [],
       events: [event],
       title: event.eventType,
-      subtitle: `PRP ${eventSourceId(event) || `event ${event.seq}`} · no raw correlation`,
+      subtitle: translate("ui3g1.RunnerInspector.eventSubtitle", {
+        source: eventSourceId(event) || translate("ui3g1.RunnerInspector.eventSeq", { seq: event.seq }),
+      }),
       itemType: "",
       nativeMethods: [],
       directions: [],
@@ -415,6 +421,7 @@ function JsonNode({
         key.toLowerCase().includes(query.toLowerCase()) || jsonMatches(child, query),
       )
     : entries;
+  const { t } = useTranslation();
   const pathCopy = useCopyAction();
   const valueCopy = useCopyAction();
   const copyValue = () => {
@@ -429,7 +436,7 @@ function JsonNode({
             type="button"
             className="mt-1 rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={() => setExpanded(!isOpen)}
-            aria-label={isOpen ? "Collapse JSON value" : "Expand JSON value"}
+            aria-label={isOpen ? t("ui3g1.RunnerInspector.collapseJsonValue") : t("ui3g1.RunnerInspector.expandJsonValue")}
           >
             {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
           </button>
@@ -447,7 +454,7 @@ function JsonNode({
         <span className="ml-auto hidden items-center gap-0.5 group-hover:flex">
           <button
             type="button"
-            title={pathCopy.copied ? "JSON path copied" : pathCopy.failed ? "Copy failed" : "Copy JSON path"}
+            title={pathCopy.copied ? t("ui3g1.RunnerInspector.jsonPathCopied") : pathCopy.failed ? t("ui3g1.RunnerInspector.copyFailed") : t("ui3g1.RunnerInspector.copyJsonPath")}
             className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={() => void pathCopy.copy(path)}
           >
@@ -455,7 +462,7 @@ function JsonNode({
           </button>
           <button
             type="button"
-            title={valueCopy.copied ? "Value copied" : valueCopy.failed ? "Copy failed" : "Copy value"}
+            title={valueCopy.copied ? t("ui3g1.RunnerInspector.valueCopied") : valueCopy.failed ? t("ui3g1.RunnerInspector.copyFailed") : t("ui3g1.RunnerInspector.copyValue")}
             className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={copyValue}
           >
@@ -476,7 +483,7 @@ function JsonNode({
             />
           ))}
           {query && visibleEntries.length === 0 ? (
-            <p className="pl-5 text-xs text-muted-foreground">No fields match.</p>
+            <p className="pl-5 text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.noFieldsMatch")}</p>
           ) : null}
         </div>
       ) : null}
@@ -484,7 +491,8 @@ function JsonNode({
   );
 }
 
-function JsonExplorer({ value, label = "Search this JSON" }: { value: unknown; label?: string }) {
+function JsonExplorer({ value, label }: { value: unknown; label?: string }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   return (
     <div className="overflow-hidden rounded-md border border-border bg-muted/20">
@@ -493,7 +501,7 @@ function JsonExplorer({ value, label = "Search this JSON" }: { value: unknown; l
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder={label}
+          placeholder={label ?? t("ui3g1.RunnerInspector.searchThisJson")}
           className="h-8 border-0 bg-transparent pl-8 text-xs shadow-none focus-visible:ring-0"
         />
       </div>
@@ -504,7 +512,7 @@ function JsonExplorer({ value, label = "Search this JSON" }: { value: unknown; l
   );
 }
 
-function fieldMappings(entry: TraceEntry): ProviderTraceFieldMapping[] {
+function fieldMappings(entry: TraceEntry, translate: TFunction): ProviderTraceFieldMapping[] {
   const explicit = Array.isArray(entry.fieldMappings)
     ? entry.fieldMappings
         .map(record)
@@ -524,7 +532,7 @@ function fieldMappings(entry: TraceEntry): ProviderTraceFieldMapping[] {
         .map((path) => ({
           inputPath: path,
           action: "dropped" as const,
-          reason: text(entry.reason) || "Field was not carried into the next stage",
+          reason: text(entry.reason) || translate("ui3g1.RunnerInspector.fieldNotCarried"),
         }))
     : [];
   return [...explicit, ...legacy];
@@ -537,7 +545,8 @@ function mappingTone(action: ProviderTraceFieldMapping["action"]) {
 }
 
 function InterpretationStage({ entry, last }: { entry: TraceEntry; last: boolean }) {
-  const mappings = fieldMappings(entry);
+  const { t } = useTranslation();
+  const mappings = fieldMappings(entry, t);
   return (
     <div className="relative grid grid-cols-(--gtc-runner-inspector-stage) gap-3">
       <div className="relative flex justify-center">
@@ -559,10 +568,10 @@ function InterpretationStage({ entry, last }: { entry: TraceEntry; last: boolean
             <table className="w-full min-w-(--sz-36rem) text-left text-xs">
               <thead className="bg-muted/30 text-muted-foreground">
                 <tr>
-                  <th className="px-3 py-1.5 font-medium">Action</th>
-                  <th className="px-3 py-1.5 font-medium">Provider path</th>
-                  <th className="px-3 py-1.5 font-medium">Output path</th>
-                  <th className="px-3 py-1.5 font-medium">Reason</th>
+                  <th className="px-3 py-1.5 font-medium">{t("ui3g1.RunnerInspector.action")}</th>
+                  <th className="px-3 py-1.5 font-medium">{t("ui3g1.RunnerInspector.providerPath")}</th>
+                  <th className="px-3 py-1.5 font-medium">{t("ui3g1.RunnerInspector.outputPath")}</th>
+                  <th className="px-3 py-1.5 font-medium">{t("ui3g1.RunnerInspector.reason")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -580,28 +589,29 @@ function InterpretationStage({ entry, last }: { entry: TraceEntry; last: boolean
             </table>
           </div>
         ) : (
-          <p className="border-t border-border/70 px-3 py-2 text-(length:--text-nano) text-muted-foreground">No field-level mapping was recorded at this stage.</p>
+          <p className="border-t border-border/70 px-3 py-2 text-(length:--text-nano) text-muted-foreground">{t("ui3g1.RunnerInspector.noFieldMapping")}</p>
         )}
       </div>
     </div>
   );
 }
 
-function typedPrpFields(event: HeartbeatRunEvent) {
+function typedPrpFields(event: HeartbeatRunEvent, translate: TFunction) {
   const prp = eventPrp(event);
   const payload = record(prp.payload);
   const item = record(payload.item);
   return [
-    ["Event type", event.eventType],
-    ["Source event", text(prp.sourceEventId)],
-    ["Sequence", scalar(prp.sourceSequence) || String(event.seq)],
-    ["Item type", text(item.type) || text(payload.kind)],
-    ["Status", text(payload.status) || text(item.status)],
-    ["Query", text(payload.query) || text(item.query)],
+    [translate("ui3g1.RunnerInspector.eventType"), event.eventType],
+    [translate("ui3g1.RunnerInspector.sourceEvent"), text(prp.sourceEventId)],
+    [translate("ui3g1.RunnerInspector.sequence"), scalar(prp.sourceSequence) || String(event.seq)],
+    [translate("ui3g1.RunnerInspector.itemType"), text(item.type) || text(payload.kind)],
+    [translate("ui3g1.RunnerInspector.status"), text(payload.status) || text(item.status)],
+    [translate("ui3g1.RunnerInspector.query"), text(payload.query) || text(item.query)],
   ].filter(([, value]) => Boolean(value));
 }
 
 function ProductionSurfacePreview({ event, runId }: { event: HeartbeatRunEvent; runId: string }) {
+  const { t } = useTranslation();
   const prp = eventPrp(event);
   const ts = new Date(event.createdAt).toISOString();
   const entries = parsePaperclipRunnerStdoutLine(
@@ -623,7 +633,7 @@ function ProductionSurfacePreview({ event, runId }: { event: HeartbeatRunEvent; 
         <div className="min-w-0">
           <p className="text-sm font-medium">{event.eventType}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Production surface: {decision.surface} · {decision.action} in {decision.container}
+            {t("ui3g1.RunnerInspector.productionSurface", { surface: decision.surface, action: decision.action, container: t(decision.containerKey) })}
           </p>
         </div>
       </div>
@@ -654,6 +664,7 @@ export function RunnerInspector({
   onOpenChange: (open: boolean) => void;
   onRerunWithTrace?: () => void;
 }) {
+  const { t } = useTranslation();
   const [inspection, setInspection] = useState<ProviderTraceInspection | null>(null);
   const [events, setEvents] = useState<HeartbeatRunEvent[]>([]);
   const [loading, setLoading] = useState(false);
@@ -757,7 +768,7 @@ export function RunnerInspector({
       })
       .catch((cause) => {
         if (!active || rawTraceAccessEpochRef.current !== loadEpoch) return;
-        setError(cause instanceof Error ? cause.message : "Runner inspection failed");
+        setError(cause instanceof Error ? cause.message : t("ui3g1.RunnerInspector.inspectionFailed"));
       })
       .finally(() => {
         if (active && rawTraceAccessEpochRef.current === loadEpoch) {
@@ -807,8 +818,8 @@ export function RunnerInspector({
   const interpretations = useMemo(() => entries.filter((entry) => entry.kind === "interpretation"), [entries]);
   const capturedProviders = unique(frames.map((frame) => text(frame.provider)));
   const operations = useMemo(
-    () => buildOperations(frames, interpretations, events),
-    [events, frames, interpretations],
+    () => buildOperations(frames, interpretations, events, t),
+    [events, frames, interpretations, t],
   );
   const filteredOperations = useMemo(
     () => operations.filter((operation) => {
@@ -896,7 +907,7 @@ export function RunnerInspector({
     if (requestedAccess?.runId !== runId || requestedAccess.allowed !== true) {
       return;
     }
-    if (!window.confirm("This exact provider frame may contain prompts, tool arguments, secrets, or reasoning. Reveal it now?")) return;
+    if (!window.confirm(t("ui3g1.RunnerInspector.confirmReveal"))) return;
     const requestedRunId = runId;
     const frame = await heartbeatsApi.revealProviderTraceFrame(
       requestedRunId,
@@ -922,7 +933,7 @@ export function RunnerInspector({
     if (requestedAccess?.runId !== runId || requestedAccess.allowed !== true) {
       return;
     }
-    if (!window.confirm("Download the exact raw trace? It may contain sensitive prompts, tool arguments, and provider-only fields.")) return;
+    if (!window.confirm(t("ui3g1.RunnerInspector.confirmDownload"))) return;
     const blob = await heartbeatsApi.downloadProviderTrace(runId);
     const currentAccess = rawTraceAccessRef.current;
     if (
@@ -941,7 +952,7 @@ export function RunnerInspector({
     if (currentAccess?.runId !== runId || currentAccess.allowed !== true) {
       return;
     }
-    if (!window.confirm("Delete this raw trace immediately? This cannot be undone.")) return;
+    if (!window.confirm(t("ui3g1.RunnerInspector.confirmDelete"))) return;
     rawTraceAccessEpochRef.current += 1;
     const deletionAccess: RawTraceAccess = {
       ...currentAccess,
@@ -957,7 +968,7 @@ export function RunnerInspector({
     } catch (cause) {
       if (rawTraceAccessRef.current?.epoch === deletionAccess.epoch) {
         setError(
-          cause instanceof Error ? cause.message : "Raw trace deletion failed",
+          cause instanceof Error ? cause.message : t("ui3g1.RunnerInspector.deletionFailed"),
         );
       }
       return;
@@ -1025,11 +1036,11 @@ export function RunnerInspector({
       >
         <SheetHeader className="border-b border-border pr-12">
           <div className="flex flex-wrap items-center gap-2">
-            <SheetTitle>Runner Inspector</SheetTitle>
+            <SheetTitle>{t("ui3g1.RunnerInspector.runnerInspector")}</SheetTitle>
             {inspection?.trace ? (
               <>
                 <Badge variant={statusVariant(inspection.trace.status)}>
-                  {traceBadgeLabel(inspection.trace.status, inspection.trace.expiresAt)}
+                  {traceBadgeLabel(inspection.trace.status, inspection.trace.expiresAt, t)}
                 </Badge>
                 <Badge variant="outline" className="font-mono">
                   {capturedProviders.join(", ") || inspection.trace.provider}
@@ -1038,9 +1049,9 @@ export function RunnerInspector({
             ) : null}
           </div>
           <SheetDescription id="runner-inspector-description">
-            Correlate exact provider traffic with every interpretation stage, canonical PRP event, and production surface.
+            {t("ui3g1.RunnerInspector.description")}
           </SheetDescription>
-          <div className="flex gap-1 pt-1" role="tablist" aria-label="Runner inspector views">
+          <div className="flex gap-1 pt-1" role="tablist" aria-label={t("ui3g1.RunnerInspector.views")}>
             {VIEW_OPTIONS.map((option) => {
               const Icon = option.icon;
               return (
@@ -1055,7 +1066,7 @@ export function RunnerInspector({
                     view === option.value ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  <Icon className="h-4 w-4" /> {option.label}
+                  <Icon className="h-4 w-4" /> {t(option.labelKey)}
                 </button>
               );
             })}
@@ -1066,18 +1077,18 @@ export function RunnerInspector({
           {error ? <div className="m-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{error}</div> : null}
           {!loading && !error && canInspectRaw === false ? (
             <div className="m-4 rounded-md border border-border bg-muted/20 p-4">
-              <p className="font-medium">Raw provider traces require an instance administrator.</p>
-              <p className="mt-1 text-sm text-muted-foreground">Canonical PRP events and presentation decisions remain inspectable below.</p>
+              <p className="font-medium">{t("ui3g1.RunnerInspector.requiresAdmin")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.requiresAdminDetail")}</p>
             </div>
           ) : null}
           {!loading && !error && canInspectRaw === true && !inspection?.trace ? (
             <div className="m-4 flex items-start justify-between gap-4 rounded-md border border-border bg-muted/20 p-4">
               <div>
-                <p className="font-medium">Raw provider capture was off for this run.</p>
-                <p className="mt-1 text-sm text-muted-foreground">Canonical PRP events and persisted presentation decisions remain available below.</p>
+                <p className="font-medium">{t("ui3g1.RunnerInspector.captureOff")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.captureOffDetail")}</p>
               </div>
               {onRerunWithTrace && canInspectRaw === true ? (
-                <Button size="sm" onClick={onRerunWithTrace}><RefreshCw className="mr-1.5 h-4 w-4" />Re-run with provider trace</Button>
+                <Button size="sm" onClick={onRerunWithTrace}><RefreshCw className="mr-1.5 h-4 w-4" />{t("ui3g1.RunnerInspector.rerunWithTrace")}</Button>
               ) : null}
             </div>
           ) : null}
@@ -1085,18 +1096,18 @@ export function RunnerInspector({
           {view === "overview" ? (
             <ScrollArea className="min-h-0 flex-1">
               <div className="space-y-6 p-5">
-                {loading ? <p className="text-sm text-muted-foreground">Loading run pipeline…</p> : null}
+                {loading ? <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.loadingPipeline")}</p> : null}
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                  <StatCard label="Provider" value={capturedProviders.join(", ") || inspection?.trace?.provider || "PRP only"} detail={inspection?.trace ? `captured through ${inspection.trace.provider}` : "capture was off"} />
-                  <StatCard label="Raw frames" value={frames.length} detail={inspection?.trace ? formatBytes(inspection.trace.byteCount) : "no exact bytes"} />
-                  <StatCard label="Operations" value={operations.length} detail="correlated groups" />
-                  <StatCard label="PRP events" value={events.length} detail={`${visibleEventCount} visible`} />
-                  <StatCard label="Mappings" value={interpretations.length} detail={`${ignoredCount} ignored`} />
-                  <StatCard label="Run status" value={run?.status ?? "unknown"} detail={inspection?.trace ? traceBadgeLabel(inspection.trace.status, inspection.trace.expiresAt) : "Raw capture off"} />
+                  <StatCard label={t("ui3g1.RunnerInspector.provider")} value={capturedProviders.join(", ") || inspection?.trace?.provider || t("ui3g1.RunnerInspector.prpOnly")} detail={inspection?.trace ? t("ui3g1.RunnerInspector.capturedThrough", { provider: inspection.trace.provider }) : t("ui3g1.RunnerInspector.captureWasOff")} />
+                  <StatCard label={t("ui3g1.RunnerInspector.rawFrames")} value={frames.length} detail={inspection?.trace ? formatBytes(inspection.trace.byteCount) : t("ui3g1.RunnerInspector.noExactBytes")} />
+                  <StatCard label={t("ui3g1.RunnerInspector.operations")} value={operations.length} detail={t("ui3g1.RunnerInspector.correlatedGroups")} />
+                  <StatCard label={t("ui3g1.RunnerInspector.prpEventsLabel")} value={events.length} detail={t("ui3g1.RunnerInspector.visibleCount", { count: visibleEventCount })} />
+                  <StatCard label={t("ui3g1.RunnerInspector.mappings")} value={interpretations.length} detail={t("ui3g1.RunnerInspector.ignoredCount", { count: ignoredCount })} />
+                  <StatCard label={t("ui3g1.RunnerInspector.runStatus")} value={run?.status ?? t("ui3g1.RunnerInspector.unknown")} detail={inspection?.trace ? traceBadgeLabel(inspection.trace.status, inspection.trace.expiresAt, t) : t("ui3g1.RunnerInspector.rawCaptureOff")} />
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
                   <section className="rounded-lg border border-border bg-card p-4">
-                    <h3 className="text-sm font-semibold">Interpretation outcomes</h3>
+                    <h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.interpretationOutcomes")}</h3>
                     <div className="mt-3 space-y-2">
                       {Object.entries(dispositionCounts).length ? Object.entries(dispositionCounts).map(([label, count]) => (
                         <div key={label} className="flex items-center gap-3 text-sm">
@@ -1104,11 +1115,11 @@ export function RunnerInspector({
                           <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(4, (count / Math.max(1, interpretations.length)) * 100)}%` }} /></div>
                           <span className="w-8 text-right font-mono text-xs">{count}</span>
                         </div>
-                      )) : <p className="text-sm text-muted-foreground">No interpretation records were persisted.</p>}
+                      )) : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noInterpretationRecords")}</p>}
                     </div>
                   </section>
                   <section className="rounded-lg border border-border bg-card p-4">
-                    <h3 className="text-sm font-semibold">Recent correlated operations</h3>
+                    <h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.recentOperations")}</h3>
                     <div className="mt-2 divide-y divide-border/70">
                       {operations.slice(-6).reverse().map((operation) => (
                         <button key={operation.key} type="button" onClick={() => selectOperation(operation)} className="flex w-full items-center gap-3 py-2 text-left hover:text-primary">
@@ -1121,7 +1132,7 @@ export function RunnerInspector({
                   </section>
                 </div>
                 <section className="rounded-lg border border-border bg-accent/30 p-4">
-                  <div className="flex gap-3"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-foreground" /><div><h3 className="text-sm font-semibold">Sensitive debug data</h3><p className="mt-1 text-sm text-muted-foreground">Parsed frames are redacted on the server. Exact reveals and downloads are administrator-only, warned, audited, and automatically expire.</p></div></div>
+                  <div className="flex gap-3"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-foreground" /><div><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.sensitiveData")}</h3><p className="mt-1 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.sensitiveDataDetail")}</p></div></div>
                 </section>
               </div>
             </ScrollArea>
@@ -1130,21 +1141,21 @@ export function RunnerInspector({
           {view === "pipeline" ? (
             <>
               <div className="grid gap-2 border-b border-border p-3 sm:grid-cols-2 xl:grid-cols-(--gtc-runner-inspector-filters)">
-                <div className="relative"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search operations, fields, and events" /></div>
-                <Select value={direction} onValueChange={setDirection}><SelectTrigger><SelectValue placeholder="Direction" /></SelectTrigger><SelectContent><SelectItem value="all">All directions</SelectItem><SelectItem value="client_to_provider">Client → provider</SelectItem><SelectItem value="provider_to_client">Provider → client</SelectItem><SelectItem value="provider_stderr">Provider stderr</SelectItem></SelectContent></Select>
-                <Select value={nativeMethod} onValueChange={setNativeMethod}><SelectTrigger><SelectValue placeholder="Native method" /></SelectTrigger><SelectContent><SelectItem value="all">All native methods</SelectItem>{unique(frames.map(frameMethod)).sort().map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
-                <Select value={disposition} onValueChange={setDisposition}><SelectTrigger><SelectValue placeholder="Mapping" /></SelectTrigger><SelectContent><SelectItem value="all">All mappings</SelectItem>{["mapped", "generic", "ignored", "rejected", "operator_only"].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
-                <Select value={prpType} onValueChange={setPrpType}><SelectTrigger><SelectValue placeholder="PRP type" /></SelectTrigger><SelectContent><SelectItem value="all">All PRP types</SelectItem>{unique(events.map((event) => event.eventType)).sort().map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
-                <Select value={visibility} onValueChange={setVisibility}><SelectTrigger><SelectValue placeholder="Visibility" /></SelectTrigger><SelectContent><SelectItem value="all">Visible + hidden</SelectItem><SelectItem value="visible">Visible</SelectItem><SelectItem value="hidden">Hidden</SelectItem></SelectContent></Select>
+                <div className="relative"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input className="pl-8" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("ui3g1.RunnerInspector.searchPlaceholder")} /></div>
+                <Select value={direction} onValueChange={setDirection}><SelectTrigger><SelectValue placeholder={t("ui3g1.RunnerInspector.direction")} /></SelectTrigger><SelectContent><SelectItem value="all">{t("ui3g1.RunnerInspector.allDirections")}</SelectItem><SelectItem value="client_to_provider">{t("ui3g1.RunnerInspector.clientToProvider")}</SelectItem><SelectItem value="provider_to_client">{t("ui3g1.RunnerInspector.providerToClient")}</SelectItem><SelectItem value="provider_stderr">{t("ui3g1.RunnerInspector.providerStderr")}</SelectItem></SelectContent></Select>
+                <Select value={nativeMethod} onValueChange={setNativeMethod}><SelectTrigger><SelectValue placeholder={t("ui3g1.RunnerInspector.nativeMethod")} /></SelectTrigger><SelectContent><SelectItem value="all">{t("ui3g1.RunnerInspector.allNativeMethods")}</SelectItem>{unique(frames.map(frameMethod)).sort().map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
+                <Select value={disposition} onValueChange={setDisposition}><SelectTrigger><SelectValue placeholder={t("ui3g1.RunnerInspector.mapping")} /></SelectTrigger><SelectContent><SelectItem value="all">{t("ui3g1.RunnerInspector.allMappings")}</SelectItem>{["mapped", "generic", "ignored", "rejected", "operator_only"].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
+                <Select value={prpType} onValueChange={setPrpType}><SelectTrigger><SelectValue placeholder={t("ui3g1.RunnerInspector.prpType")} /></SelectTrigger><SelectContent><SelectItem value="all">{t("ui3g1.RunnerInspector.allPrpTypes")}</SelectItem>{unique(events.map((event) => event.eventType)).sort().map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select>
+                <Select value={visibility} onValueChange={setVisibility}><SelectTrigger><SelectValue placeholder={t("ui3g1.RunnerInspector.visibility")} /></SelectTrigger><SelectContent><SelectItem value="all">{t("ui3g1.RunnerInspector.visibleAndHidden")}</SelectItem><SelectItem value="visible">{t("ui3g1.RunnerInspector.visible")}</SelectItem><SelectItem value="hidden">{t("ui3g1.RunnerInspector.hidden")}</SelectItem></SelectContent></Select>
               </div>
               <div className="grid min-h-0 flex-1 lg:grid-cols-(--gtc-runner-inspector-pipeline)">
                 <ScrollArea className="border-r border-border">
                   <div className="p-2">
-                    {loading ? <p className="p-3 text-sm text-muted-foreground">Loading run pipeline…</p> : null}
-                    {!loading && filteredOperations.length === 0 ? <p className="p-3 text-sm text-muted-foreground">No operations match these filters.</p> : null}
+                    {loading ? <p className="p-3 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.loadingPipeline")}</p> : null}
+                    {!loading && filteredOperations.length === 0 ? <p className="p-3 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noOperationsMatch")}</p> : null}
                     {filteredOperations.map((operation) => (
                       <button key={operation.key} type="button" onClick={() => setSelectedKey(operation.key)} className="mb-1 w-full rounded-lg border border-transparent px-3 py-2.5 text-left hover:bg-muted/50 data-[selected=true]:border-border data-[selected=true]:bg-muted" data-selected={selectedOperation?.key === operation.key}>
-                        <span className="flex items-center gap-2"><span className={cn("h-2 w-2 shrink-0 rounded-full", operation.events.length ? operation.visible ? "bg-primary" : "bg-secondary-foreground" : "bg-muted-foreground")} role="img" aria-label={operation.events.length ? operation.visible ? "Visible production event" : "Hidden production event" : "No production event"} /><span className="min-w-0 flex-1 truncate text-sm font-medium">{operation.title}</span>{operation.frames.length > 1 ? <Badge variant="outline" className="px-1.5 text-(length:--text-nano)">{operation.frames.length} frames</Badge> : null}</span>
+                        <span className="flex items-center gap-2"><span className={cn("h-2 w-2 shrink-0 rounded-full", operation.events.length ? operation.visible ? "bg-primary" : "bg-secondary-foreground" : "bg-muted-foreground")} role="img" aria-label={operation.events.length ? operation.visible ? t("ui3g1.RunnerInspector.visibleProductionEvent") : t("ui3g1.RunnerInspector.hiddenProductionEvent") : t("ui3g1.RunnerInspector.noProductionEvent")} /><span className="min-w-0 flex-1 truncate text-sm font-medium">{operation.title}</span>{operation.frames.length > 1 ? <Badge variant="outline" className="px-1.5 text-(length:--text-nano)">{t("ui3g1.RunnerInspector.framesBadge", { count: operation.frames.length })}</Badge> : null}</span>
                         <span className="mt-1 block truncate pl-4 text-(length:--text-nano) text-muted-foreground">{operation.subtitle}</span>
                         <span className="mt-1.5 flex flex-wrap gap-1 pl-4">{operation.prpTypes.slice(0, 3).map((type) => <span key={type} className="rounded bg-background px-1.5 py-0.5 font-mono text-(length:--text-nano) text-muted-foreground">{type}</span>)}</span>
                       </button>
@@ -1155,63 +1166,63 @@ export function RunnerInspector({
                   {selectedOperation ? (
                     <div className="space-y-6 p-5">
                       <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/20 px-4 py-3">
-                        <strong className="text-sm">{selectedOperation.title}</strong><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{selectedOperation.frames.length} raw frame{selectedOperation.frames.length === 1 ? "" : "s"}</span><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{selectedOperation.interpretations.length} mapping stage{selectedOperation.interpretations.length === 1 ? "" : "s"}</span><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{selectedEvents.length} PRP event{selectedEvents.length === 1 ? "" : "s"}</span>
+                        <strong className="text-sm">{selectedOperation.title}</strong><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.rawFrameCount", { count: selectedOperation.frames.length })}</span><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.mappingStageCount", { count: selectedOperation.interpretations.length })}</span><ArrowRight className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.prpEventCount", { count: selectedEvents.length })}</span>
                       </div>
                       <section>
-                        <div className="mb-2 flex flex-wrap items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">1</span><h3 className="text-sm font-semibold">Provider frames</h3><span className="text-xs text-muted-foreground">server-redacted by default</span></div>
+                        <div className="mb-2 flex flex-wrap items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">1</span><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.providerFrames")}</h3><span className="text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.serverRedacted")}</span></div>
                         {selectedOperation.frames.length > 1 ? <div className="mb-2 flex flex-wrap gap-1">{selectedOperation.frames.map((frame) => <button key={Number(frame.frameId)} type="button" onClick={() => setSelectedFrameId(Number(frame.frameId))} className={cn("rounded-md border px-2 py-1 font-mono text-xs", Number(frame.frameId) === Number(selectedFrame?.frameId) ? "border-primary/50 bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:bg-muted")}>#{String(frame.frameId)} {frameMethod(frame) || text(frame.direction)}</button>)}</div> : null}
                         {selectedFrame ? (
                           <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><Badge variant="outline">frame {String(selectedFrame.frameId)}</Badge><span>{text(selectedFrame.direction).replaceAll("_", " ")}</span><span>{formatBytes(Number(selectedFrame.byteLength) || 0)}</span><code className="truncate">{text(selectedFrame.digest)}</code></div>
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><Badge variant="outline">{t("ui3g1.RunnerInspector.frameBadge", { id: String(selectedFrame.frameId) })}</Badge><span>{text(selectedFrame.direction).replaceAll("_", " ")}</span><span>{formatBytes(Number(selectedFrame.byteLength) || 0)}</span><code className="truncate">{text(selectedFrame.digest)}</code></div>
                             <JsonExplorer value={selectedFrame.parsed} />
-                            {Array.isArray(selectedFrame.withheldPaths) && selectedFrame.withheldPaths.length > 0 ? <div className="flex items-start gap-2 rounded-md border border-border bg-accent/30 px-3 py-2 text-xs text-muted-foreground"><ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-foreground" /><span>Withheld paths: {selectedFrame.withheldPaths.join(", ")}</span></div> : null}
-                            {canInspectRaw === true ? <Button size="sm" variant="outline" onClick={() => void reveal(Number(selectedFrame.frameId))}><Eye className="mr-1.5 h-4 w-4" />Reveal exact frame</Button> : null}
-                            {revealedFrame ? <div className="rounded-md border border-destructive/30 p-2"><p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-destructive"><ShieldAlert className="h-3.5 w-3.5" />Exact unredacted frame</p><JsonExplorer value={decodeExactFrame(revealedFrame.rawBase64)} label="Search exact frame" /></div> : null}
+                            {Array.isArray(selectedFrame.withheldPaths) && selectedFrame.withheldPaths.length > 0 ? <div className="flex items-start gap-2 rounded-md border border-border bg-accent/30 px-3 py-2 text-xs text-muted-foreground"><ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-foreground" /><span>{t("ui3g1.RunnerInspector.withheldPaths", { paths: selectedFrame.withheldPaths.join(", ") })}</span></div> : null}
+                            {canInspectRaw === true ? <Button size="sm" variant="outline" onClick={() => void reveal(Number(selectedFrame.frameId))}><Eye className="mr-1.5 h-4 w-4" />{t("ui3g1.RunnerInspector.revealExactFrame")}</Button> : null}
+                            {revealedFrame ? <div className="rounded-md border border-destructive/30 p-2"><p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-destructive"><ShieldAlert className="h-3.5 w-3.5" />{t("ui3g1.RunnerInspector.exactUnredactedFrame")}</p><JsonExplorer value={decodeExactFrame(revealedFrame.rawBase64)} label={t("ui3g1.RunnerInspector.searchExactFrame")} /></div> : null}
                           </div>
-                        ) : <p className="text-sm text-muted-foreground">This PRP event has no recoverable raw frame.</p>}
+                        ) : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noRecoverableFrame")}</p>}
                       </section>
                       <section>
-                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">2</span><h3 className="text-sm font-semibold">Interpretation stages</h3></div>
-                        {selectedInterpretations.length ? selectedInterpretations.map((entry, index) => <InterpretationStage key={`${entry.debugChannel}:${entry.debugSequence}:${index}`} entry={entry} last={index === selectedInterpretations.length - 1} />) : <p className="text-sm text-muted-foreground">No interpretation stage was recorded for this frame.</p>}
+                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">2</span><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.interpretationStages")}</h3></div>
+                        {selectedInterpretations.length ? selectedInterpretations.map((entry, index) => <InterpretationStage key={`${entry.debugChannel}:${entry.debugSequence}:${index}`} entry={entry} last={index === selectedInterpretations.length - 1} />) : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noInterpretationStage")}</p>}
                       </section>
                       <section>
-                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">3</span><h3 className="text-sm font-semibold">Canonical PRP events</h3></div>
+                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">3</span><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.canonicalPrpEvents")}</h3></div>
                         {selectedEvents.length ? selectedEvents.map((event) => (
                           <div key={event.id} className="mb-3 overflow-hidden rounded-lg border border-border bg-card">
-                            <div className="flex flex-wrap items-center gap-2 border-b border-border/70 px-3 py-2"><code className="text-xs font-semibold">{event.eventType}</code><Badge variant="outline">seq {event.seq}</Badge><button type="button" className="ml-auto text-xs text-primary underline-offset-4 hover:underline" onClick={() => { setVisibility(visibilityDecision(event).visible ? "visible" : "hidden"); setSelectedKey(selectedOperation.key); }}>Why isn’t this visible?</button></div>
-                            <dl className="grid gap-x-4 gap-y-1 px-3 py-2 text-xs sm:grid-cols-(--gtc-runner-inspector-fields)">{typedPrpFields(event).map(([label, value]) => <div key={label} className="contents"><dt className="text-muted-foreground">{label}</dt><dd className="min-w-0 break-words font-mono">{value}</dd></div>)}</dl>
-                            <details className="border-t border-border/70"><summary className="flex cursor-pointer list-none items-center gap-1 px-3 py-2 text-xs font-medium text-muted-foreground"><ChevronDown className="h-3.5 w-3.5" />Canonical event JSON</summary><div className="p-3 pt-0"><JsonExplorer value={eventPrp(event)} /></div></details>
+                            <div className="flex flex-wrap items-center gap-2 border-b border-border/70 px-3 py-2"><code className="text-xs font-semibold">{event.eventType}</code><Badge variant="outline">{t("ui3g1.RunnerInspector.seq", { seq: event.seq })}</Badge><button type="button" className="ml-auto text-xs text-primary underline-offset-4 hover:underline" onClick={() => { setVisibility(visibilityDecision(event).visible ? "visible" : "hidden"); setSelectedKey(selectedOperation.key); }}>{t("ui3g1.RunnerInspector.whyNotVisible")}</button></div>
+                            <dl className="grid gap-x-4 gap-y-1 px-3 py-2 text-xs sm:grid-cols-(--gtc-runner-inspector-fields)">{typedPrpFields(event, t).map(([label, value]) => <div key={label} className="contents"><dt className="text-muted-foreground">{label}</dt><dd className="min-w-0 break-words font-mono">{value}</dd></div>)}</dl>
+                            <details className="border-t border-border/70"><summary className="flex cursor-pointer list-none items-center gap-1 px-3 py-2 text-xs font-medium text-muted-foreground"><ChevronDown className="h-3.5 w-3.5" />{t("ui3g1.RunnerInspector.canonicalEventJson")}</summary><div className="p-3 pt-0"><JsonExplorer value={eventPrp(event)} /></div></details>
                           </div>
-                        )) : <p className="text-sm text-muted-foreground">This provider operation emitted no canonical PRP events.</p>}
+                        )) : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noCanonicalEvents")}</p>}
                       </section>
                       <section>
-                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">4</span><h3 className="text-sm font-semibold">Production presentation</h3></div>
+                        <div className="mb-3 flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">4</span><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.productionPresentation")}</h3></div>
                         {selectedEvents.length ? selectedEvents.map((event) => {
                           const decision = visibilityDecision(event);
-                          return <div key={event.id} className="mb-4 grid gap-3 xl:grid-cols-(--gtc-runner-inspector-presentation)"><dl className="grid grid-cols-(--gtc-runner-inspector-fields) gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-sm"><dt className="text-muted-foreground">Visible</dt><dd className="flex items-center gap-1.5">{decision.visible ? <Check className="h-3.5 w-3.5 text-primary" /> : <CircleOff className="h-3.5 w-3.5 text-muted-foreground" />}{decision.visible ? "yes" : "no"}</dd><dt className="text-muted-foreground">Surface</dt><dd>{decision.surface}</dd><dt className="text-muted-foreground">Container</dt><dd>{decision.container}</dd><dt className="text-muted-foreground">State</dt><dd>{decision.state}</dd><dt className="text-muted-foreground">Action</dt><dd>{decision.action}</dd><dt className="text-muted-foreground">Reason</dt><dd>{decision.reason}</dd><dt className="text-muted-foreground">Reason code</dt><dd><code className="text-xs">{decision.reasonCode}</code></dd></dl><div><p className="mb-2 text-(length:--text-nano) font-medium uppercase tracking-wide text-muted-foreground">Production surface preview</p><ProductionSurfacePreview event={event} runId={runId} /></div></div>;
-                        }) : <p className="text-sm text-muted-foreground">No presentation surface was emitted for this operation.</p>}
-                        {Object.keys(presentationDecision).length > 0 ? <details className="rounded-lg border border-border"><summary className="cursor-pointer px-3 py-2 text-xs font-medium text-muted-foreground">Resolved final response decision</summary><div className="p-3 pt-0"><JsonExplorer value={presentationDecision} /></div></details> : null}
+                          return <div key={event.id} className="mb-4 grid gap-3 xl:grid-cols-(--gtc-runner-inspector-presentation)"><dl className="grid grid-cols-(--gtc-runner-inspector-fields) gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-sm"><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.visibleLabel")}</dt><dd className="flex items-center gap-1.5">{decision.visible ? <Check className="h-3.5 w-3.5 text-primary" /> : <CircleOff className="h-3.5 w-3.5 text-muted-foreground" />}{decision.visible ? t("ui3g1.RunnerInspector.yes") : t("ui3g1.RunnerInspector.no")}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.surfaceLabel")}</dt><dd>{decision.surface}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.containerLabel")}</dt><dd>{t(decision.containerKey)}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.stateLabel")}</dt><dd>{decision.state}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.actionLabel")}</dt><dd>{decision.action}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.reasonLabel")}</dt><dd>{decision.reasonKey ? t(decision.reasonKey) : decision.reason}</dd><dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.reasonCodeLabel")}</dt><dd><code className="text-xs">{decision.reasonCode}</code></dd></dl><div><p className="mb-2 text-(length:--text-nano) font-medium uppercase tracking-wide text-muted-foreground">{t("ui3g1.RunnerInspector.productionSurfacePreview")}</p><ProductionSurfacePreview event={event} runId={runId} /></div></div>;
+                        }) : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noPresentationSurface")}</p>}
+                        {Object.keys(presentationDecision).length > 0 ? <details className="rounded-lg border border-border"><summary className="cursor-pointer px-3 py-2 text-xs font-medium text-muted-foreground">{t("ui3g1.RunnerInspector.resolvedDecision")}</summary><div className="p-3 pt-0"><JsonExplorer value={presentationDecision} /></div></details> : null}
                         {verificationCaveats.length > 0 || ignoredAttentionRequests.length > 0 ? (
                           <div className="mt-3 rounded-lg border border-border bg-accent/30 p-3">
-                            <p className="text-xs font-semibold text-accent-foreground">Semantic finalization lineage</p>
+                            <p className="text-xs font-semibold text-accent-foreground">{t("ui3g1.RunnerInspector.semanticLineage")}</p>
                             <p className="mt-1 text-xs text-muted-foreground">
-                              Provider-native transport and model-authored tool arguments are separate layers. PRP normalized the model payload, then server policy chose the issue disposition.
+                              {t("ui3g1.RunnerInspector.semanticLineageDetail")}
                             </p>
                             {ignoredAttentionRequests.some((candidate) => record(candidate).sourceKind === "environment_constraint") ? (
                               <p className="mt-2 text-xs">
-                                <code>environment_constraint</code> was model-authored tool payload data, not a Codex app-server event. It was normalized into a non-blocking verification caveat.
+                                <code>environment_constraint</code> {t("ui3g1.RunnerInspector.environmentConstraintNote")}
                               </p>
                             ) : null}
                             <dl className="mt-2 grid grid-cols-(--gtc-runner-inspector-fields) gap-x-3 gap-y-1 text-xs">
-                              <dt className="text-muted-foreground">Policy</dt><dd><code>{text(runResultJson.finalizationPolicyVersion) || "unknown"}</code></dd>
-                              <dt className="text-muted-foreground">Decision reason</dt><dd><code>{text(runResultJson.finalizationReasonCode) || "unknown"}</code></dd>
+                              <dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.policy")}</dt><dd><code>{text(runResultJson.finalizationPolicyVersion) || t("ui3g1.RunnerInspector.unknown")}</code></dd>
+                              <dt className="text-muted-foreground">{t("ui3g1.RunnerInspector.decisionReason")}</dt><dd><code>{text(runResultJson.finalizationReasonCode) || t("ui3g1.RunnerInspector.unknown")}</code></dd>
                             </dl>
-                            <details className="mt-2"><summary className="cursor-pointer text-xs font-medium text-muted-foreground">Normalized caveats and ignored requests</summary><div className="mt-2"><JsonExplorer value={{ verificationCaveats, ignoredAttentionRequests }} /></div></details>
+                            <details className="mt-2"><summary className="cursor-pointer text-xs font-medium text-muted-foreground">{t("ui3g1.RunnerInspector.normalizedCaveats")}</summary><div className="mt-2"><JsonExplorer value={{ verificationCaveats, ignoredAttentionRequests }} /></div></details>
                           </div>
                         ) : null}
                       </section>
                     </div>
-                  ) : <div className="p-5 text-sm text-muted-foreground">Select a correlated operation to inspect its pipeline.</div>}
+                  ) : <div className="p-5 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.selectOperation")}</div>}
                 </ScrollArea>
               </div>
             </>
@@ -1219,15 +1230,15 @@ export function RunnerInspector({
 
           {view === "trace" ? (
             <div className="grid min-h-0 flex-1 md:grid-cols-(--gtc-runner-inspector-trace)">
-              <ScrollArea className="border-r border-border"><div className="p-2">{frames.length ? [...frames].sort((left, right) => Number(left.frameId) - Number(right.frameId)).map((frame) => <button key={Number(frame.frameId)} type="button" onClick={() => { const operation = operations.find((candidate) => candidate.frames.some((candidateFrame) => Number(candidateFrame.frameId) === Number(frame.frameId))); if (operation) setSelectedKey(operation.key); setSelectedFrameId(Number(frame.frameId)); }} className={cn("mb-1 w-full rounded-md border px-3 py-2 text-left", Number(frame.frameId) === Number(selectedFrame?.frameId) ? "border-primary/40 bg-primary/10" : "border-transparent hover:bg-muted/50")}><span className="flex items-center gap-2 text-sm font-medium"><span className="font-mono text-xs text-muted-foreground">#{String(frame.frameId)}</span><span className="truncate">{frameMethod(frame) || text(frame.direction)}</span></span><span className="mt-1 block text-(length:--text-nano) text-muted-foreground">{text(frame.direction).replaceAll("_", " ")} · {formatBytes(Number(frame.byteLength) || 0)}</span></button>) : <p className="p-3 text-sm text-muted-foreground">No raw frames were captured for this run.</p>}</div></ScrollArea>
-              <ScrollArea><div className="space-y-3 p-5">{selectedFrame ? <><div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-semibold">Exact trace frame #{String(selectedFrame.frameId)}</h3><Badge variant="outline">{frameMethod(selectedFrame) || text(selectedFrame.direction)}</Badge></div><JsonExplorer value={selectedFrame.parsed} />{canInspectRaw === true ? <Button size="sm" variant="outline" onClick={() => void reveal(Number(selectedFrame.frameId))}><Eye className="mr-1.5 h-4 w-4" />Reveal exact frame</Button> : null}{revealedFrame ? <JsonExplorer value={decodeExactFrame(revealedFrame.rawBase64)} label="Search exact frame" /> : null}</> : <p className="text-sm text-muted-foreground">Select a frame from the chronological trace.</p>}</div></ScrollArea>
+              <ScrollArea className="border-r border-border"><div className="p-2">{frames.length ? [...frames].sort((left, right) => Number(left.frameId) - Number(right.frameId)).map((frame) => <button key={Number(frame.frameId)} type="button" onClick={() => { const operation = operations.find((candidate) => candidate.frames.some((candidateFrame) => Number(candidateFrame.frameId) === Number(frame.frameId))); if (operation) setSelectedKey(operation.key); setSelectedFrameId(Number(frame.frameId)); }} className={cn("mb-1 w-full rounded-md border px-3 py-2 text-left", Number(frame.frameId) === Number(selectedFrame?.frameId) ? "border-primary/40 bg-primary/10" : "border-transparent hover:bg-muted/50")}><span className="flex items-center gap-2 text-sm font-medium"><span className="font-mono text-xs text-muted-foreground">#{String(frame.frameId)}</span><span className="truncate">{frameMethod(frame) || text(frame.direction)}</span></span><span className="mt-1 block text-(length:--text-nano) text-muted-foreground">{text(frame.direction).replaceAll("_", " ")} · {formatBytes(Number(frame.byteLength) || 0)}</span></button>) : <p className="p-3 text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.noRawFrames")}</p>}</div></ScrollArea>
+              <ScrollArea><div className="space-y-3 p-5">{selectedFrame ? <><div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-semibold">{t("ui3g1.RunnerInspector.exactTraceFrame", { id: String(selectedFrame.frameId) })}</h3><Badge variant="outline">{frameMethod(selectedFrame) || text(selectedFrame.direction)}</Badge></div><JsonExplorer value={selectedFrame.parsed} />{canInspectRaw === true ? <Button size="sm" variant="outline" onClick={() => void reveal(Number(selectedFrame.frameId))}><Eye className="mr-1.5 h-4 w-4" />{t("ui3g1.RunnerInspector.revealExactFrame")}</Button> : null}{revealedFrame ? <JsonExplorer value={decodeExactFrame(revealedFrame.rawBase64)} label={t("ui3g1.RunnerInspector.searchExactFrame")} /> : null}</> : <p className="text-sm text-muted-foreground">{t("ui3g1.RunnerInspector.selectFrame")}</p>}</div></ScrollArea>
             </div>
           ) : null}
 
           {canInspectRaw === true && inspection?.trace?.runId === runId ? (
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border p-3">
-              <p className="text-xs text-muted-foreground">{inspection.trace.frameCount} frames · {formatBytes(inspection.trace.byteCount)} · expires {new Date(inspection.trace.expiresAt).toLocaleString()}</p>
-              <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => void downloadTrace()}><Download className="mr-1.5 h-4 w-4" />Download exact trace</Button><Button size="sm" variant="destructive" onClick={() => void deleteTrace()}><Trash2 className="mr-1.5 h-4 w-4" />Delete trace</Button></div>
+              <p className="text-xs text-muted-foreground">{t("ui3g1.RunnerInspector.traceFooter", { count: inspection.trace.frameCount, bytes: formatBytes(inspection.trace.byteCount), expires: new Date(inspection.trace.expiresAt).toLocaleString() })}</p>
+              <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => void downloadTrace()}><Download className="mr-1.5 h-4 w-4" />{t("ui3g1.RunnerInspector.downloadExactTrace")}</Button><Button size="sm" variant="destructive" onClick={() => void deleteTrace()}><Trash2 className="mr-1.5 h-4 w-4" />{t("ui3g1.RunnerInspector.deleteTrace")}</Button></div>
             </div>
           ) : null}
         </div>

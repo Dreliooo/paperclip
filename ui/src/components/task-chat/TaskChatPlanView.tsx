@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Check, Circle, Loader2 } from "lucide-react";
 import type { TaskChatPlan, TaskChatPlanEntryStatus } from "./task-chat-model";
 
+import { useTranslation } from "@/i18n";
 const STATUS_ICON: Record<TaskChatPlanEntryStatus, { Icon: typeof Check; spin: boolean; tone: string }> = {
   completed: { Icon: Check, spin: false, tone: "text-(--status-task-icon-done)" },
   in_progress: { Icon: Loader2, spin: true, tone: "text-(--status-agent-running)" },
@@ -20,14 +21,20 @@ const PRIORITY_TONE = {
  * checklist with per-entry status and a revision label; entries stagger in.
  */
 export function TaskChatPlanView({ plan }: { plan: TaskChatPlan }) {
+  const { t } = useTranslation();
+  const priorityLabel: Record<string, string> = {
+    high: t("ui2g7.taskChatPlanView.priority.high"),
+    medium: t("ui2g7.taskChatPlanView.priority.medium"),
+    low: t("ui2g7.taskChatPlanView.priority.low"),
+  };
   const done = plan.entries.filter((e) => e.status === "completed").length;
   return (
     <div className="flex flex-col gap-2 py-2">
       <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">Plan</span>
-        <span>· rev {plan.revision}</span>
+        <span className="font-medium text-foreground">{t("ui2g7.taskChatPlanView.plan")}</span>
+        <span>{t("ui2g7.taskChatPlanView.revision", { revision: plan.revision })}</span>
         <span className="ml-auto">
-          {done}/{plan.entries.length} done
+          {t("ui2g7.taskChatPlanView.progress", { done, total: plan.entries.length })}
         </span>
       </div>
       <ul className="flex flex-col gap-1">
@@ -44,7 +51,7 @@ export function TaskChatPlanView({ plan }: { plan: TaskChatPlan }) {
                 {entry.content}
               </span>
               <span className={cn("shrink-0 text-(length:--text-nano) uppercase tracking-wide", PRIORITY_TONE[entry.priority])}>
-                {entry.priority}
+                {priorityLabel[entry.priority] ?? entry.priority}
               </span>
             </li>
           );

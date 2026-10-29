@@ -1,5 +1,6 @@
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { useMemo, useState } from "react";
+import type { TFunction } from "i18next";
 import {
   ArrowRight,
   Braces,
@@ -31,71 +32,86 @@ import { MarkdownEditor } from "../MarkdownEditor";
 import { RoutineVariablesEditor, RoutineVariablesHint } from "../RoutineVariablesEditor";
 import { EnvironmentVariablesEditor } from "../environment-variables-editor";
 import { useRoutineDetail } from "./context";
+import { useTranslation } from "@/i18n";
 import type { EnvBinding, RoutineDetail as RoutineDetailType } from "@paperclipai/shared";
 
-const concurrencyPolicyOptions = [
+type PolicyOptionDef = {
+  value: string;
+  titleKey: string;
+  descriptionKey: string;
+};
+
+const concurrencyPolicyOptions: PolicyOptionDef[] = [
   {
     value: "coalesce_if_active",
-    title: "Coalesce if active",
-    description: "Keep one follow-up run queued while an active run is still working.",
+    titleKey: "routineDetail.policy.concurrency.coalesceIfActive.title",
+    descriptionKey: "routineDetail.policy.concurrency.coalesceIfActive.description",
   },
   {
     value: "always_enqueue",
-    title: "Always enqueue",
-    description: "Queue every trigger occurrence, even if several runs stack up.",
+    titleKey: "routineDetail.policy.concurrency.alwaysEnqueue.title",
+    descriptionKey: "routineDetail.policy.concurrency.alwaysEnqueue.description",
   },
   {
     value: "skip_if_active",
-    title: "Skip if active",
-    description: "Drop overlapping trigger occurrences while the routine is already active.",
+    titleKey: "routineDetail.policy.concurrency.skipIfActive.title",
+    descriptionKey: "routineDetail.policy.concurrency.skipIfActive.description",
   },
 ];
 
-const catchUpPolicyOptions = [
+const catchUpPolicyOptions: PolicyOptionDef[] = [
   {
     value: "skip_missed",
-    title: "Skip missed",
-    description: "Ignore schedule windows that were missed while paused.",
+    titleKey: "routineDetail.policy.catchUp.skipMissed.title",
+    descriptionKey: "routineDetail.policy.catchUp.skipMissed.description",
   },
   {
     value: "enqueue_missed_with_cap",
-    title: "Enqueue missed with cap",
-    description: "Catch up missed schedule windows after recovery; sub-hourly schedules are combined into one catch-up run, slower schedules replay each missed window up to a cap.",
+    titleKey: "routineDetail.policy.catchUp.enqueueMissedWithCap.title",
+    descriptionKey: "routineDetail.policy.catchUp.enqueueMissedWithCap.description",
   },
 ];
 
-const activityGatePolicyOptions = [
+const activityGatePolicyOptions: PolicyOptionDef[] = [
   {
     value: "always",
-    title: "Run on every scheduled tick",
-    description: "Fire on the schedule no matter what — the default behavior.",
+    titleKey: "routineDetail.policy.activityGate.always.title",
+    descriptionKey: "routineDetail.policy.activityGate.always.description",
   },
   {
     value: "require_external_activity",
-    title: "Skip when there's been no activity since the last run",
-    description:
-      "On a scheduled tick, only run if something happened since the last run that finished. Lets a watcher-style routine stay asleep while the system is settled instead of burning tokens.",
+    titleKey: "routineDetail.policy.activityGate.requireExternalActivity.title",
+    descriptionKey: "routineDetail.policy.activityGate.requireExternalActivity.description",
   },
 ];
 
-const activityGateScopeOptions = [
+const activityGateScopeOptions: PolicyOptionDef[] = [
   {
     value: "company",
-    title: "Organization-wide",
-    description: "Any activity across the organization counts as a reason to run.",
+    titleKey: "routineDetail.policy.activityScope.company.title",
+    descriptionKey: "routineDetail.policy.activityScope.company.description",
   },
   {
     value: "project",
-    title: "This project",
-    description: "Only activity in the routine's project counts as a reason to run.",
+    titleKey: "routineDetail.policy.activityScope.project.title",
+    descriptionKey: "routineDetail.policy.activityScope.project.description",
   },
 ];
+
+function translatePolicyOptions(options: PolicyOptionDef[], translate: TFunction) {
+  return options.map((option) => ({
+    value: option.value,
+    title: translate(option.titleKey),
+    description: translate(option.descriptionKey),
+  }));
+}
 
 export function OverviewSection({
   defaultDescriptionAnnotationsOpen = false,
 }: {
   defaultDescriptionAnnotationsOpen?: boolean;
 } = {}) {
+  const { t } = useTranslation();
   const ctx = useRoutineDetail();
   const {
     routine,
@@ -138,16 +154,16 @@ export function OverviewSection({
       {/* Assignment row */}
       <div className="overflow-x-auto overscroll-x-contain">
         <div className="inline-flex min-w-full flex-wrap items-center gap-2 text-sm text-muted-foreground sm:min-w-max sm:flex-nowrap">
-          <span>For</span>
+          <span>{t("routineDetail.sections.assignmentFor")}</span>
           <InlineEntitySelector
             ref={assigneeSelectorRef}
             value={editDraft.assigneeAgentId}
             options={assigneeOptions}
             recentOptionIds={recentAssigneeIds}
-            placeholder="Responsible"
-            noneLabel="No responsible"
-            searchPlaceholder="Search responsible..."
-            emptyMessage="No responsible found."
+            placeholder={t("routineDetail.sections.responsiblePlaceholder")}
+            noneLabel={t("routineDetail.sections.noResponsible")}
+            searchPlaceholder={t("routineDetail.sections.searchResponsible")}
+            emptyMessage={t("routineDetail.sections.noResponsibleFound")}
             onChange={(assigneeAgentId) =>
               setEditDraft((current) => ({ ...current, assigneeAgentId }))
             }
@@ -169,7 +185,7 @@ export function OverviewSection({
                   <span className="truncate">{option.label}</span>
                 )
               ) : (
-                <span className="text-muted-foreground">Responsible</span>
+                <span className="text-muted-foreground">{t("routineDetail.sections.responsiblePlaceholder")}</span>
               )
             }
             renderOption={(option) => {
@@ -185,16 +201,16 @@ export function OverviewSection({
               );
             }}
           />
-          <span>in</span>
+          <span>{t("routineDetail.sections.assignmentIn")}</span>
           <InlineEntitySelector
             ref={projectSelectorRef}
             value={editDraft.projectId}
             options={projectOptions}
             recentOptionIds={recentProjectIds}
-            placeholder="Project"
-            noneLabel="No project"
-            searchPlaceholder="Search projects..."
-            emptyMessage="No projects found."
+            placeholder={t("routineDetail.sections.projectPlaceholder")}
+            noneLabel={t("routineDetail.sections.noProject")}
+            searchPlaceholder={t("routineDetail.sections.searchProjects")}
+            emptyMessage={t("routineDetail.sections.noProjectsFound")}
             onChange={(projectId) => setEditDraft((current) => ({ ...current, projectId }))}
             onConfirm={() => descriptionEditorRef.current?.focus()}
             renderTriggerValue={(option) =>
@@ -207,7 +223,7 @@ export function OverviewSection({
                   <span className="truncate">{option.label}</span>
                 </>
               ) : (
-                <span className="text-muted-foreground">Project</span>
+                <span className="text-muted-foreground">{t("routineDetail.sections.projectPlaceholder")}</span>
               )
             }
             renderOption={(option) => {
@@ -229,8 +245,7 @@ export function OverviewSection({
 
       {!routine.assigneeAgentId ? (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-200">
-          Default agent required. This routine can stay as a draft and still run manually, but
-          automation stays paused until you assign a default agent.
+          {t("routineDetail.sections.defaultAgentWarning")}
         </div>
       ) : null}
 
@@ -264,7 +279,7 @@ export function OverviewSection({
               ref={descriptionEditorRef}
               value={editDraft.description}
               onChange={(description) => setEditDraft((current) => ({ ...current, description }))}
-              placeholder="Add instructions..."
+              placeholder={t("routineDetail.sections.addInstructions")}
               bordered={false}
               contentClassName="min-h-(--sz-120px) text-sm leading-7"
               mentions={mentionOptions}
@@ -280,7 +295,7 @@ export function OverviewSection({
             ref={descriptionEditorRef}
             value={editDraft.description}
             onChange={(description) => setEditDraft((current) => ({ ...current, description }))}
-            placeholder="Add instructions..."
+            placeholder={t("routineDetail.sections.addInstructions")}
             bordered={false}
             contentClassName="min-h-(--sz-120px) text-sm leading-7"
             mentions={mentionOptions}
@@ -308,29 +323,33 @@ export function OverviewSection({
       <div className="grid gap-3 sm:grid-cols-2">
         <SummaryCard
           icon={Clock3}
-          label="Triggers"
-          value={activeTriggers === 0 ? "None" : `${activeTriggers} active`}
-          hint={nextFire ? `Next fire ${nextFire}` : "No schedule"}
+          label={t("routineDetail.sections.triggersLabel")}
+          value={activeTriggers === 0
+            ? t("routineDetail.sections.none")
+            : t("routineDetail.sections.activeCount", { count: activeTriggers })}
+          hint={nextFire ? t("routineDetail.sections.nextFire", { date: nextFire }) : t("routineDetail.sections.noSchedule")}
           to={() => navigateToSection("triggers")}
-          ariaLabel={`${activeTriggers} triggers. Open triggers.`}
+          ariaLabel={t("routineDetail.sections.ariaTriggers", { count: activeTriggers })}
         />
         <SummaryCard
           icon={Play}
-          label="Last run"
-          value={lastRun ? lastRun.status.replaceAll("_", " ") : "No runs"}
-          hint={lastRun ? timeAgo(lastRun.triggeredAt) : "Trigger a run"}
+          label={t("routineDetail.sections.lastRunLabel")}
+          value={lastRun ? lastRun.status.replaceAll("_", " ") : t("routineDetail.sections.noRuns")}
+          hint={lastRun ? timeAgo(lastRun.triggeredAt) : t("routineDetail.sections.triggerARun")}
           to={() => navigateToSection("runs")}
-          ariaLabel={lastRun ? `Last run ${lastRun.status}. Open runs.` : "No runs. Open runs."}
+          ariaLabel={lastRun
+            ? t("routineDetail.sections.ariaLastRun", { status: lastRun.status })
+            : t("routineDetail.sections.ariaNoRuns")}
         />
       </div>
 
       {/* Recent activity */}
       <div className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Recent activity
+          {t("routineDetail.sections.recentActivity")}
         </p>
         {recentActivity.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No activity yet.</p>
+          <p className="text-xs text-muted-foreground">{t("routineDetail.sections.noActivity")}</p>
         ) : (
           <div className="divide-y divide-border/60">
             {recentActivity.map((event) => (
@@ -351,7 +370,7 @@ export function OverviewSection({
               onClick={() => navigateToSection("activity")}
               className="flex items-center gap-1 pt-2 text-xs text-muted-foreground hover:text-foreground"
             >
-              View all activity <ArrowRight className="h-3 w-3" />
+              {t("routineDetail.sections.viewAllActivity")} <ArrowRight className="h-3 w-3" />
             </button>
           </div>
         )}
@@ -395,6 +414,7 @@ function SummaryCard({
 export { RoutineTriggers as TriggersSection } from "../routine-triggers/RoutineTriggers";
 
 export function VariablesSection() {
+  const { t } = useTranslation();
   const ctx = useRoutineDetail();
   const { editDraft, setEditDraft, navigateToSection } = ctx;
   const hasVariables = editDraft.variables.length > 0;
@@ -403,13 +423,11 @@ export function VariablesSection() {
     <div className="space-y-4">
       <div className="flex items-center gap-3 rounded-md border border-border bg-muted/20 px-4 py-3 text-xs">
         <span className="flex-1 text-muted-foreground">
-          Variables are auto-detected from <code className="font-mono">{"{{placeholders}}"}</code> in
-          the title &amp; instructions. The variable name is read-only — rename by editing the
-          placeholder.
+          {t("routineDetail.sections.variablesIntro")}<code className="font-mono">{"{{placeholders}}"}</code>{t("routineDetail.sections.variablesOutro")}
         </span>
         <Button variant="secondary" size="sm" onClick={() => navigateToSection("overview")}>
           <Edit3 className="mr-1.5 h-3.5 w-3.5" />
-          Edit instructions
+          {t("routineDetail.sections.editInstructions")}
         </Button>
       </div>
 
@@ -423,8 +441,8 @@ export function VariablesSection() {
       ) : (
         <EmptyState
           icon={Braces}
-          message="No variables yet. Add a {{placeholder}} in the title or instructions to create one."
-          action="Edit instructions"
+          message={`${t("routineDetail.sections.noVariablesBefore")}{{placeholder}}${t("routineDetail.sections.noVariablesAfter")}`}
+          action={t("routineDetail.sections.editInstructions")}
           onAction={() => navigateToSection("overview")}
         />
       )}
@@ -433,6 +451,7 @@ export function VariablesSection() {
 }
 
 export function SecretsSection() {
+  const { t } = useTranslation();
   const ctx = useRoutineDetail();
   const { editDraft, setEditDraft, availableSecrets, createSecret } = ctx;
 
@@ -454,8 +473,7 @@ export function SecretsSection() {
   return (
     <div className="space-y-4">
       <div className="rounded-md border border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
-        Routine secrets apply to every task this routine creates. They override matching keys in
-        project and agent env. <span className="font-mono">PAPERCLIP_*</span> names are reserved.
+        {t("routineDetail.sections.secretsIntro")}<span className="font-mono">PAPERCLIP_*</span>{t("routineDetail.sections.secretsReserved")}
       </div>
 
 
@@ -471,6 +489,7 @@ export function SecretsSection() {
 }
 
 export function DeliverySection() {
+  const { t } = useTranslation();
   const ctx = useRoutineDetail();
   const { editDraft, setEditDraft, routine } = ctx;
 
@@ -485,58 +504,57 @@ export function DeliverySection() {
     <div className="space-y-6">
       <div className="space-y-3">
         <p className="text-xs font-medium uppercase tracking-(--tracking-caps) text-muted-foreground">
-          Concurrency
+          {t("routineDetail.sections.concurrencyHeading")}
         </p>
         <RadioCardGroup
-          ariaLabel="Concurrency policy"
+          ariaLabel={t("routineDetail.sections.concurrencyAria")}
           value={editDraft.concurrencyPolicy}
           onValueChange={(concurrencyPolicy) =>
             setEditDraft((current) => ({ ...current, concurrencyPolicy }))
           }
-          options={concurrencyPolicyOptions}
+          options={translatePolicyOptions(concurrencyPolicyOptions, t)}
         />
       </div>
       <div className="space-y-3">
         <p className="text-xs font-medium uppercase tracking-(--tracking-caps) text-muted-foreground">
-          Catch-up
+          {t("routineDetail.sections.catchUpHeading")}
         </p>
         <RadioCardGroup
-          ariaLabel="Catch-up policy"
+          ariaLabel={t("routineDetail.sections.catchUpAria")}
           value={editDraft.catchUpPolicy}
           onValueChange={(catchUpPolicy) =>
             setEditDraft((current) => ({ ...current, catchUpPolicy }))
           }
-          options={catchUpPolicyOptions}
+          options={translatePolicyOptions(catchUpPolicyOptions, t)}
         />
       </div>
       <div className="space-y-3">
         <p className="text-xs font-medium uppercase tracking-(--tracking-caps) text-muted-foreground">
-          Advanced run policy
+          {t("routineDetail.sections.advancedRunHeading")}
         </p>
         <RadioCardGroup
-          ariaLabel="Advanced run policy"
+          ariaLabel={t("routineDetail.sections.advancedRunHeading")}
           value={editDraft.activityGatePolicy}
           onValueChange={(activityGatePolicy) =>
             setEditDraft((current) => ({ ...current, activityGatePolicy }))
           }
-          options={activityGatePolicyOptions}
+          options={translatePolicyOptions(activityGatePolicyOptions, t)}
           disabled={!hasScheduleTrigger}
         />
         {!hasScheduleTrigger ? (
           <p className="text-xs text-muted-foreground">
-            Add a schedule trigger to gate runs on activity. Webhook, manual, and API fires always
-            run.
+            {t("routineDetail.sections.scheduleGateNote")}
           </p>
         ) : gateEnabled ? (
           <div className="space-y-2 rounded-lg border border-border p-3">
-            <Label className="text-xs font-medium">Activity scope</Label>
+            <Label className="text-xs font-medium">{t("routineDetail.sections.activityScopeLabel")}</Label>
             <RadioCardGroup
-              ariaLabel="Activity gate scope"
+              ariaLabel={t("routineDetail.sections.activityScopeAria")}
               value={editDraft.activityGateScope}
               onValueChange={(activityGateScope) =>
                 setEditDraft((current) => ({ ...current, activityGateScope }))
               }
-              options={activityGateScopeOptions}
+              options={translatePolicyOptions(activityGateScopeOptions, t)}
             />
           </div>
         ) : null}
@@ -568,6 +586,7 @@ function NextFiresPreview({
   triggers: RoutineDetailType["triggers"];
   concurrencyPolicy: string;
 }) {
+  const { t } = useTranslation();
   const preview = useMemo(() => {
     const schedule = triggers
       .filter((trigger) => trigger.kind === "schedule" && trigger.enabled && trigger.cronExpression)
@@ -589,7 +608,7 @@ function NextFiresPreview({
   return (
     <div className="space-y-3">
       <p className="text-xs font-medium uppercase tracking-(--tracking-caps) text-muted-foreground">
-        Next 5 fires
+        {t("routineDetail.sections.nextFiresHeading")}
       </p>
       {preview ? (
         <>
@@ -609,14 +628,12 @@ function NextFiresPreview({
             ))}
           </div>
           <p className="text-(length:--text-micro) text-muted-foreground/60">
-            Preview assumes the previous run is still in flight when the next fires. Times shown in{" "}
-            {preview.timeZone}.
+            {t("routineDetail.sections.previewNote", { timeZone: preview.timeZone })}
           </p>
         </>
       ) : (
         <p className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
-          No enabled schedule trigger to preview. Add a schedule in Triggers to see how this policy
-          treats upcoming fires.
+          {t("routineDetail.sections.noPreview")}
         </p>
       )}
     </div>

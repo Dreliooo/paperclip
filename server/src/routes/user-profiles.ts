@@ -18,6 +18,7 @@ import type {
 } from "@paperclipai/shared";
 import { notFound } from "../errors.js";
 import { visibleIssueCondition } from "../services/issue-visibility.js";
+import { issueReadSqlCondition } from "../services/authorization.js";
 import { assertCompanyAccess } from "./authz.js";
 
 type CompanyUserRow = {
@@ -311,6 +312,7 @@ export function userProfileRoutes(db: Db) {
     const canonicalSlug = userSlugCandidates(row)[0] ?? row.principalId;
     const userId = row.userId ?? row.principalId;
 
+    const issueReadCondition = await issueReadSqlCondition(db, req.actor);
     const [stats, daily, recentIssues, recentActivity, topAgents, topProviders] = await Promise.all([
       Promise.all(
         PROFILE_WINDOWS.map((entry) =>
@@ -336,6 +338,8 @@ export function userProfileRoutes(db: Db) {
             eq(issues.companyId, companyId),
             visibleIssueCondition(),
             userIssueInvolvementSql(companyId, userId),
+            // Titles of private tasks are only listed to people who can read them.
+            issueReadCondition,
           ),
         )
         .orderBy(desc(issues.updatedAt))

@@ -1,3 +1,4 @@
+import type { CreationRequestEvidence } from "./creation-attribution.js";
 import type { TaskWorkspaceIntent, TaskWorkspacePendingSelection } from "./task-workspace.js";
 import type { ExecutionProjection, ExecutionBlocker } from "./execution-projection.js";
 import type {
@@ -874,6 +875,9 @@ export interface Issue {
   createdByAgentId: string | null;
   createdByUserId: string | null;
   responsibleUserId: string | null;
+  /** Person who asked an agent to create the task, only with evidence; omitted by older servers. */
+  requestedByUserId?: string | null;
+  requestEvidence?: CreationRequestEvidence | null;
   issueNumber: number | null;
   identifier: string | null;
   originKind?: IssueOriginKind;

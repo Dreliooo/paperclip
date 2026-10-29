@@ -1,5 +1,6 @@
 import type { IssueWorkMode } from "@paperclipai/shared";
 import { ClipboardList, Hammer, MessageCircleQuestion, type LucideIcon } from "lucide-react";
+import { t } from "@/i18n";
 
 export type WorkModeTone = "neutral" | "ask" | "planning";
 
@@ -45,21 +46,21 @@ export function workModeMetaList(): WorkModeMeta[] {
   return [
     {
       value: "standard",
-      label: "Auto mode",
+      label: t("ui3lib.workMode.auto"),
       icon: Hammer,
       tone: "neutral",
       classes: STANDARD_CLASSES,
     },
     {
       value: "planning",
-      label: "Plan mode",
+      label: t("ui3lib.workMode.plan"),
       icon: ClipboardList,
       tone: "planning",
       classes: PLANNING_CLASSES,
     },
     {
       value: "ask",
-      label: "Ask mode",
+      label: t("ui3lib.workMode.ask"),
       icon: MessageCircleQuestion,
       tone: "ask",
       classes: ASK_CLASSES,
@@ -80,10 +81,10 @@ export function nextWorkMode(mode: IssueWorkMode): IssueWorkMode {
 
 export function titleForPendingWorkMode(mode: IssueWorkMode): string {
   if (mode === "ask") {
-    return "Ask mode for this submission. Click to change. The responsible will answer in this thread; no implementation work.";
+    return t("ui3lib.workMode.askTitle");
   }
   if (mode === "planning") {
-    return "Plan mode is on for this submission. Click to change.";
+    return t("ui3lib.workMode.planTitle");
   }
-  return "Auto mode for this submission. Click to change.";
+  return t("ui3lib.workMode.autoTitle");
 }

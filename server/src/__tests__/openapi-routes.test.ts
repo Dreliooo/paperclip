@@ -86,6 +86,8 @@ const apiPrefixes: Record<string, string> = {
   "voice-sessions.ts": "/api",
   "tool-gateway.ts": "/api",
   "user-profiles.ts": "/api",
+  "user-preferences.ts": "/api",
+  "issue-objectives.ts": "/api",
 };
 
 const ROUTE_LITERAL_PATTERN =

@@ -12,6 +12,7 @@ import { Link } from "@/lib/router";
 import { authApi } from "@/api/auth";
 import { queryKeys } from "@/lib/queryKeys";
 import { useCloudInstance } from "@/hooks/useCloudInstance";
+import { useTranslation } from "@/i18n";
 import { useCloudInviteUrl } from "@/hooks/useCloudInviteUrl";
 import { useCanInviteCompanyMembers } from "@/hooks/useCompanyInviteAccess";
 import { useHiddenSettings } from "@/hooks/useHiddenSettings";
@@ -120,6 +121,7 @@ export function SidebarAccountMenu({
   open: controlledOpen,
   onOpenChange,
 }: SidebarAccountMenuProps) {
+  const { t } = useTranslation();
   const cloud = useCloudInstance();
   const isCloud = Boolean(cloud);
   // Invites live on the Members page (or in Cloud's People settings). Hide the
@@ -154,9 +156,9 @@ export function SidebarAccountMenu({
 
   const signOutMutation = useSignOut({ onSignedOut: closeNavigationChrome });
 
-  const displayName = session?.user.name?.trim() || "Board";
+  const displayName = session?.user.name?.trim() || t("ui3g1.SidebarAccountMenu.board");
   const secondaryLabel =
-    session?.user.email?.trim() || (deploymentMode === "authenticated" ? "Signed in" : "Local workspace board");
+    session?.user.email?.trim() || (deploymentMode === "authenticated" ? t("ui3g1.SidebarAccountMenu.signedIn") : t("ui3g1.SidebarAccountMenu.localWorkspaceBoard"));
   const initials = deriveInitials(displayName);
   const profileHref = userProfilePath(session?.user);
 
@@ -180,7 +182,7 @@ export function SidebarAccountMenu({
               "flex min-w-0 items-center gap-2.5 rounded-lg text-left text-(length:--text-compact) font-medium text-foreground/80 transition-colors hover:bg-accent/50 hover:text-foreground",
               rail ? "w-full px-3 py-2" : "flex-1 px-2 py-1.5",
             )}
-            aria-label="Open account menu"
+            aria-label={t("ui3g1.SidebarAccountMenu.openAccountMenu")}
           >
             <Avatar size="sm">
               {session?.user.image ? <AvatarImage src={session.user.image} alt={displayName} /> : null}
@@ -201,7 +203,7 @@ export function SidebarAccountMenu({
             <div className="relative flex items-start gap-3">
               <Link
                 to={profileHref}
-                aria-label="View profile"
+                aria-label={t("ui3g1.SidebarAccountMenu.viewProfile")}
                 onClick={closeNavigationChrome}
                 className="absolute inset-0 rounded-xl transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
@@ -220,10 +222,10 @@ export function SidebarAccountMenu({
                     href={`https://github.com/paperclipai/paperclip/commit/${stagingCommit}`}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`View commit ${stagingCommit} on GitHub`}
+                    aria-label={t("ui3g1.SidebarAccountMenu.viewCommit", { sha: stagingCommit })}
                     title={stagingCommit}
                   >
-                    SHA {stagingCommit.slice(0, 7)}
+                    {t("ui3g1.SidebarAccountMenu.sha", { sha: stagingCommit.slice(0, 7) })}
                   </a>
                 ) : null}
               </div>
@@ -232,8 +234,8 @@ export function SidebarAccountMenu({
             <div className="mt-4 space-y-1">
               {showInvite && inviteHref ? (
                 <MenuAction
-                  label="Invite"
-                  description="Invite people to your organization."
+                  label={t("ui3g1.SidebarAccountMenu.invite")}
+                  description={t("ui3g1.SidebarAccountMenu.inviteDescription")}
                   icon={UserPlus}
                   href={inviteHref}
                   topLevel={isCloud}
@@ -241,8 +243,8 @@ export function SidebarAccountMenu({
                 />
               ) : null}
               <MenuAction
-                label="Documentation"
-                description="Open Paperclip docs in a new tab."
+                label={t("ui3g1.SidebarAccountMenu.documentation")}
+                description={t("ui3g1.SidebarAccountMenu.documentationDescription")}
                 icon={BookOpen}
                 href={DOCS_URL}
                 external
@@ -264,10 +266,10 @@ export function SidebarAccountMenu({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-foreground">
-                      {signOutMutation.isPending ? "Signing out..." : "Sign out"}
+                      {signOutMutation.isPending ? t("ui3g1.SidebarAccountMenu.signingOut") : t("ui3g1.SidebarAccountMenu.signOut")}
                     </span>
                     <span className="block text-xs text-muted-foreground">
-                      End this browser session.
+                      {t("ui3g1.SidebarAccountMenu.endSession")}
                     </span>
                   </span>
                 </button>
@@ -284,13 +286,13 @@ export function SidebarAccountMenu({
                 href={FEEDBACK_URL}
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Share feedback"
+                aria-label={t("ui3g1.SidebarAccountMenu.shareFeedback")}
                 className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground/50 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Flag className="h-4 w-4" aria-hidden="true" />
               </a>
             </TooltipTrigger>
-            <TooltipContent side="top">Share feedback</TooltipContent>
+            <TooltipContent side="top">{t("ui3g1.SidebarAccountMenu.shareFeedback")}</TooltipContent>
           </Tooltip>
         ) : null}
       </div>

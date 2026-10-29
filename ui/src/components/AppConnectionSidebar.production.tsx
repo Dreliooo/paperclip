@@ -21,12 +21,14 @@ import {
   type AppGalleryDisplayEntry,
 } from "@/pages/apps/app-definition-display";
 import { SidebarNavItem } from "./SidebarNavItem.production";
+import { useTranslation } from "@/i18n";
 
 type AppDetailSidebarProps =
   | { kind: "connection"; connectionId: string }
   | { kind: "application"; applicationId: string };
 
 export function AppDetailSidebar(props: AppDetailSidebarProps) {
+  const { t } = useTranslation();
   const { selectedCompanyId } = useCompany();
   const { isMobile, setSidebarOpen } = useSidebar();
 
@@ -65,7 +67,7 @@ export function AppDetailSidebar(props: AppDetailSidebarProps) {
     ? (connectionsQuery.data?.connections ?? []).filter((candidate) => candidate.applicationId === props.applicationId)
     : [];
   const previousConnection = latestArchivedConnection(appConnections);
-  const appName = connection ? humanizeConnectionDisplayName(connection) : application?.name ?? "App";
+  const appName = connection ? humanizeConnectionDisplayName(connection) : application?.name ?? t("ui3g0.appDetail.appFallback");
   const logoEntry = galleryEntryFor(
     (galleryQuery.data?.apps ?? []) as AppGalleryDisplayEntry[],
     connection,
@@ -109,7 +111,7 @@ export function AppDetailSidebar(props: AppDetailSidebarProps) {
               end
               badge={tab.key === "review" && reviewCount > 0 ? reviewCount : undefined}
               badgeTone="danger"
-              badgeLabel="needing review"
+              badgeLabel={t("ui3g0.appDetail.needingReview")}
             />
           ))}
         </div>

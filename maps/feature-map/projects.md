@@ -22,6 +22,14 @@ Agent access: [companion](../agent-access-map/projects.md).
 ### `project-list`
 
 Open `/projects`, create a project, and enter its overview or Issues view.
+Switch between **My projects** and **All projects** (`?view=mine|all`; the last
+choice is remembered per browser). My projects comes from the server and each row
+says why it is yours (created, requested, shared, your tasks, following, personal);
+All projects shows who created each one. File projects into folders and subfolders
+(up to four levels) from the left rail or a row's **Move to…** menu
+(`?folder=<id>|unfiled`); a folder shows its subfolders' projects too. Project
+details show **Created by**, **Requested by** (only with evidence), **Access
+owner** and **Lead agent**.
 
 ### `repository-settings`
 
@@ -34,6 +42,10 @@ Preconditions: follow the [baseline](./README.md#before-driving-a-journey). Use 
 ### `project-list`
 
 Automated: [projects UI](../../ui/src/pages/Projects.test.tsx) and [project detail](../../ui/src/pages/ProjectDetail.test.tsx) are component tests.
+
+Automated (folders): [project folder access](../../server/src/__tests__/project-folders.test.ts) proves folder counts and moves follow private-project read access.
+
+Automated (ownership): [project ownership](../../server/src/__tests__/project-ownership.test.ts) checks that two people get different My projects lists, private projects stay hidden, and requesters need run evidence; [project views](../../ui/src/lib/project-views.test.ts) covers the view and subfolder filters. Migration 0351's historical backfill was checked against fictional data in a local Postgres only.
 
 Manual: Create a project, add a task from its view, and reload. Verify the task belongs to that project, list counts are plausible, and links preserve company scope. Archive only the disposable project and inspect list/task behavior.
 
@@ -52,6 +64,8 @@ Manual: Attach a small repository, save, and create a project task. Inspect the 
   Reopen a renamed project through its stable UUID route, wait for the current
   Configuration form, and record the newly normalized URL before reloading.
 
+- Project folders only organize: they never change who can read a project. A
+  private project counts in a folder only for people on its access list.
 - Project repository configuration and a provisioned execution workspace are different records.
 - See [workspaces](./workspaces.md), [goals](./goals.md), and [budgets](./budgets-costs.md) for those features.
 - Do not assume a deleted or archived project should erase its historical task evidence.

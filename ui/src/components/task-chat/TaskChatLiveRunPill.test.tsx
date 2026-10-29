@@ -5,7 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ExecutionProjection } from "@paperclipai/shared";
 import type { TranscriptEntry } from "../../adapters";
-import { TaskChatLiveRunPill, toolCountSummaryFromEntries } from "./TaskChatLiveRunPill";
+import { TaskChatLiveRunPill, formatElapsedWords, toolCountSummaryFromEntries, toolCountsFromEntries } from "./TaskChatLiveRunPill";
 
 function toolCall(overrides: Partial<Extract<TranscriptEntry, { kind: "tool_call" }>>): TranscriptEntry {
   return { kind: "tool_call", ts: "2026-08-08T00:00:00.000Z", name: "read_file", input: {}, ...overrides };
@@ -120,4 +120,38 @@ describe("TaskChatLiveRunPill", () => {
     expect(pill?.textContent).toContain("ran 1 command");
   });
 
+  it("says which agent is working", () => {
+    act(() => {
+      root.render(
+        <TaskChatLiveRunPill
+          status="running"
+          startedAtMs={Date.now() - 65_000}
+          toolSummary={null}
+          toolCounts={{ commands: 40, other: 0 }}
+          agentName="Demo Agent"
+          agent={{ id: "agent-1" }}
+        />,
+      );
+    });
+    const pill = container.querySelector('[data-testid="task-chat-live-run-pill"]');
+    expect(pill?.querySelector('[data-testid="task-chat-agent-identity"]')?.textContent).toContain("Demo Agent");
+    expect(pill?.textContent).toContain("ran 40 commands");
+  });
+});
+
+describe("pill helpers", () => {
+  it("counts tool calls once each", () => {
+    expect(toolCountsFromEntries([
+      toolCall({ name: "bash", input: { command: "ls" }, toolUseId: "c1" }),
+      toolCall({ name: "bash", input: { command: "ls" }, toolUseId: "c1" }),
+      toolCall({ name: "read_file", toolUseId: "t1" }),
+    ])).toEqual({ commands: 1, other: 1 });
+  });
+
+  it("localizes elapsed time", () => {
+    expect(formatElapsedWords(11 * 60_000, "en")).toBe("11 minutes");
+    expect(formatElapsedWords(11 * 60_000, "es")).toBe("11 minutos");
+    expect(formatElapsedWords(65 * 60_000, "es")).toBe("1 hora 5 minutos");
+    expect(formatElapsedWords(0, "en")).toBeNull();
+  });
 });

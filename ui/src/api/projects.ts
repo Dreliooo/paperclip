@@ -1,4 +1,5 @@
 import type {
+  MyProjectsResult,
   Project,
   ProjectAccessMember,
   ProjectRepositoryOptions,
@@ -28,6 +29,9 @@ export const projectsApi = {
     const query = params.toString();
     return api.get<Project[]>("/companies/" + encodeURIComponent(companyId) + "/projects" + (query ? "?" + query : ""));
   },
+  /** The signed-in person's projects and why each one is theirs. */
+  mine: (companyId: string) =>
+    api.get<MyProjectsResult>("/companies/" + encodeURIComponent(companyId) + "/projects/mine"),
   get: (id: string, companyId?: string) => api.get<Project>(projectPath(id, companyId)),
   create: (companyId: string, data: Record<string, unknown>) =>
     api.post<Project>(`/companies/${companyId}/projects`, data),

@@ -953,6 +953,19 @@ export type {
 } from "./user-profile.js";
 export type { SidebarBadges } from "./sidebar-badges.js";
 export type { SidebarOrderPreference } from "./sidebar-preferences.js";
+export type { UsageDisplayMode, UserPreferences } from "./user-preferences.js";
+export {
+  ISSUE_OBJECTIVE_ACTIONS,
+  ISSUE_OBJECTIVE_STATUSES,
+  type IssueObjective,
+  type IssueObjectiveAction,
+  type IssueObjectiveLimitReason,
+  type IssueObjectiveLimits,
+  type IssueObjectiveProgress,
+  type IssueObjectiveStalledTask,
+  type IssueObjectiveStatus,
+  type IssueObjectiveUsage,
+} from "./issue-objective.js";
 export type {
   ResourceMembershipResourceType,
   ResourceMembershipState,

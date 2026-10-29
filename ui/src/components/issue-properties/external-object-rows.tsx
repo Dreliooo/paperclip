@@ -13,6 +13,7 @@ import {
   externalObjectStatusIconDefault,
 } from "../../lib/status-colors";
 import { cn } from "../../lib/utils";
+import { t, useTranslation } from "@/i18n";
 import { ExternalObjectStatusIcon } from "../ExternalObjectStatusIcon";
 import { PropertyRow } from "./primitives";
 import { ExpandRelationListButton } from "./relation-controls";
@@ -32,8 +33,8 @@ function externalObjectRowDisplayKey(group: IssueExternalObjectGroup): string {
   const displayKey = pill.displayKey?.trim();
   if (displayKey) return displayKey;
   if (pill.providerKey === "github") {
-    if (pill.objectType === "pull_request") return "Github PR";
-    if (pill.objectType === "issue") return "Github Issue";
+    if (pill.objectType === "pull_request") return t("ui2g3.externalObjects.githubPr");
+    if (pill.objectType === "issue") return t("ui2g3.externalObjects.githubIssue");
   }
   return externalObjectDisplayLabel(pill.providerKey, pill.objectType);
 }
@@ -57,8 +58,8 @@ function githubObjectPropertyValue(url: string | null | undefined): string | nul
     if (parsed.hostname !== "github.com") return null;
     const [, owner, repo, kind, number] = parsed.pathname.split("/");
     if (!owner || !repo || !number) return null;
-    if (kind === "pull") return `PR ${number}`;
-    if (kind === "issues") return `Issue ${number}`;
+    if (kind === "pull") return t("ui2g3.externalObjects.prNumber", { number });
+    if (kind === "issues") return t("ui2g3.externalObjects.issueNumber", { number });
     return null;
   } catch {
     return null;
@@ -167,6 +168,7 @@ export function ExternalObjectRows({
   externalObjectsError?: boolean;
   onRetryExternalObjects?: () => void;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
@@ -175,9 +177,9 @@ export function ExternalObjectRows({
 
   if (externalObjectsError) {
     return (
-      <PropertyRow label="External objects">
+      <PropertyRow label={t("ui2g3.externalObjects.label")}>
         <span className="text-xs text-muted-foreground">
-          Couldn't load external objects.
+          {t("ui2g3.externalObjects.loadFailed")}
           {onRetryExternalObjects ? (
             <>
               {" "}
@@ -186,7 +188,7 @@ export function ExternalObjectRows({
                 className="text-primary underline-offset-2 hover:underline"
                 onClick={onRetryExternalObjects}
               >
-                Retry
+                {t("ui2g3.externalObjects.retry")}
               </button>
             </>
           ) : null}
@@ -197,7 +199,7 @@ export function ExternalObjectRows({
 
   if (externalObjectsLoading) {
     return (
-      <PropertyRow label="External objects">
+      <PropertyRow label={t("ui2g3.externalObjects.label")}>
         <span className="h-4 w-24 animate-pulse rounded bg-muted/40" />
       </PropertyRow>
     );
@@ -226,7 +228,7 @@ export function ExternalObjectRows({
           );
         })}
       {expanded || hiddenExternalObjectCount > 0 ? (
-        <PropertyRow label="References">
+        <PropertyRow label={t("ui2g3.externalObjects.references")}>
           <ExpandRelationListButton
             hiddenCount={hiddenExternalObjectCount}
             expanded={expanded}

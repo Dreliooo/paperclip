@@ -217,6 +217,7 @@ export const queryKeys = {
     installed: (companyId: string) =>
       ["team-catalog", "installed", companyId] as const,
   },
+  issueObjective: (issueId: string) => ["issue-objective", issueId] as const,
   agents: {
     identity: (id: string) => ["agents", "identity", id] as const,
     list: (companyId: string) => ["agents", companyId] as const,
@@ -533,6 +534,8 @@ export const queryKeys = {
         companyId,
         { includeArchived: opts.includeArchived === true },
       ] as const,
+    /** Per person: keyed by user so a different sign-in never reuses the list. */
+    mine: (companyId: string, userId: string | null) => ["projects", companyId, "mine", userId ?? "anonymous"] as const,
     detail: (id: string) => ["projects", "detail", id] as const,
     accessMembers: (id: string) => ["projects", "access-members", id] as const,
   },
@@ -620,6 +623,7 @@ export const queryKeys = {
     mine: (companyId: string) =>
       ["inbox-agent-policy", companyId, "me"] as const,
   },
+  userPreferences: ["user-preferences", "me"] as const,
   sidebarPreferences: {
     companyOrder: (userId: string) =>
       ["sidebar-preferences", "company-order", userId] as const,
@@ -697,6 +701,9 @@ export const queryKeys = {
   activity: (companyId: string) => ["activity", companyId] as const,
   costs: (companyId: string, from?: string, to?: string) =>
     ["costs", companyId, from, to] as const,
+  cacheReuse: (scope: "agent" | "issue", id: string) => ["cache-reuse", scope, id] as const,
+  usageBreakdown: (companyId: string, groupBy: string, provider: string | null, from?: string, to?: string) =>
+    ["usage-breakdown", companyId, groupBy, provider, from, to] as const,
   usageByProvider: (companyId: string, from?: string, to?: string) =>
     ["usage-by-provider", companyId, from, to] as const,
   usageByBiller: (companyId: string, from?: string, to?: string) =>

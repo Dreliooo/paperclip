@@ -5,6 +5,7 @@ import type {
   ConnectionGrantStatus,
   ToolConnectionCredentialPolicy,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 /**
  * Canonical user-facing vocabulary for connection identity (PAP-17835).
@@ -73,15 +74,15 @@ export function connectionNameForCredentialPolicy(
 export function grantStatusLabel(status: ConnectionGrantStatus | null): string {
   switch (status) {
     case "active":
-      return "Connected";
+      return t("ui4.connectionIdentity.status.connected");
     case "needs_reauthorization":
-      return "Needs attention";
+      return t("ui4.connectionIdentity.status.needsAttention");
     case "expired":
-      return "Expired";
+      return t("ui4.connectionIdentity.status.expired");
     case "revoked":
-      return "Revoked";
+      return t("ui4.connectionIdentity.status.revoked");
     default:
-      return "Not connected";
+      return t("ui4.connectionIdentity.status.notConnected");
   }
 }
 
@@ -112,9 +113,9 @@ export function grantAccountLabel(
 ): string {
   const tenantName = grant?.providerTenant?.name?.trim();
   if (tenantName) return tenantName;
-  if (grant?.kind === "user") return options.subjectLabel?.trim() || "Connected account";
-  if (grant?.kind === "agent") return options.subjectLabel?.trim() || "Dedicated account";
-  return "Shared credential";
+  if (grant?.kind === "user") return options.subjectLabel?.trim() || t("ui4.connectionIdentity.account.connected");
+  if (grant?.kind === "agent") return options.subjectLabel?.trim() || t("ui4.connectionIdentity.account.dedicated");
+  return t("ui4.connectionIdentity.account.shared");
 }
 
 /**
@@ -124,8 +125,8 @@ export function grantAccountLabel(
  */
 export function audienceSummary(grant: Pick<ConnectionGrant, "members"> | null): string {
   const count = grant?.members?.length ?? 0;
-  if (count === 0) return "All organization members";
-  return `${count} selected ${count === 1 ? "member" : "members"}`;
+  if (count === 0) return t("ui4.connectionIdentity.audience.allMembers");
+  return t("ui4.connectionIdentity.audience.selectedMembers", { count });
 }
 
 export function audienceUserIds(grant: Pick<ConnectionGrant, "members"> | null): Set<string> {

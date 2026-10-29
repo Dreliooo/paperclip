@@ -8,6 +8,8 @@ import { z } from "zod";
 import { normalizeProjectRepositoryUrl, resolveProjectRepositorySelection } from "../services/project-repositories.js";
 import { toolAccessService } from "../services/tool-access.js";
 import { Router, type Request, type Response } from "express";
+import { creationAttributionForActor } from "../services/creation-attribution.js";
+import { listProjectInvolvement } from "../services/project-involvement.js";
 import type { Db } from "@paperclipai/db";
 import { agents, authUsers, companyMemberships, instanceUserRoles, projectAccessMembers } from "@paperclipai/db";
 import { inArray } from "drizzle-orm";
@@ -26,7 +28,7 @@ import {
   updateProjectWorkspaceSchema,
   workspaceRuntimeControlTargetSchema,
 } from "@paperclipai/shared";
-import type { WorkspaceRuntimeDesiredState, WorkspaceRuntimeServiceStateMap } from "@paperclipai/shared";
+import type { MyProjectsResult, WorkspaceRuntimeDesiredState, WorkspaceRuntimeServiceStateMap } from "@paperclipai/shared";
 import { trackProjectCreated } from "@paperclipai/shared/telemetry";
 import { validate } from "../middleware/validate.js";
 import { accessService, projectService, logActivity, workspaceOperationService } from "../services/index.js";
@@ -311,6 +313,23 @@ export function projectRoutes(db: Db) {
     res.json(updated);
   });
 
+  // "My projects": ids and reasons only. Every project still goes through the
+  // normal read check, so this never shows a project the viewer cannot open.
+  router.get("/companies/:companyId/projects/mine", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    if (req.actor.type !== "board" || !req.actor.userId) {
+      throw forbidden("My projects requires a signed-in board user");
+    }
+    const userId = req.actor.userId;
+    const involvement = await listProjectInvolvement(db, companyId, userId);
+    const allowed = new Set((await filterProjectsForActor(
+      req,
+      involvement.map((entry) => ({ id: entry.projectId, companyId })),
+    )).map((project) => project.id));
+    res.json({ userId, projects: involvement.filter((entry) => allowed.has(entry.projectId)) } satisfies MyProjectsResult);
+  });
+
   router.get("/companies/:companyId/projects", async (req, res) => {
     const companyId = req.params.companyId as string;
     assertCompanyAccess(req, companyId);
@@ -366,6 +385,8 @@ export function projectRoutes(db: Db) {
 
     const { workspace, repositoryIds, repositoryUrls, idempotencyKey, ...projectData } = req.body as CreateProjectPayload & { idempotencyKey?: string; repositoryUrls?: string[] };
     projectData.privacyOwnerUserId = req.actor.type === "board" ? req.actor.userId ?? null : req.actor.type === "agent" ? req.actor.onBehalfOfUserId ?? null : null;
+    // Who created it and, only with evidence, who asked an agent to; never client-supplied.
+    Object.assign(projectData, await creationAttributionForActor(db, companyId, req.actor));
     const runContext = req.actor.type === "agent" && req.actor.source === "agent_jwt" && req.actor.runId
       ? await projectToolContext(db, req.actor, true) : null;
     await assertProjectEnvironmentSelection(

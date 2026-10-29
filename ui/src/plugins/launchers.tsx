@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "@/lib/router";
 import { queryKeys } from "@/lib/queryKeys";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
+import type { TFunction } from "i18next";
 import {
   PluginBridgeContext,
   type PluginHostContext,
@@ -127,9 +129,9 @@ const supportedLauncherBounds = new Set<PluginLauncherBounds>(
 
 const PluginLauncherRuntimeContext = createContext<PluginLauncherRuntimeContextValue | null>(null);
 
-function getErrorMessage(error: unknown): string {
+function getErrorMessage(error: unknown, t: TFunction): string {
   if (error instanceof Error && error.message) return error.message;
-  return "Unknown error";
+  return t("ui2g1.launchers.unknownError");
 }
 
 function buildLauncherHostContext(
@@ -289,6 +291,7 @@ function isPluginLauncherBounds(value: unknown): value is PluginLauncherBounds {
 export function usePluginLaunchers(
   filters: UsePluginLaunchersFilters,
 ): UsePluginLaunchersResult {
+  const { t } = useTranslation();
   const queryEnabled = filters.enabled ?? true;
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.plugins.uiContributions,
@@ -348,7 +351,7 @@ export function usePluginLaunchers(
     launchers,
     contributionsByPluginId,
     isLoading: queryEnabled && isLoading,
-    errorMessage: error ? getErrorMessage(error) : null,
+    errorMessage: error ? getErrorMessage(error, t) : null,
   };
 }
 
@@ -539,6 +542,7 @@ function LauncherModalShell({
     },
   }), [instance, requestBounds]);
 
+  const { t } = useTranslation();
   const baseZ = launcherOverlayBaseZIndex + stackIndex * 20;
   // Keep each launcher in a deterministic z-index band so every stacked modal,
   // drawer, or popover retains its own backdrop/panel pairing.
@@ -596,7 +600,7 @@ function LauncherModalShell({
             className="ml-auto"
             onClick={() => void closeLauncher(instance.key, { reason: "programmatic" })}
           >
-            Close
+            {t("ui2g1.launchers.close")}
           </Button>
         </div>
         <div
@@ -799,6 +803,7 @@ export function PluginLauncherOutlet({
   errorBehavior = "inline",
 }: PluginLauncherOutletProps) {
   const { activateLauncher } = usePluginLauncherRuntime();
+  const { t } = useTranslation();
   const { launchers, contributionsByPluginId, errorMessage } = usePluginLaunchers({
     placementZones,
     entityType,
@@ -809,7 +814,7 @@ export function PluginLauncherOutlet({
   if (errorMessage && errorBehavior === "inline") {
     return (
       <div className={cn("rounded-md border border-destructive/30 bg-destructive/5 px-2 py-1 text-xs text-destructive", errorClassName)}>
-        Plugin launchers unavailable: {errorMessage}
+        {t("ui2g1.launchers.unavailable", { message: errorMessage })}
       </div>
     );
   }

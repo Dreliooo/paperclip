@@ -1507,6 +1507,18 @@ describe("TaskChatComposer", () => {
       expect(document.querySelector('[data-testid="composer-add-goal"]')).toBeNull();
     });
 
+    it("opens the objective dialog from the add menu", async () => {
+      const onOpenObjective = vi.fn();
+      render(<TaskChatComposer onAdd={vi.fn()} workMode="standard"
+        onWorkModeChange={vi.fn()} onOpenObjective={onOpenObjective} />);
+      openComposerAddMenu();
+      const objective = document.querySelector<HTMLElement>('[data-testid="composer-add-objective"]');
+      expect(objective).not.toBeNull();
+      flushSync(() => objective!.click());
+      await flushAsync();
+      expect(onOpenObjective).toHaveBeenCalledTimes(1);
+    });
+
     it("commits a pending agent reassignment before starting the goal", async () => {
       const order: string[] = [];
       const onAdd = vi.fn().mockResolvedValue(undefined);

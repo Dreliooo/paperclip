@@ -1,3 +1,5 @@
+import { t } from "@/i18n";
+
 /**
  * Prosumer copy for the Apps surface (PAP-10856).
  *
@@ -51,106 +53,106 @@ export interface AppCopy {
  */
 const APP_COPY: Record<string, AppCopy> = {
   zapier: {
-    tagline: "Reach 9,000+ apps your team already uses.",
-    short: "Reach 9,000+ apps from your agents.",
+    get tagline() { return t("ui4.appGallery.apps.zapier.tagline"); },
+    get short() { return t("ui4.appGallery.apps.zapier.short"); },
   },
   github: {
-    tagline: "Read code and pull requests, comment on issues.",
-    short: "Read code and pull requests, comment on issues.",
+    get tagline() { return t("ui4.appGallery.apps.github.tagline"); },
+    get short() { return t("ui4.appGallery.apps.github.short"); },
   },
   slack: {
-    tagline: "Send and read messages in your team's channels.",
-    short: "Send and read messages in your channels.",
+    get tagline() { return t("ui4.appGallery.apps.slack.tagline"); },
+    get short() { return t("ui4.appGallery.apps.slack.short"); },
   },
   notion: {
-    tagline: "Read and update pages in your workspace.",
-    short: "Read and update pages in your workspace.",
+    get tagline() { return t("ui4.appGallery.apps.notion.tagline"); },
+    get short() { return t("ui4.appGallery.apps.notion.short"); },
   },
   railway: {
-    tagline: "Inspect services, read logs, and manage deployments.",
-    short: "Connect Railway for deployments, logs, and container access.",
+    get tagline() { return t("ui4.appGallery.apps.railway.tagline"); },
+    get short() { return t("ui4.appGallery.apps.railway.short"); },
   },
   posthog: {
-    tagline: "Explore product usage, errors, flags, and experiments.",
-    short: "Sign in with PostHog. Project pinning and access controls are optional.",
+    get tagline() { return t("ui4.appGallery.apps.posthog.tagline"); },
+    get short() { return t("ui4.appGallery.apps.posthog.short"); },
   },
   gauge: {
-    tagline: "Track your brand in AI answers and run content workflows.",
-    short: "Sign in with Gauge and pick an organization. API keys are optional.",
+    get tagline() { return t("ui4.appGallery.apps.gauge.tagline"); },
+    get short() { return t("ui4.appGallery.apps.gauge.short"); },
   },
   neon: {
-    tagline: "Manage Postgres projects, branches, and queries.",
-    short: "Sign in with Neon. Project pinning and read-only mode are optional.",
+    get tagline() { return t("ui4.appGallery.apps.neon.tagline"); },
+    get short() { return t("ui4.appGallery.apps.neon.short"); },
   },
   superagent: {
-    tagline: "Review security findings and run red-team checks.",
-    short: "Connect with a Superagent API key. Billable and destructive tools stay under action policies.",
+    get tagline() { return t("ui4.appGallery.apps.superagent.tagline"); },
+    get short() { return t("ui4.appGallery.apps.superagent.short"); },
   },
   linear: {
-    tagline: "Create, update and read tickets.",
-    short: "Create, update and read tickets.",
+    get tagline() { return t("ui4.appGallery.apps.linear.tagline"); },
+    get short() { return t("ui4.appGallery.apps.linear.short"); },
   },
   "google-sheets": {
-    tagline: "Read and update selected spreadsheets.",
-    short: "Read spreadsheets or update the files you choose.",
+    get tagline() { return t("ui4.appGallery.apps.googleSheets.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleSheets.short"); },
   },
   gmail: {
-    tagline: "Read mail and create drafts for your review.",
-    short: "Read mail and create drafts for your review.",
+    get tagline() { return t("ui4.appGallery.apps.gmail.tagline"); },
+    get short() { return t("ui4.appGallery.apps.gmail.short"); },
   },
   "google-drive": {
-    tagline: "Find, read, and create files in Drive.",
-    short: "Find, read, and create files in Drive.",
+    get tagline() { return t("ui4.appGallery.apps.googleDrive.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleDrive.short"); },
   },
   "google-docs": {
-    tagline: "Read and update documents.",
-    short: "Read and update documents.",
+    get tagline() { return t("ui4.appGallery.apps.googleDocs.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleDocs.short"); },
   },
   "google-slides": {
-    tagline: "Read and update presentations.",
-    short: "Read and update presentations.",
+    get tagline() { return t("ui4.appGallery.apps.googleSlides.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleSlides.short"); },
   },
   "google-calendar": {
-    tagline: "Review calendars and manage events.",
-    short: "Review calendars and manage events.",
+    get tagline() { return t("ui4.appGallery.apps.googleCalendar.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleCalendar.short"); },
   },
   "google-chat": {
-    tagline: "Read conversations and send messages.",
-    short: "Read conversations and send messages.",
+    get tagline() { return t("ui4.appGallery.apps.googleChat.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleChat.short"); },
   },
   "google-people": {
-    tagline: "Look up contacts and people in your directory.",
-    short: "Look up contacts and people in your directory.",
+    get tagline() { return t("ui4.appGallery.apps.googlePeople.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googlePeople.short"); },
   },
   "google-workspace-search": {
-    tagline: "Search across your Google workspace.",
-    short: "Search across your Google workspace.",
+    get tagline() { return t("ui4.appGallery.apps.googleWorkspaceSearch.tagline"); },
+    get short() { return t("ui4.appGallery.apps.googleWorkspaceSearch.short"); },
   },
   hubspot: {
-    tagline: "Look up contacts and update deal stages.",
-    short: "Look up contacts and update deal stages.",
+    get tagline() { return t("ui4.appGallery.apps.hubspot.tagline"); },
+    get short() { return t("ui4.appGallery.apps.hubspot.short"); },
   },
   intercom: {
-    tagline: "Read and reply to customer conversations.",
-    short: "Read and reply to customer conversations.",
+    get tagline() { return t("ui4.appGallery.apps.intercom.tagline"); },
+    get short() { return t("ui4.appGallery.apps.intercom.short"); },
   },
   figma: {
-    tagline: "Read files and post comments on frames.",
-    short: "Read files and post comments on frames.",
+    get tagline() { return t("ui4.appGallery.apps.figma.tagline"); },
+    get short() { return t("ui4.appGallery.apps.figma.short"); },
   },
   stripe: {
-    tagline: "Read customers, invoices, and payouts.",
-    short: "Read customers, invoices, and payouts.",
+    get tagline() { return t("ui4.appGallery.apps.stripe.tagline"); },
+    get short() { return t("ui4.appGallery.apps.stripe.short"); },
   },
   context7: {
-    tagline: "Look up up-to-date docs for your libraries.",
-    short: "Look up up-to-date docs for your libraries.",
+    get tagline() { return t("ui4.appGallery.apps.context7.tagline"); },
+    get short() { return t("ui4.appGallery.apps.context7.short"); },
   },
 };
 
 const GENERIC: AppCopy = {
-  tagline: "Give your agents access to this app.",
-  short: "Give your agents access to this app.",
+  get tagline() { return t("ui4.appGallery.generic"); },
+  get short() { return t("ui4.appGallery.generic"); },
 };
 
 /** Curated, gate-safe copy for a gallery app. */
@@ -175,7 +177,7 @@ export function credentialFieldLabel(
   rawLabel: string,
   fieldCount: number,
 ): string {
-  if (fieldCount <= 1) return `Your ${appName} key`;
+  if (fieldCount <= 1) return t("ui4.appGallery.credentialKey", { app: appName });
   const cleaned = sanitizeProsumerCopy(rawLabel);
-  return cleaned || `Your ${appName} key`;
+  return cleaned || t("ui4.appGallery.credentialKey", { app: appName });
 }

@@ -5,6 +5,7 @@ import type {
   ToolRiskLevel,
 } from "@paperclipai/shared";
 import type { ToolProfileEntryInput } from "@/api/tools";
+import { t } from "@/i18n";
 
 /**
  * Pure domain model for the prosumer access-profile wizard (PAP-10997).
@@ -31,9 +32,9 @@ export function toolCapability(tool: ToolCatalogEntry): ToolCapability {
 }
 
 export const CAPABILITY_LABEL: Record<ToolCapability, string> = {
-  read: "Read-only",
-  write: "Makes changes",
-  destructive: "Destructive",
+  get read() { return t("ui4.profileModel.capability.read"); },
+  get write() { return t("ui4.profileModel.capability.write"); },
+  get destructive() { return t("ui4.profileModel.capability.destructive"); },
 };
 
 // --- App grouping ----------------------------------------------------------
@@ -66,7 +67,7 @@ export function groupCatalogByApp(
       const name =
         (tool.applicationId ? applicationsById.get(tool.applicationId) : null) ??
         connectionsById.get(tool.connectionId) ??
-        "Tools";
+        t("ui4.profileModel.toolsFallback");
       group = {
         appKey,
         applicationId: tool.applicationId,
@@ -131,16 +132,16 @@ export function appCheckState(group: AppGroup, selection: AppSelection | undefin
 export function appSelectionLabel(group: AppGroup, selection: AppSelection | undefined): string {
   const total = group.tools.length;
   const state = appCheckState(group, selection);
-  if (state === "unchecked") return "None selected";
+  if (state === "unchecked") return t("ui4.profileModel.noneSelected");
   if (selection?.kind === "all" || (selection?.kind === "all_except" && selection.excluded.length === 0)) {
-    return `All ${group.name} tools (${total})`;
+    return t("ui4.profileModel.allAppTools", { name: group.name, total });
   }
   if (selection?.kind === "all_except") {
     const n = selection.excluded.length;
-    return `All ${group.name} except ${n}`;
+    return t("ui4.profileModel.allAppExcept", { name: group.name, n });
   }
   const n = selectedToolIds(group, selection).size;
-  return `${n} of ${total} ${group.name} tools`;
+  return t("ui4.profileModel.someAppTools", { n, total, name: group.name });
 }
 
 // --- Checkbox reducers -----------------------------------------------------
@@ -368,11 +369,31 @@ export interface TemplateDef {
 }
 
 export const TEMPLATES: TemplateDef[] = [
-  { key: "read_only", title: "Read-only", description: "See and fetch, but never change anything." },
-  { key: "everyday", title: "Everyday work", description: "Read and make routine changes — no destructive tools." },
-  { key: "full_access", title: "Full access", description: "Everything every connected app offers." },
-  { key: "scratch", title: "Start from scratch", description: "An empty profile you build up tool by tool." },
-  { key: "copy", title: "Copy an existing profile", description: "Start from a profile you already have." },
+  {
+    key: "read_only",
+    get title() { return t("ui4.profileModel.template.readOnlyTitle"); },
+    get description() { return t("ui4.profileModel.template.readOnlyDescription"); },
+  },
+  {
+    key: "everyday",
+    get title() { return t("ui4.profileModel.template.everydayTitle"); },
+    get description() { return t("ui4.profileModel.template.everydayDescription"); },
+  },
+  {
+    key: "full_access",
+    get title() { return t("ui4.profileModel.template.fullAccessTitle"); },
+    get description() { return t("ui4.profileModel.template.fullAccessDescription"); },
+  },
+  {
+    key: "scratch",
+    get title() { return t("ui4.profileModel.template.scratchTitle"); },
+    get description() { return t("ui4.profileModel.template.scratchDescription"); },
+  },
+  {
+    key: "copy",
+    get title() { return t("ui4.profileModel.template.copyTitle"); },
+    get description() { return t("ui4.profileModel.template.copyDescription"); },
+  },
 ];
 
 function capabilityPredicate(key: TemplateKey): (tool: ToolCatalogEntry) => boolean {

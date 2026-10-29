@@ -2,6 +2,7 @@ import { useRef } from "react";
 import type { ExecutionProjection } from "@paperclipai/shared";
 import { useSecondTick } from "@/hooks/useSecondTick";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 import type {
   TaskChatItem,
   TaskChatMessageItem,
@@ -72,6 +73,7 @@ function RunnerTurnStatus({
   finishedAtMs?: number | null;
   continuedAfterSteering?: boolean;
 }) {
+  const { t } = useTranslation();
   const terminal = isTerminalRunStatus(status);
   useSecondTick(!terminal && startedAtMs != null);
   const elapsedMs =
@@ -84,14 +86,13 @@ function RunnerTurnStatus({
   const elapsed = formatCompactDuration(elapsedMs);
 
   const failed = terminalStatusFailed(status);
-  const label = terminal ? (failed ? "Stopped" : "Worked") : "Working";
   const semanticLabel = terminal
     ? elapsed
-      ? `${label} ${failed ? "after" : "for"} ${elapsed}`
-      : label
-    : `${label} for ${elapsed ?? "0s"}`;
+      ? t(failed ? "ui3g2.runnerTurn.stoppedAfter" : "ui3g2.runnerTurn.workedFor", { elapsed })
+      : t(failed ? "ui3g2.runnerTurn.stopped" : "ui3g2.runnerTurn.worked")
+    : t("ui3g2.runnerTurn.workingFor", { elapsed: elapsed ?? "0s" });
   const visibleLabel = continuedAfterSteering
-    ? `Continued after steering · ${semanticLabel}`
+    ? t("ui3g2.runnerTurn.continued", { status: semanticLabel })
     : semanticLabel;
 
   return (
@@ -108,9 +109,10 @@ function RunnerTurnStatus({
 }
 
 function RunnerCurrentActivityTail({ status }: { status: string }) {
+  const { t } = useTranslation();
   if (isTerminalRunStatus(status)) return null;
   return <div className="mt-2 flex min-h-8 min-w-0 items-center gap-2 px-1 py-1 text-xs text-muted-foreground" data-testid="task-chat-current-activity" data-turn-position="tail">
-    <span className="shimmer-text shimmer-text-muted" aria-live="polite" data-testid="task-chat-current-activity-label">Thinking</span>
+    <span className="shimmer-text shimmer-text-muted" aria-live="polite" data-testid="task-chat-current-activity-label">{t("ui3g2.runnerTurn.thinking")}</span>
   </div>;
 }
 
@@ -148,6 +150,7 @@ export function TaskChatRunnerTurn({
     decision: TaskChatRuntimeRequestDecision,
   ) => void | Promise<void>;
 }) {
+  const { t } = useTranslation();
   const terminal = isTerminalRunStatus(status);
   const yielded = items.some(
     (item) =>
@@ -230,7 +233,7 @@ export function TaskChatRunnerTurn({
           role="status"
           data-testid="task-chat-activity-unavailable"
         >
-          Live runner activity is temporarily unavailable. Retrying…
+          {t("ui3g2.runnerTurn.activityUnavailable")}
         </div>
       ) : null}
       {timelineRows.length > 0 ? (
@@ -276,7 +279,7 @@ export function TaskChatRunnerTurn({
             item={{ ...final, authorName: agentName ?? undefined, agentIcon, agent, timestamp: final.timestamp ?? formatTaskChatTimestamp(final.atMs) }}
             animateEntry={false}
             hideAgentIdentity={!continuedAfterSteering}
-            actions={<TaskChatBubbleActions copyText={final.text} />}
+            actions={<TaskChatBubbleActions copyText={final.text} speakId={final.id ? `final:${final.id}` : undefined} />}
           />
         </div>
       ) : null}

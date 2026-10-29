@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { quotaUnavailableMessage } from "@/lib/quota-refresh";
 import type { QuotaWindow } from "@paperclipai/shared";
 import { cn, quotaSourceDisplayName } from "@/lib/utils";
@@ -28,8 +29,10 @@ function orderedWindows(windows: QuotaWindow[]): QuotaWindow[] {
   });
 }
 
-function detailText(window: QuotaWindow): string | null {
-  if (typeof window.detail === "string" && window.detail.trim().length > 0) return window.detail.trim();
+type WindowDetail = { kind: "text"; text: string } | { kind: "resets"; formatted: string };
+
+function detailText(window: QuotaWindow): WindowDetail | null {
+  if (typeof window.detail === "string" && window.detail.trim().length > 0) return { kind: "text", text: window.detail.trim() };
   if (!window.resetsAt) return null;
   const formatted = new Date(window.resetsAt).toLocaleString(undefined, {
     month: "short",
@@ -38,7 +41,7 @@ function detailText(window: QuotaWindow): string | null {
     minute: "2-digit",
     timeZoneName: "short",
   });
-  return `Resets ${formatted}`;
+  return { kind: "resets", formatted };
 }
 
 function fillClass(usedPercent: number | null): string {
@@ -58,6 +61,7 @@ export function CodexSubscriptionPanel({
   source = null,
   error = null,
 }: CodexSubscriptionPanelProps) {
+  const { t } = useTranslation();
   const ordered = orderedWindows(windows);
   const accountWindows = ordered.filter((window) => !isModelSpecific(window.label));
   const modelWindows = ordered.filter((window) => isModelSpecific(window.label));
@@ -67,10 +71,10 @@ export function CodexSubscriptionPanel({
       <div className="flex items-start justify-between gap-3 border-b border-border pb-3">
         <div className="min-w-0">
           <div className="text-(length:--text-micro) font-semibold uppercase tracking-(--tracking-caps) text-muted-foreground">
-            Codex subscription
+            {t("ui2g2.codexSubscription.title")}
           </div>
           <div className="mt-1 text-sm text-muted-foreground">
-            Quota from the Codex subscription connected to this server.
+            {t("ui2g2.codexSubscription.description")}
           </div>
         </div>
         {source ? (
@@ -89,7 +93,7 @@ export function CodexSubscriptionPanel({
       <div className="mt-4 space-y-5">
         <div className="space-y-3">
           <div className="text-(length:--text-micro) font-semibold uppercase tracking-(--tracking-caps) text-muted-foreground">
-            Account windows
+            {t("ui2g2.codexSubscription.accountWindows")}
           </div>
           <div className="space-y-3">
             {accountWindows.map((window) => (
@@ -101,7 +105,7 @@ export function CodexSubscriptionPanel({
         {modelWindows.length > 0 ? (
           <div className="space-y-3">
             <div className="text-(length:--text-micro) font-semibold uppercase tracking-(--tracking-caps) text-muted-foreground">
-              Model windows
+              {t("ui2g2.codexSubscription.modelWindows")}
             </div>
             <div className="space-y-3">
               {modelWindows.map((window) => (
@@ -116,7 +120,13 @@ export function CodexSubscriptionPanel({
 }
 
 function QuotaWindowRow({ window }: { window: QuotaWindow }) {
-  const detail = detailText(window);
+  const { t } = useTranslation();
+  const detailResult = detailText(window);
+  const detail = detailResult
+    ? detailResult.kind === "text"
+      ? detailResult.text
+      : t("ui2g2.codexSubscription.resets", { time: detailResult.formatted })
+    : null;
   if (window.usedPercent == null) {
     return (
       <div className="border border-border px-3.5 py-3">
@@ -143,7 +153,7 @@ function QuotaWindowRow({ window }: { window: QuotaWindow }) {
           ) : null}
         </div>
         <div className="shrink-0 text-sm font-semibold tabular-nums text-foreground">
-          {window.usedPercent}% used
+          {t("ui2g2.codexSubscription.usedPercent", { percent: window.usedPercent })}
         </div>
       </div>
 

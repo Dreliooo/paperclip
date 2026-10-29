@@ -514,6 +514,8 @@ describe("claudeModelUsageTotals", () => {
       inputTokens: 4_650,
       outputTokens: 77_000,
       cachedInputTokens: 260_000,
+      // Subset of inputTokens, reported so cache writes can be priced apart.
+      cacheWriteTokens: 4_500,
     });
   });
 
@@ -552,6 +554,7 @@ describe("parseClaudeStreamJson usage extraction", () => {
       inputTokens: 2_090,
       outputTokens: 77_000,
       cachedInputTokens: 300_000,
+      cacheWriteTokens: 2_000,
     });
     expect(parsed.usageBasis).toBe("per_run");
     expect(parsed.costUsd).toBeCloseTo(1.25);
@@ -576,7 +579,7 @@ describe("interrupted Claude accounting", () => {
       { type: "assistant", message: { id: "m2", usage: { input_tokens: 5, output_tokens: 2 } } },
     ];
     const parsed = parseClaudeStreamJson(events.map((event) => JSON.stringify(event)).join("\n"));
-    expect(parsed.usage).toEqual({ inputTokens: 35, cachedInputTokens: 40, outputTokens: 9 });
+    expect(parsed.usage).toEqual({ inputTokens: 35, cachedInputTokens: 40, outputTokens: 9, cacheWriteTokens: 20 });
     expect(parsed.usageBasis).toBe("per_run");
     expect(parsed.costUsd).toBeNull();
   });

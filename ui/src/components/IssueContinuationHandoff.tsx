@@ -6,6 +6,7 @@ import { cn, relativeTime } from "../lib/utils";
 import { MarkdownBody, type MarkdownExternalReferenceMap } from "./MarkdownBody";
 import { ChevronDown, ChevronRight, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n";
 
 type IssueContinuationHandoffProps = {
   document: IssueDocument | null | undefined;
@@ -18,6 +19,7 @@ export function IssueContinuationHandoff({
   focusSignal = 0,
   externalReferences,
 }: IssueContinuationHandoffProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +35,7 @@ export function IssueContinuationHandoff({
 
   if (!document) return null;
 
-  const title = document.title?.trim() || "Continuation handoff";
+  const title = document.title?.trim() || t("ui2g4.issueContinuationHandoff.defaultTitle");
 
   return (
     <div
@@ -49,7 +51,7 @@ export function IssueContinuationHandoff({
           type="button"
           className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
           onClick={() => setExpanded((current) => !current)}
-          aria-label={expanded ? "Collapse continuation handoff" : "Expand continuation handoff"}
+          aria-label={expanded ? t("ui2g4.issueContinuationHandoff.collapseAria") : t("ui2g4.issueContinuationHandoff.expandAria")}
           aria-expanded={expanded}
         >
           {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -59,19 +61,19 @@ export function IssueContinuationHandoff({
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-foreground">{title}</span>
             <Badge variant="outline" className="border-border font-mono text-(length:--text-nano) uppercase text-muted-foreground">
-              handoff
+              {t("ui2g4.issueContinuationHandoff.badge")}
             </Badge>
           </div>
           <div className="text-(length:--text-micro) text-muted-foreground">
-            Updated {relativeTime(document.updatedAt)}
-            {document.latestRevisionNumber > 0 ? ` - revision ${document.latestRevisionNumber}` : ""}
+            {t("ui2g4.issueContinuationHandoff.updated", { time: relativeTime(document.updatedAt) })}
+            {document.latestRevisionNumber > 0 ? t("ui2g4.issueContinuationHandoff.revision", { revision: document.latestRevisionNumber }) : ""}
           </div>
         </div>
         <AgentSetupPrompt
           prompt={document.body}
-          label="Continue with an agent"
-          title="Task handoff"
-          description="Paste this into your agent to continue from this handoff."
+          label={t("ui2g4.issueContinuationHandoff.continueLabel")}
+          title={t("ui2g4.issueContinuationHandoff.promptTitle")}
+          description={t("ui2g4.issueContinuationHandoff.promptDescription")}
           align="end"
         />
       </div>

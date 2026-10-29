@@ -57,6 +57,7 @@ import type {
   SuggestTasksInteraction,
   SuggestTasksResultCreatedTask,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export function isInteractionPreparingApproval(interaction: IssueThreadInteraction): boolean {
   return interaction.status === "pending"
@@ -154,19 +155,19 @@ export function buildItemVerdictsSummary(
     result: interaction.result,
   });
   if (interaction.status === "answered") {
-    const parts = [`${progress.decided} decided`];
-    if (progress.approved > 0) parts.push(`${progress.approved} approved`);
-    if (progress.rejected > 0) parts.push(`${progress.rejected} rejected`);
-    if (progress.deferred > 0) parts.push(`${progress.deferred} deferred`);
+    const parts = [t("ui3lib.threadInteractions.verdicts.decided", { count: progress.decided })];
+    if (progress.approved > 0) parts.push(t("ui3lib.threadInteractions.verdicts.approved", { count: progress.approved }));
+    if (progress.rejected > 0) parts.push(t("ui3lib.threadInteractions.verdicts.rejected", { count: progress.rejected }));
+    if (progress.deferred > 0) parts.push(t("ui3lib.threadInteractions.verdicts.deferred", { count: progress.deferred }));
     return parts.join(" · ");
   }
   if (interaction.status === "expired") {
     const outcome = interaction.result?.outcome;
-    if (outcome === "superseded_by_comment") return "Verdicts expired after comment";
-    if (outcome === "stale_target") return "Verdicts expired after target changed";
-    return "Verdicts expired";
+    if (outcome === "superseded_by_comment") return t("ui3lib.threadInteractions.verdicts.expiredAfterComment");
+    if (outcome === "stale_target") return t("ui3lib.threadInteractions.verdicts.expiredAfterTarget");
+    return t("ui3lib.threadInteractions.verdicts.expired");
   }
-  return `${progress.decided} of ${progress.total} decided`;
+  return t("ui3lib.threadInteractions.verdicts.decidedOf", { decided: progress.decided, total: progress.total });
 }
 
 export function getCheckboxConfirmationSelectedLabels(args: {
@@ -214,60 +215,56 @@ export function buildIssueThreadInteractionSummary(
   const administrativeOutcome = interaction.result && "outcome" in interaction.result
     ? interaction.result.outcome
     : null;
-  if (administrativeOutcome === "skipped") return "Skipped interaction";
-  if (administrativeOutcome === "withdrawn") return "Withdrawn interaction";
-  if (administrativeOutcome === "issue_closed") return "Expired when issue closed";
-  if (administrativeOutcome === "addressee_deleted") return "Cancelled when addressee was deleted";
+  if (administrativeOutcome === "skipped") return t("ui3lib.threadInteractions.skipped");
+  if (administrativeOutcome === "withdrawn") return t("ui3lib.threadInteractions.withdrawn");
+  if (administrativeOutcome === "issue_closed") return t("ui3lib.threadInteractions.expiredIssueClosed");
+  if (administrativeOutcome === "addressee_deleted") return t("ui3lib.threadInteractions.cancelledAddresseeDeleted");
   if (interaction.kind === "suggest_tasks") {
     const count = interaction.payload.tasks.length;
     if (interaction.status === "accepted") {
       const createdCount = interaction.result?.createdTasks?.length ?? 0;
       const skippedCount = interaction.result?.skippedClientKeys?.length ?? 0;
       if (skippedCount > 0) {
-        return `Accepted ${createdCount} of ${count} tasks`;
+        return t("ui3lib.threadInteractions.acceptedPartial", { created: createdCount, total: count });
       }
-      return createdCount === 1 ? "Accepted 1 task" : `Accepted ${createdCount} tasks`;
+      return t("ui3lib.threadInteractions.acceptedTasks", { count: createdCount });
     }
     if (interaction.status === "rejected") {
-      return count === 1 ? "Rejected 1 task" : `Rejected ${count} tasks`;
+      return t("ui3lib.threadInteractions.rejectedTasks", { count });
     }
-    return count === 1 ? "Suggested 1 task" : `Suggested ${count} tasks`;
+    return t("ui3lib.threadInteractions.suggestedTasks", { count });
   }
 
   if (interaction.kind === "request_confirmation") {
-    if (interaction.status === "accepted") return "Confirmed request";
+    if (interaction.status === "accepted") return t("ui3lib.threadInteractions.confirmedRequest");
     if (interaction.status === "rejected") {
       const rejectLabel = interaction.payload.rejectLabel?.trim();
-      return rejectLabel ? `Selected “${rejectLabel}”` : "Declined request";
+      return rejectLabel ? t("ui3lib.threadInteractions.selectedLabel", { label: rejectLabel }) : t("ui3lib.threadInteractions.declinedRequest");
     }
     if (interaction.status === "expired") {
       const outcome = interaction.result?.outcome;
-      if (outcome === "superseded_by_comment") return "Confirmation expired after comment";
-      if (outcome === "stale_target") return "Confirmation expired after target changed";
-      return "Confirmation expired";
+      if (outcome === "superseded_by_comment") return t("ui3lib.threadInteractions.confirmationExpiredAfterComment");
+      if (outcome === "stale_target") return t("ui3lib.threadInteractions.confirmationExpiredAfterTarget");
+      return t("ui3lib.threadInteractions.confirmationExpired");
     }
-    return "Requested confirmation";
+    return t("ui3lib.threadInteractions.requestedConfirmation");
   }
 
   if (interaction.kind === "request_checkbox_confirmation") {
     const optionCount = interaction.payload.options.length;
     if (interaction.status === "accepted") {
       const selectedCount = interaction.result?.selectedOptionIds?.length ?? 0;
-      if (selectedCount === 0) return "Confirmed with no options selected";
-      return selectedCount === 1
-        ? `Confirmed 1 of ${optionCount} options`
-        : `Confirmed ${selectedCount} of ${optionCount} options`;
+      if (selectedCount === 0) return t("ui3lib.threadInteractions.confirmedNoOptions");
+      return t("ui3lib.threadInteractions.confirmedOf", { selected: selectedCount, total: optionCount });
     }
-    if (interaction.status === "rejected") return "Declined selection";
+    if (interaction.status === "rejected") return t("ui3lib.threadInteractions.declinedSelection");
     if (interaction.status === "expired") {
       const outcome = interaction.result?.outcome;
-      if (outcome === "superseded_by_comment") return "Selection expired after comment";
-      if (outcome === "stale_target") return "Selection expired after target changed";
-      return "Selection expired";
+      if (outcome === "superseded_by_comment") return t("ui3lib.threadInteractions.selectionExpiredAfterComment");
+      if (outcome === "stale_target") return t("ui3lib.threadInteractions.selectionExpiredAfterTarget");
+      return t("ui3lib.threadInteractions.selectionExpired");
     }
-    return optionCount === 1
-      ? "Requested a selection from 1 option"
-      : `Requested a selection from ${optionCount} options`;
+    return t("ui3lib.threadInteractions.requestedSelection", { count: optionCount });
   }
 
   if (interaction.kind === "request_item_verdicts") {
@@ -275,30 +272,31 @@ export function buildIssueThreadInteractionSummary(
   }
 
   if (interaction.kind === "connection_intent") {
-    if (interaction.status === "accepted") return `${interaction.payload.serviceName} connected`;
-    if (interaction.status === "rejected") return `${interaction.payload.serviceName} declined`;
+    const service = interaction.payload.serviceName;
+    if (interaction.status === "accepted") return t("ui3lib.threadInteractions.connection.connected", { service });
+    if (interaction.status === "rejected") return t("ui3lib.threadInteractions.connection.declined", { service });
     if (interaction.status === "expired") {
       return interaction.result?.outcome === "superseded"
-        ? `${interaction.payload.serviceName} request superseded`
-        : `${interaction.payload.serviceName} request expired`;
+        ? t("ui3lib.threadInteractions.connection.supersededRequest", { service })
+        : t("ui3lib.threadInteractions.connection.expiredRequest", { service });
     }
-    return `Connect ${interaction.payload.serviceName}`;
+    return t("ui3lib.threadInteractions.connection.connect", { service });
   }
 
   const count = interaction.payload.questions.length;
   if (interaction.status === "answered") {
-    return count === 1 ? "Answered 1 question" : `Answered ${count} questions`;
+    return t("ui3lib.threadInteractions.questions.answered", { count });
   }
   if (interaction.status === "cancelled") {
-    return count === 1 ? "Cancelled 1 question" : `Cancelled ${count} questions`;
+    return t("ui3lib.threadInteractions.questions.cancelled", { count });
   }
   if (interaction.status === "expired") {
     if (interaction.result?.expirationReason === "superseded_by_comment") {
-      return count === 1 ? "Question expired after comment" : "Questions expired after comment";
+      return t("ui3lib.threadInteractions.questions.expiredAfterComment", { count });
     }
-    return count === 1 ? "Question expired" : "Questions expired";
+    return t("ui3lib.threadInteractions.questions.expired", { count });
   }
-  return count === 1 ? "Asked 1 question" : `Asked ${count} questions`;
+  return t("ui3lib.threadInteractions.questions.asked", { count });
 }
 
 /** Readable model input for a durable answer delivered into a successor run. */
@@ -377,7 +375,7 @@ export function getQuestionAnswerLabels(args: {
     .map((optionId) => optionLabelById.get(optionId))
     .filter((label): label is string => typeof label === "string");
   const otherText = answer?.otherText?.trim();
-  if (otherText) labels.push(`Other: ${otherText}`);
+  if (otherText) labels.push(t("ui3lib.threadInteractions.otherAnswer", { text: otherText }));
   return labels;
 }
 

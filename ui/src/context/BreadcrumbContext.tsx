@@ -22,6 +22,11 @@ export interface Breadcrumb {
   trailing?: ReactNode;
   /** Stable identity for the action, following leadingKey semantics. */
   trailingKey?: string;
+  /**
+   * Keep the label's own casing when it is the first crumb. Section crumbs
+   * ("TASKS") are styled uppercase; names chosen by people (a project) are not.
+   */
+  preserveCase?: boolean;
 }
 
 interface BreadcrumbContextValue {
@@ -58,6 +63,7 @@ function breadcrumbsEqual(left: Breadcrumb[], right: Breadcrumb[]) {
       || left[index]?.identifier !== right[index]?.identifier
       || left[index]?.leadingKey !== right[index]?.leadingKey
       || left[index]?.trailingKey !== right[index]?.trailingKey
+      || left[index]?.preserveCase !== right[index]?.preserveCase
     ) {
       return false;
     }

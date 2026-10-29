@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ListFilter, Layers, ChevronDown, ChevronRight, User, Settings } from "lucide-react";
+import { useTranslation } from "@/i18n";
 import { timeAgo } from "../lib/timeAgo";
 
 /* ------------------------------------------------------------------ */
@@ -112,11 +113,11 @@ function getEventTier(event: ActivityEvent): EventTier {
 type FilterValue = "all" | "in-progress" | "for-review" | "completed";
 type GroupMode = "flat" | "by-task";
 
-const FILTER_OPTIONS: Array<{ value: FilterValue; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "in-progress", label: "In Progress" },
-  { value: "for-review", label: "In Review" },
-  { value: "completed", label: "Done" },
+const FILTER_OPTIONS: Array<{ value: FilterValue; labelKey: string }> = [
+  { value: "all", labelKey: "ui2g0.activityFeed.filterAll" },
+  { value: "in-progress", labelKey: "ui2g0.activityFeed.filterInProgress" },
+  { value: "for-review", labelKey: "ui2g0.activityFeed.filterInReview" },
+  { value: "completed", labelKey: "ui2g0.activityFeed.filterDone" },
 ];
 
 const FILTER_ACTIONS: Record<FilterValue, Set<string> | null> = {
@@ -253,14 +254,15 @@ function CollapsedFeedGroup({
   entityNameMap: Map<string, string>;
   entityTitleMap: Map<string, string>;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const actor = group.latestEvent.actorType === "agent"
     ? agentMap.get(group.latestEvent.actorId)
     : null;
   const actorName = actor?.name
-    ?? (group.latestEvent.actorType === "system" ? "System"
-      : group.latestEvent.actorType === "user" ? "Board"
-      : "Unknown");
+    ?? (group.latestEvent.actorType === "system" ? t("ui2g0.activityFeed.system")
+      : group.latestEvent.actorType === "user" ? t("ui2g0.activityFeed.board")
+      : t("ui2g0.activityFeed.unknown"));
   const entityName = entityNameMap.get(`${group.entityType}:${group.entityId}`);
 
   return (
@@ -287,7 +289,7 @@ function CollapsedFeedGroup({
         }
         <span className="flex-1 min-w-0 truncate">
           <span data-fc="actor" className="font-medium text-(--hex-959596) group-hover:text-white">{actorName}</span>
-          <span data-fc="verb" className="ml-1 text-(--hex-959596)">made {group.events.length} updates to</span>
+          <span data-fc="verb" className="ml-1 text-(--hex-959596)">{t("ui2g0.activityFeed.madeUpdates", { count: group.events.length })}</span>
           <span data-fc="title" className="ml-1 text-(--hex-959596) group-hover:text-white">{entityName ?? group.entityId}</span>
         </span>
         <span data-fc="time" className="text-muted-foreground shrink-0">
@@ -321,6 +323,7 @@ interface ActivityFeedProps {
 }
 
 export function ActivityFeed({ className }: ActivityFeedProps) {
+  const { t } = useTranslation();
   const { selectedCompanyId } = useCompany();
   const [filter, setFilter] = useState<FilterValue>("all");
   const [groupMode, setGroupMode] = useState<GroupMode>("flat");
@@ -486,7 +489,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
           <div className="flex items-center gap-2 px-4 py-1.5" key={`sep-${index}`}>
             <div className="h-px flex-1 bg-border" />
             <span className="text-(length:--text-nano) font-medium text-muted-foreground uppercase tracking-wider">
-              Earlier
+              {t("ui2g0.activityFeed.earlier")}
             </span>
             <div className="h-px flex-1 bg-border" />
           </div>
@@ -568,7 +571,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
       const issueName = entityNameMap.get(`issue:${groupKey}`);
       const issueTitle = entityTitleMap.get(`issue:${groupKey}`);
       const label = isOther
-        ? "Other activity"
+        ? t("ui2g0.activityFeed.otherActivity")
         : `${issueName ?? groupKey}${issueTitle ? ` — ${issueTitle}` : ""}`;
 
       return (
@@ -590,22 +593,22 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
     if (!agents) return null;
     if (agents.length === 0) {
       return {
-        text: "No agents set up yet. Add an agent to get started.",
+        text: t("ui2g0.activityFeed.noAgents"),
         showPulse: false,
       };
     }
     const allPaused = agents.every((a) => a.status === "paused");
     if (allPaused) {
       return {
-        text: "All agents are paused. Resume agents from the sidebar to see activity.",
+        text: t("ui2g0.activityFeed.allPaused"),
         showPulse: false,
       };
     }
     return {
-      text: "Your agents are running — activity will appear here shortly.",
+      text: t("ui2g0.activityFeed.running"),
       showPulse: true,
     };
-  }, [agents]);
+  }, [agents, t]);
 
   const isEmpty = visibleItems.length === 0;
 
@@ -621,9 +624,9 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
           aria-hidden
         />
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold">Agent Feed</h3>
+          <h3 className="text-sm font-semibold">{t("ui2g0.activityFeed.title")}</h3>
           <p className="text-xs text-muted-foreground">
-            Live activity from your agents
+            {t("ui2g0.activityFeed.subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-1">
@@ -635,14 +638,14 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
                 variant={groupMode === "by-task" ? "secondary" : "ghost"}
                 size="icon-sm"
                 className="shrink-0 text-muted-foreground"
-                aria-label="group by task"
+                aria-label={t("ui2g0.activityFeed.groupByTask")}
                 onClick={() => setGroupMode((m) => (m === "flat" ? "by-task" : "flat"))}
               >
                 <Layers className="h-3.5 w-3.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              {groupMode === "flat" ? "Group by task" : "Show flat"}
+              {groupMode === "flat" ? t("ui2g0.activityFeed.groupByTaskTip") : t("ui2g0.activityFeed.showFlat")}
             </TooltipContent>
           </Tooltip>
 
@@ -656,22 +659,22 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
                     variant={filter !== "all" || showAllActivity ? "secondary" : "ghost"}
                     size="icon-sm"
                     className="shrink-0 text-muted-foreground"
-                    aria-label="filter by"
+                    aria-label={t("ui2g0.activityFeed.filterBy")}
                   >
                     <ListFilter className="h-3.5 w-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Filter by</TooltipContent>
+              <TooltipContent side="bottom">{t("ui2g0.activityFeed.filterByTip")}</TooltipContent>
             </Tooltip>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuRadioGroup
                 value={filter}
                 onValueChange={(v) => setFilter(v as FilterValue)}
               >
-                {FILTER_OPTIONS.map(({ value, label }) => (
+                {FILTER_OPTIONS.map(({ value, labelKey }) => (
                   <DropdownMenuRadioItem key={value} value={value}>
-                    {label}
+                    {t(labelKey)}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
@@ -680,7 +683,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
                 checked={showAllActivity}
                 onCheckedChange={(v) => setShowAllActivity(!!v)}
               >
-                Show all activity
+                {t("ui2g0.activityFeed.showAll")}
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -703,7 +706,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
                 </span>
               )}
               <p className="text-center text-sm text-muted-foreground">
-                {emptyMessage?.text ?? "Activity from your agents will appear here."}
+                {emptyMessage?.text ?? t("ui2g0.activityFeed.emptyDefault")}
               </p>
             </div>
           </div>

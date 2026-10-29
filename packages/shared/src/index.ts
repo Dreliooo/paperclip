@@ -143,10 +143,21 @@ export {
 export {
   deriveResponsibleUser,
   deriveOriginatingActor,
+  deriveCreationAttribution,
   type ResponsibleUserAttribution,
   type ResponsibleUserSource,
   type OriginatingActor,
+  type CreationAttribution,
+  type CreationAttributionFields,
 } from "./issue-attribution.js";
+export {
+  CREATION_REQUEST_EVIDENCE,
+  PROJECT_INVOLVEMENT_REASONS,
+  type CreationRequestEvidence,
+  type ProjectInvolvementReason,
+  type MyProjectInvolvement,
+  type MyProjectsResult,
+} from "./types/creation-attribution.js";
 export {
   ARTIFACT_REVIEW_DOCUMENT_KEY_PREFIX,
   MARKDOWN_ATTACHMENT_CONTENT_TYPES,
@@ -1743,6 +1754,47 @@ export {
   type UpsertSidebarOrderPreference,
 } from "./validators/sidebar-preferences.js";
 export {
+  USAGE_DISPLAY_MODES,
+  USER_PREFERENCE_LOCALES,
+  usageDisplayModeSchema,
+  updateUserPreferencesSchema,
+  type UpdateUserPreferences,
+} from "./validators/user-preferences.js";
+export type { UsageDisplayMode, UserPreferences } from "./types/user-preferences.js";
+export {
+  ISSUE_OBJECTIVE_ACTIONS,
+  ISSUE_OBJECTIVE_STATUSES,
+  type IssueObjective,
+  type IssueObjectiveAction,
+  type IssueObjectiveLimitReason,
+  type IssueObjectiveLimits,
+  type IssueObjectiveProgress,
+  type IssueObjectiveStalledTask,
+  type IssueObjectiveStatus,
+  type IssueObjectiveUsage,
+} from "./types/issue-objective.js";
+export {
+  ISSUE_OBJECTIVE_MAX_CHARS,
+  ISSUE_OBJECTIVE_MAX_CRITERIA,
+  createIssueObjectiveSchema,
+  issueObjectiveActionSchema,
+  updateIssueObjectiveSchema,
+  type CreateIssueObjective,
+  type IssueObjectiveActionRequest,
+  type UpdateIssueObjective,
+} from "./validators/issue-objective.js";
+export {
+  OBJECTIVE_IDLE_CHECK_IN_MS,
+  OBJECTIVE_MIN_NUDGE_INTERVAL_MS,
+  OBJECTIVE_STALL_MS,
+  decideObjectiveNudge,
+  evaluateObjectiveLimit,
+  objectiveProgressFingerprint,
+  summarizeObjectiveTree,
+  type ObjectiveNudgeReason,
+  type ObjectiveTreeRow,
+} from "./issue-objectives.js";
+export {
   resourceMembershipStateSchema,
   updateDocumentResourceMembershipSchema,
   updateResourceMembershipSchema,
@@ -2887,3 +2939,34 @@ export * from "./fast-response.js";
 export { HUMAN_TASK_ORIGIN_KINDS, isAgentCreatedIssue, type IssueCreationSourceFields } from "./issue-creation-source.js";
 
 export * from "./grok-bot.js";
+export {
+  API_RATE_CARDS,
+  estimateApiEquivalent,
+  findApiRateCard,
+  normalizeModelForPricing,
+  type ApiEquivalentEstimate,
+  type ApiRateCard,
+  type TokenUsageCounts,
+} from "./api-equivalent-pricing.js";
+export {
+  rollupUsageRows,
+  type CacheWriteCoverage,
+  type UsageAggregateRow,
+  type UsageApiEquivalent,
+  type UsageBreakdownReport,
+  type UsageBreakdownRow,
+  type UsageGroupBy,
+  type UsageGroupKind,
+  type UsageModelSlice,
+  type UsageTokenBreakdown,
+} from "./usage-breakdown.js";
+export {
+  assessCacheReuse,
+  DEFAULT_CACHE_TTL_MS,
+  MIN_MEASURABLE_PROMPT_TOKENS,
+  type CacheChangeCause,
+  type CacheReuseAssessment,
+  type CacheReuseStatus,
+  type CacheRunAssessment,
+  type CacheRunSample,
+} from "./cache-reuse.js";

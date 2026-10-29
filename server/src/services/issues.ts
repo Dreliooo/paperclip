@@ -1,4 +1,5 @@
 import { measureRunTransaction } from "./execution-transaction-timing.js";
+import { resolveCreationRequester } from "./creation-attribution.js";
 import { measureRunPhase } from "./execution-preparation-timing.js";
 import { automaticReadRecoveryCleanupCondition, touchedByUserCondition } from "./issue-participation.js";
 import { HUMAN_TASK_ORIGIN_KINDS } from "@paperclipai/shared";
@@ -4907,6 +4908,8 @@ const issueListSelect = {
   createdByAgentId: issues.createdByAgentId,
   createdByUserId: issues.createdByUserId,
   responsibleUserId: issues.responsibleUserId,
+  requestedByUserId: issues.requestedByUserId,
+  requestEvidence: issues.requestEvidence,
   issueNumber: issues.issueNumber,
   identifier: issues.identifier,
   originKind: issues.originKind,
@@ -10332,6 +10335,14 @@ export function issueService(db: Db) {
           issueData.projectId = personalProject.id;
         }
 
+        // Only an agent-created task can have a separate requester, and only with evidence.
+        const requester = !issueData.createdByUserId && issueData.createdByAgentId
+          ? await resolveCreationRequester(tx as unknown as Db, {
+            companyId,
+            identityContextId: issueData.originIdentityContextId ?? null,
+            runId: issueData.originRunId ?? actorRunId ?? null,
+          })
+          : null;
         const values = {
           ...issueData,
           workspaceSelection: workspaceIntent,
@@ -10341,6 +10352,8 @@ export function issueService(db: Db) {
           titleNeedsGeneration,
           originRunId: issueData.originRunId ?? actorRunId ?? null,
           responsibleUserId,
+          requestedByUserId: requester?.requestedByUserId ?? null,
+          requestEvidence: requester?.requestEvidence ?? null,
           requestDepth: clampIssueRequestDepth(issueData.requestDepth),
           originKind: issueData.originKind ?? "manual",
           goalId: resolveIssueGoalId({

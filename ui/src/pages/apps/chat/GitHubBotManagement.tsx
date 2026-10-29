@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { t as translate, useTranslation } from "@/i18n";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ExternalLink,
@@ -55,6 +56,7 @@ export function GitHubRepositoryAccess({
   onChange: (id: string, enabled: boolean) => void;
   onToggleAll: (enabled: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const client = useQueryClient();
   const [search, setSearch] = useState("");
   const scroller = useRef<HTMLDivElement>(null);
@@ -82,13 +84,13 @@ export function GitHubRepositoryAccess({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold">Repositories</h2>
+        <h2 className="text-base font-semibold">{t("ui3g7.gitHubRepositoryAccess.title")}</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Manage repositories"
+              aria-label={t("ui3g7.gitHubRepositoryAccess.manageLabel")}
             >
               <MoreHorizontal className="size-4" />
             </Button>
@@ -96,40 +98,39 @@ export function GitHubRepositoryAccess({
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <a href={managementUrl} target="_blank" rel="noreferrer">
-                Manage on GitHub
+                {t("ui3g7.gitHubRepositoryAccess.manageOnGitHub")}
                 <ExternalLink className="size-4" />
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem disabled={pending} onClick={onRefresh}>
               <RefreshCw className="size-4" />
-              Refresh repositories
+              {t("ui3g7.gitHubRepositoryAccess.refresh")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       <p className="text-xs text-muted-foreground">
-        Choose where the bot can receive messages and use tools. Repository
-        changes save immediately.
+        {t("ui3g7.gitHubRepositoryAccess.intro")}
       </p>
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-0 flex-1 basis-48">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input aria-label="Search repositories" placeholder="Search repositories" className="pl-9"
+          <Input aria-label={t("ui3g7.gitHubRepositoryAccess.search")} placeholder={t("ui3g7.gitHubRepositoryAccess.search")} className="pl-9"
             value={search} maxLength={200} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <Button variant="outline" size="sm" disabled={pending || list.isFetching || !summary || !summary.totalCount || (!disableAll && !summary.availableCount)}
-          aria-label={`${disableAll ? "Disable" : "Enable"} all repositories`}
+          aria-label={disableAll ? t("ui3g7.gitHubRepositoryAccess.disableAllLabel") : t("ui3g7.gitHubRepositoryAccess.enableAllLabel")}
           onClick={() => onToggleAll(!disableAll)}>
-          {disableAll ? "Disable all" : "Enable all"}
+          {disableAll ? t("ui3g7.gitHubRepositoryAccess.disableAll") : t("ui3g7.gitHubRepositoryAccess.enableAll")}
         </Button>
       </div>
       {summary && <p className="text-xs text-muted-foreground">
-        {summary.enabledCount} of {summary.totalCount} repositories enabled. Toggle all applies across the entire connection.
+        {t("ui3g7.gitHubRepositoryAccess.summary", { enabled: summary.enabledCount, total: summary.totalCount })}
       </p>}
       {list.isError && <p role="alert" className="text-sm text-destructive">
-        Could not load repositories. <Button variant="link" size="sm" onClick={() => void list.refetch()}>Try again</Button>
+        {t("ui3g7.gitHubRepositoryAccess.loadError")} <Button variant="link" size="sm" onClick={() => void list.refetch()}>{t("ui3g7.gitHubBotManagement.tryAgain")}</Button>
       </p>}
-      <div ref={scroller} role="region" aria-label="Repositories" tabIndex={0}
+      <div ref={scroller} role="region" aria-label={t("ui3g7.gitHubRepositoryAccess.regionLabel")} tabIndex={0}
         className="max-h-96 overflow-y-auto overscroll-contain border-y border-border">
         <div className="divide-y divide-border">
         {rows.map((resource) => (
@@ -144,12 +145,12 @@ export function GitHubRepositoryAccess({
               description={
                 resource.availability === "available"
                   ? undefined
-                  : "Unavailable on GitHub. Update the App’s installation access, then refresh."
+                  : t("ui3g7.gitHubRepositoryAccess.unavailable")
               }
               onChange={(enabled) => onChange(resource.id, enabled)}
             />
             <details className="text-sm">
-              <summary className="cursor-pointer text-muted-foreground">Task defaults</summary>
+              <summary className="cursor-pointer text-muted-foreground">{t("ui3g7.gitHubRepositoryAccess.taskDefaults")}</summary>
               <div className="pt-3">
                 <ChatExecutionDefaults
                   companyId={companyId}
@@ -166,15 +167,15 @@ export function GitHubRepositoryAccess({
           </div>
         ))}
         </div>
-        {list.isPending ? <p role="status" className="py-4 text-sm text-muted-foreground">Loading repositories…</p> : rows.length === 0 && !list.isError && (
+        {list.isPending ? <p role="status" className="py-4 text-sm text-muted-foreground">{t("ui3g7.gitHubRepositoryAccess.loading")}</p> : rows.length === 0 && !list.isError && (
           <p className="py-4 text-sm text-muted-foreground">
-            {search ? "No repositories match your search." : "No repositories available. Add repository access on GitHub, then refresh."}
+            {search ? t("ui3g7.gitHubRepositoryAccess.noMatch") : t("ui3g7.gitHubRepositoryAccess.noneAvailable")}
           </p>
         )}
         {list.hasNextPage && <div ref={more} className="flex justify-center py-2">
           <Button variant="ghost" size="sm" disabled={pending || list.isFetching}
             onClick={() => void list.fetchNextPage({ cancelRefetch: false })}>
-            {list.isFetchingNextPage ? "Loading repositories…" : "Load more repositories"}
+            {list.isFetchingNextPage ? t("ui3g7.gitHubRepositoryAccess.loading") : t("ui3g7.gitHubRepositoryAccess.loadMore")}
           </Button>
         </div>}
       </div>
@@ -189,6 +190,7 @@ export function GitHubBotManagement({
   endpoint: ChatEndpoint;
   view: "settings" | "access";
 }) {
+  const { t } = useTranslation();
   const client = useQueryClient();
   const query = useQuery({
     queryKey: ["github-bot-configuration", endpoint.id],
@@ -227,7 +229,7 @@ export function GitHubBotManagement({
     try {
       await fn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save changes.");
+      setError(e instanceof Error ? e.message : t("ui3g7.gitHubBotManagement.saveError"));
     } finally {
       setPending(false);
     }
@@ -235,21 +237,21 @@ export function GitHubBotManagement({
   if (query.isError)
     return (
       <p role="alert" className="text-sm text-destructive">
-        Could not load the bot configuration.{" "}
+        {t("ui3g7.gitHubBotManagement.loadError")}{" "}
         <Button
           variant="link"
           onClick={() => {
             void query.refetch();
           }}
         >
-          Try again
+          {t("ui3g7.gitHubBotManagement.tryAgain")}
         </Button>
       </p>
     );
   if (!record)
     return (
       <p role="status" className="text-sm text-muted-foreground">
-        Loading configuration…
+        {t("ui3g7.gitHubBotManagement.loadingConfig")}
       </p>
     );
   const config = record.configuration;
@@ -273,7 +275,7 @@ export function GitHubBotManagement({
                   await client.invalidateQueries({ queryKey: ["github-bot-repositories", endpoint.id] });
                   await client.invalidateQueries({ queryKey: ["github-bot-repository-pages", endpoint.id] });
                   setNotice(
-                    "Repository access refreshed. New repositories stay disabled.",
+                    t("ui3g7.gitHubBotManagement.refreshed"),
                   );
                 })
               }
@@ -301,14 +303,13 @@ export function GitHubBotManagement({
             {!config.toolsEnabled && (
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  This saved bot has GitHub tools disabled, so it cannot start
-                  work or respond.
+                  {t("ui3g7.gitHubBotManagement.toolsDisabled")}
                 </p>
                 <Button
                   variant="outline"
                   onClick={() => edit({ ...config, toolsEnabled: true })}
                 >
-                  Enable bot tools
+                  {t("ui3g7.gitHubBotManagement.enableTools")}
                 </Button>
               </div>
             )}
@@ -317,7 +318,7 @@ export function GitHubBotManagement({
                 className="text-xs text-muted-foreground underline underline-offset-4"
                 to={`/apps/${endpoint.connectionId}`}
               >
-                Manage tool permissions
+                {t("ui3g7.gitHubBotManagement.manageToolPermissions")}
               </Link>
             )}
           </>
@@ -358,7 +359,7 @@ export function GitHubBotManagement({
               setError("");
             }}
           >
-            Discard changes
+            {t("ui3g7.gitHubBotManagement.discard")}
           </Button>
           <Button
             disabled={pending || !scoreValid}
@@ -376,11 +377,11 @@ export function GitHubBotManagement({
                 setDraft(null);
                 setScoreText(null);
                 setAutomaticMode(null);
-                setNotice("Changes saved.");
+                setNotice(translate("ui3g7.gitHubBotManagement.saved"));
               })
             }
           >
-            {pending ? "Saving…" : "Save changes"}
+            {pending ? t("ui3g7.gitHubBotManagement.saving") : t("ui3g7.gitHubBotManagement.save")}
           </Button>
         </div>
       )}
@@ -397,26 +398,27 @@ export function orderedGitHubReviews(reviews: GitHubTaskReview[]) {
 export function gitHubReviewResultLabel(review: GitHubTaskReview) {
   const completed = review.state === "completed" && review.assessment?.complete;
   const conclusion = review.conclusion
-    ? {
-        success: "Passed",
-        failure: "Below threshold",
-        neutral: "Report only",
-        action_required: "Action required",
-      }[review.conclusion]
-    : "Awaiting check";
-  const state = {
-    queued: "Queued",
-    running: "Reviewing",
-    completed: "Incomplete",
-    incomplete: "Incomplete",
-    error: "Review failed",
-    superseded: "Superseded",
-    manual_required: "Action required",
-  }[review.state];
-  return completed ? `${review.assessment!.score}/5 · ${conclusion}` : state;
+    ? translate({
+        success: "ui3g7.gitHubBotManagement.passed",
+        failure: "ui3g7.gitHubBotManagement.belowThreshold",
+        neutral: "ui3g7.gitHubBotManagement.reportOnly",
+        action_required: "ui3g7.gitHubBotManagement.actionRequired",
+      }[review.conclusion])
+    : translate("ui3g7.gitHubBotManagement.awaitingCheck");
+  const state = translate({
+    queued: "ui3g7.gitHubBotManagement.queued",
+    running: "ui3g7.gitHubBotManagement.reviewing",
+    completed: "ui3g7.gitHubBotManagement.incomplete",
+    incomplete: "ui3g7.gitHubBotManagement.incomplete",
+    error: "ui3g7.gitHubBotManagement.reviewFailed",
+    superseded: "ui3g7.gitHubBotManagement.superseded",
+    manual_required: "ui3g7.gitHubBotManagement.actionRequired",
+  }[review.state]);
+  return completed ? translate("ui3g7.gitHubBotManagement.scored", { score: review.assessment!.score, conclusion }) : state;
 }
 
 function ReviewResult({ review }: { review: GitHubTaskReview }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -424,7 +426,7 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
           {gitHubReviewResultLabel(review)}
         </span>
         <span className="text-xs text-muted-foreground">
-          Commit <code>{review.headSha.slice(0, 7)}</code> ·{" "}
+          {t("ui3g7.gitHubBotManagement.commit")} <code>{review.headSha.slice(0, 7)}</code> ·{" "}
           {formatDateTime(review.updatedAt)}
         </span>
       </div>
@@ -434,7 +436,7 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
         </MarkdownBody>
       ) : (
         <p className="text-sm text-muted-foreground">
-          No assessment has been submitted yet.
+          {t("ui3g7.gitHubBotManagement.noAssessment")}
         </p>
       )}
       <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
@@ -442,7 +444,7 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
           className="underline underline-offset-4"
           to={`/issues/${review.issueId}`}
         >
-          Paperclip task
+          {t("ui3g7.gitHubBotManagement.paperclipTask")}
         </Link>
         {review.summaryUrl && (
           <a
@@ -451,7 +453,7 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
             target="_blank"
             rel="noreferrer"
           >
-            GitHub comment
+            {t("ui3g7.gitHubBotManagement.githubComment")}
           </a>
         )}
         {review.checkUrl && (
@@ -461,27 +463,27 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
             target="_blank"
             rel="noreferrer"
           >
-            Check
+            {t("ui3g7.gitHubBotManagement.check")}
           </a>
         )}
       </div>
-      <section className="space-y-4 text-sm" aria-label="Review evidence">
+      <section className="space-y-4 text-sm" aria-label={t("ui3g7.gitHubBotManagement.evidence")}>
         <div className="space-y-3">
           {review.runId && (
             <Link
               className="text-xs underline underline-offset-4"
               to={`/issues/${review.issueId}?runId=${review.runId}`}
             >
-              Agent run
+              {t("ui3g7.gitHubBotManagement.agentRun")}
             </Link>
           )}
           {review.assessment && (
             <>
-              <h3 className="font-medium">Rationale</h3>
+              <h3 className="font-medium">{t("ui3g7.gitHubBotManagement.rationale")}</h3>
               <MarkdownBody>{review.assessment.rationale}</MarkdownBody>
               {review.assessment.findings.length > 0 && (
                 <section className="space-y-3">
-                  <h3 className="font-medium">Findings</h3>
+                  <h3 className="font-medium">{t("ui3g7.gitHubBotManagement.findings")}</h3>
                   {review.assessment.findings.map((finding) => (
                     <div
                       key={finding.key}
@@ -495,10 +497,9 @@ function ReviewResult({ review }: { review: GitHubTaskReview }) {
                   ))}
                 </section>
               )}
-              <h3 className="font-medium">Coverage</h3>
+              <h3 className="font-medium">{t("ui3g7.gitHubBotManagement.coverage")}</h3>
               <p className="text-xs text-muted-foreground">
-                {review.assessment.coverage.reviewedPaths.length} files reviewed
-                · {review.assessment.coverage.omittedPaths.length} omitted
+                {t("ui3g7.gitHubBotManagement.coverageCounts", { reviewed: review.assessment.coverage.reviewedPaths.length, omitted: review.assessment.coverage.omittedPaths.length })}
               </p>
               {review.assessment.coverage.limitations.map((limit, index) => (
                 <p key={index} className="text-xs text-muted-foreground">
@@ -520,17 +521,18 @@ export function GitHubReviewList({
   endpointId: string;
   reviews: GitHubTaskReview[];
 }) {
+  const { t } = useTranslation();
   if (!reviews.length)
     return (
       <EmptyState
         icon={GitPullRequest}
-        message="No reviews yet"
-        description="Mention the bot on a pull request, or enable automatic events in Settings."
+        message={t("ui3g7.gitHubBotManagement.noReviews")}
+        description={t("ui3g7.gitHubBotManagement.noReviewsHelp")}
       />
     );
   return (
     <ul
-      aria-label="Reviews"
+      aria-label={t("ui3g7.gitHubBotManagement.reviewsList")}
       className="divide-y divide-border border-y border-border"
     >
       {orderedGitHubReviews(reviews).map((review) => (
@@ -541,7 +543,7 @@ export function GitHubReviewList({
           >
             <div className="min-w-0 flex-1 basis-48 space-y-1">
               <p className="break-words font-medium">
-                {review.event.title || `Pull request #${review.pullNumber}`}
+                {review.event.title || t("ui3g7.gitHubBotManagement.pullRequestNumber", { number: review.pullNumber })}
               </p>
               <p className="break-all text-xs text-muted-foreground">
                 {review.repository} #{review.pullNumber} ·{" "}
@@ -571,17 +573,18 @@ export function GitHubReviewDetail({
   endpointId: string;
   review: GitHubTaskReview;
 }) {
+  const { t } = useTranslation();
   return (
     <article className="max-w-3xl space-y-6">
       <Link
         className="text-sm text-muted-foreground hover:underline"
         to={`/apps/chat/${endpointId}/reviews`}
       >
-        ← All reviews
+        ← {t("ui3g7.gitHubBotManagement.allReviews")}
       </Link>
       <header className="space-y-2">
         <h2 className="text-lg font-semibold">
-          {review.event.title || `Pull request #${review.pullNumber}`}
+          {review.event.title || t("ui3g7.gitHubBotManagement.pullRequestNumber", { number: review.pullNumber })}
         </h2>
         <a
           className="break-all text-sm text-muted-foreground hover:underline"
@@ -604,6 +607,7 @@ export function GitHubReviews({
   endpointId: string;
   reviewId?: string;
 }) {
+  const { t } = useTranslation();
   const query = useQuery({
     queryKey: ["github-bot-reviews", endpointId, reviewId ?? "list"],
     queryFn: async () => reviewId ? [await githubChatApi.review(endpointId, reviewId)] : githubChatApi.reviews(endpointId),
@@ -612,7 +616,7 @@ export function GitHubReviews({
   if (query.isError)
     return (
       <p role="alert" className="text-sm text-destructive">
-        {reviewId ? "This review could not be loaded or was not found in this connection." : "Reviews could not be loaded."}{" "}
+        {reviewId ? t("ui3g7.gitHubBotManagement.reviewLoadError") : t("ui3g7.gitHubBotManagement.reviewsLoadError")}{" "}
         <Button variant="link" onClick={() => void query.refetch()}>
           Try again
         </Button>
@@ -621,7 +625,7 @@ export function GitHubReviews({
   if (query.isPending)
     return (
       <p role="status" className="text-sm text-muted-foreground">
-        Loading reviews…
+        {t("ui3g7.gitHubBotManagement.loadingReviews")}
       </p>
     );
   if (reviewId) {
@@ -631,13 +635,13 @@ export function GitHubReviews({
     ) : (
       <div className="space-y-3">
         <p role="alert" className="text-sm text-muted-foreground">
-          This review was not found in this connection.
+          {t("ui3g7.gitHubBotManagement.reviewNotFound")}
         </p>
         <Link
           to={`/apps/chat/${endpointId}/reviews`}
           className="text-sm underline"
         >
-          All reviews
+          {t("ui3g7.gitHubBotManagement.allReviews")}
         </Link>
       </div>
     );

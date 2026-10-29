@@ -18,6 +18,7 @@ import type {
   WorkspaceServiceControlAction,
   WorkspaceServiceControlEntry,
 } from "@/components/WorkspaceServiceControlBar";
+import { t as translate, useTranslation } from "@/i18n";
 
 export type WorkspaceRuntimeAction = "start" | "stop" | "restart" | "run";
 
@@ -103,7 +104,7 @@ function buildJobItem(
     key: `command:${command.id}`,
     title: command.name,
     kind: "job",
-    statusLabel: "run once",
+    statusLabel: translate("ui2g4.workspaceRuntimeControls.runOnce"),
     lifecycle: null,
     healthStatus: null,
     exposure: null,
@@ -116,7 +117,7 @@ function buildJobItem(
     workspaceCommandId: command.id,
     runtimeServiceId: null,
     serviceIndex: null,
-    disabledReason: command.disabledReason ?? (!command.command ? "This job is missing a command." : null),
+    disabledReason: command.disabledReason ?? (!command.command ? translate("ui2g4.workspaceRuntimeControls.jobMissingCommand") : null),
   };
 }
 
@@ -166,7 +167,7 @@ export function buildWorkspaceRuntimeControlSections(input: {
       workspaceCommandId: null,
       runtimeServiceId: runtimeService.id,
       serviceIndex: runtimeService.configIndex ?? null,
-      disabledReason: "This runtime service no longer matches a configured workspace command.",
+      disabledReason: translate("ui2g4.workspaceRuntimeControls.untrackedDisabled"),
     }));
 
   return {
@@ -192,14 +193,14 @@ function isActiveStatusLabel(statusLabel: string) {
 function exposureFailureCopy(exposure: RuntimeExposureStatus | null) {
   if (exposure?.state === "failed") {
     return {
-      label: "HTTPS unavailable",
-      remediation: "Check the Tailscale broker and node HTTPS configuration.",
+      label: translate("ui2g4.workspaceRuntimeControls.httpsUnavailable"),
+      remediation: translate("ui2g4.workspaceRuntimeControls.httpsUnavailableHelp"),
     };
   }
   if (exposure?.state === "cleanup_pending") {
     return {
-      label: "HTTPS cleanup pending",
-      remediation: "Restart the host broker before reusing this port.",
+      label: translate("ui2g4.workspaceRuntimeControls.httpsCleanupPending"),
+      remediation: translate("ui2g4.workspaceRuntimeControls.httpsCleanupHelp"),
     };
   }
   return null;
@@ -267,14 +268,14 @@ export function buildWorkspaceServiceControlEntries(input: {
 
     const runtimeService = item.runtimeServiceId ? runtimeServicesById.get(item.runtimeServiceId) ?? null : null;
     const failureDetail = state === "failed"
-      ? `Service failed${runtimeService?.stoppedAt ? ` · ${timeAgo(runtimeService.stoppedAt)}` : ""}`
+      ? `${translate("ui2g4.workspaceRuntimeControls.serviceFailed")}${runtimeService?.stoppedAt ? translate("ui2g4.workspaceRuntimeControls.failedAgo", { ago: timeAgo(runtimeService.stoppedAt) }) : ""}`
       : null;
     const exposure = runtimeService?.exposure ?? item.exposure;
     const exposureFailure = exposureFailureCopy(exposure);
     const exposureDetail = exposure?.state === "pending"
-      ? "Provisioning HTTPS…"
+      ? translate("ui2g4.workspaceRuntimeControls.provisioningHttps")
       : exposure?.state === "ready"
-        ? "HTTPS ready"
+        ? translate("ui2g4.workspaceRuntimeControls.httpsReady")
         : exposureFailure
           ? `${exposureFailure.label} · ${exposureFailure.remediation}`
           : null;
@@ -360,6 +361,7 @@ function CommandActionButtons({
   square?: boolean;
   iconOnly?: boolean;
 }) {
+  const { t } = useTranslation();
   const actions: WorkspaceRuntimeAction[] =
     item.kind === "job"
       ? ["run"]
@@ -373,12 +375,12 @@ function CommandActionButtons({
         const request = buildRequest(item, action);
         const Icon = action === "stop" ? Square : action === "restart" ? RotateCcw : Play;
         const label = action === "run"
-          ? "Run"
+          ? t("ui2g4.workspaceRuntimeControls.run")
           : action === "start"
-            ? "Start"
+            ? t("ui2g4.workspaceRuntimeControls.start")
             : action === "stop"
-              ? "Stop"
-              : "Restart";
+              ? t("ui2g4.workspaceRuntimeControls.stop")
+              : t("ui2g4.workspaceRuntimeControls.restart");
         const showSpinner = isPending && requestMatchesPending(pendingRequest, request);
         const disabled =
           isPending
@@ -436,6 +438,7 @@ function CommandSection({
   // policy is known. The URL, the port, and the command itself stay — they
   // describe the service, not the host filesystem.
   const { hideHostPaths } = useManagedSandboxOnly();
+  const { t } = useTranslation();
   return (
     <div className="space-y-3">
       <div className="space-y-1">
@@ -476,7 +479,7 @@ function CommandSection({
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   ) : null}
-                  {item.port ? <div>Port {item.port}</div> : null}
+                  {item.port ? <div>{t("ui2g4.workspaceRuntimeControls.port", { port: item.port })}</div> : null}
                   {item.command ? <div className="break-all font-mono">{item.command}</div> : null}
                   {item.cwd && !hideHostPaths ? <div className="break-all font-mono">{item.cwd}</div> : null}
                   {item.disabledReason ? <div>{item.disabledReason}</div> : null}
@@ -509,13 +512,14 @@ export function WorkspaceRuntimeControls({
   sections,
   isPending = false,
   pendingRequest = null,
-  serviceEmptyMessage = "No services are configured for this workspace.",
-  jobEmptyMessage = "No one-shot jobs are configured for this workspace.",
+  serviceEmptyMessage,
+  jobEmptyMessage,
   disabledHint = null,
   onAction,
   className,
   square,
 }: WorkspaceRuntimeControlsProps) {
+  const { t } = useTranslation();
   const runningCount = [...sections.services, ...sections.otherServices].filter(
     (item) => item.statusLabel === "running" || item.statusLabel === "starting",
   ).length;
@@ -525,7 +529,7 @@ export function WorkspaceRuntimeControls({
     <div className={cn("space-y-4", className)}>
       <div className={cn("border border-border/70 bg-background p-3", square ? "rounded-none" : "rounded-xl")}>
         <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-(--tracking-eyebrow) text-muted-foreground">Workspace commands</div>
+          <div className="text-xs font-medium uppercase tracking-(--tracking-eyebrow) text-muted-foreground">{t("ui2g4.workspaceRuntimeControls.workspaceCommands")}</div>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline"
               className={cn(
@@ -536,12 +540,12 @@ export function WorkspaceRuntimeControls({
               )}
             >
               <Activity className="h-3.5 w-3.5" />
-              {runningCount > 0 ? `${runningCount} services running` : "No services running"}
+              {runningCount > 0 ? t("ui2g4.workspaceRuntimeControls.servicesRunning", { n: runningCount }) : t("ui2g4.workspaceRuntimeControls.noServicesRunning")}
             </Badge>
             <span className="text-xs text-muted-foreground">
               {sections.jobs.length > 0
-                ? `${sections.jobs.length} job${sections.jobs.length === 1 ? "" : "s"} available to run on demand.`
-                : "Each command can be controlled independently."}
+                ? t("ui2g4.workspaceRuntimeControls.jobsAvailable", { count: sections.jobs.length })
+                : t("ui2g4.workspaceRuntimeControls.eachIndependent")}
             </span>
           </div>
           {visibleDisabledHint ? <p className="text-xs text-muted-foreground">{visibleDisabledHint}</p> : null}
@@ -549,10 +553,10 @@ export function WorkspaceRuntimeControls({
       </div>
 
       <CommandSection
-        title="Services"
-        description="Long-running commands that Paperclip can supervise for this workspace."
+        title={t("ui2g4.workspaceRuntimeControls.servicesTitle")}
+        description={t("ui2g4.workspaceRuntimeControls.servicesDescription")}
         items={sections.services}
-        emptyMessage={serviceEmptyMessage}
+        emptyMessage={serviceEmptyMessage ?? t("ui2g4.workspaceRuntimeControls.noServicesConfigured")}
         disabledHint={visibleDisabledHint}
         isPending={isPending}
         pendingRequest={pendingRequest}
@@ -561,10 +565,10 @@ export function WorkspaceRuntimeControls({
       />
 
       <CommandSection
-        title="Jobs"
-        description="One-shot commands that run now and exit when they finish."
+        title={t("ui2g4.workspaceRuntimeControls.jobsTitle")}
+        description={t("ui2g4.workspaceRuntimeControls.jobsDescription")}
         items={sections.jobs}
-        emptyMessage={jobEmptyMessage}
+        emptyMessage={jobEmptyMessage ?? t("ui2g4.workspaceRuntimeControls.noJobsConfigured")}
         isPending={isPending}
         pendingRequest={pendingRequest}
         onAction={onAction}
@@ -573,8 +577,8 @@ export function WorkspaceRuntimeControls({
 
       {sections.otherServices.length > 0 ? (
         <CommandSection
-          title="Untracked services"
-          description="Running services that no longer match the current workspace command config."
+          title={t("ui2g4.workspaceRuntimeControls.untrackedTitle")}
+          description={t("ui2g4.workspaceRuntimeControls.untrackedDescription")}
           items={sections.otherServices}
           emptyMessage=""
           isPending={isPending}

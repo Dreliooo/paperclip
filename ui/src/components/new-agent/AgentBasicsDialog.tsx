@@ -12,6 +12,7 @@ import { isNewAgentAdapterAllowed } from "@/lib/new-agent-adapters";
 import { queryKeys } from "@/lib/queryKeys";
 import { getAdapterDisplay } from "@/adapters/adapter-display-registry";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { SelectPopover } from "../ui/select";
@@ -48,6 +49,7 @@ export function AgentBasicsDialog({
   initialAdapter?: string;
   onInvite?: () => void;
 }) {
+  const { t } = useTranslation();
   const id = useId();
   const cloud = Boolean(useCloudInstance());
   const experimental = useQuery({
@@ -100,18 +102,18 @@ export function AgentBasicsDialog({
       >
         <div
           className="flex items-center gap-2 px-6 py-5 text-xs text-muted-foreground"
-          aria-label="New agent progress"
+          aria-label={t("agentConfig.basics.progressLabel")}
         >
           <span
             className={cn(step === "name" && "font-medium text-foreground")}
           >
-            1. Name
+            {t("agentConfig.basics.stepName")}
           </span>
           <ChevronRight className="size-3" />
           <span
             className={cn(step === "adapter" && "font-medium text-foreground")}
           >
-            2. Adapter
+            {t("agentConfig.basics.stepAdapter")}
           </span>
         </div>
         <form
@@ -132,26 +134,26 @@ export function AgentBasicsDialog({
               <div className="space-y-2">
                 <DialogTitle className="text-3xl font-semibold tracking-tight">
                   {step === "name"
-                    ? "Meet your next agent"
-                    : "Choose an adapter"}
+                    ? t("agentConfig.basics.titleName")
+                    : t("agentConfig.basics.titleAdapter")}
                 </DialogTitle>
                 <DialogDescription className="text-base">
                   {step === "name"
-                    ? "Start with a name. Make them your own."
-                    : `How should ${name.trim()} work?`}
+                    ? t("agentConfig.basics.descriptionName")
+                    : t("agentConfig.basics.descriptionAdapter", { name: name.trim() })}
                 </DialogDescription>
               </div>
             </div>
             {step === "name" ? (
               <div className="space-y-2">
                 <label htmlFor={id} className="text-sm font-medium">
-                  Agent name
+                  {t("agentConfig.basics.nameLabel")}
                 </label>
                 <Input
                   id={id}
                   autoFocus
                   maxLength={100}
-                  placeholder="e.g. Darnold"
+                  placeholder={t("agentConfig.basics.namePlaceholder")}
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   className="h-12 text-base"
@@ -163,16 +165,16 @@ export function AgentBasicsDialog({
                     className="px-0 text-muted-foreground"
                     onClick={onInvite}
                   >
-                    Invite an external agent
+                    {t("agentConfig.basics.invite")}
                   </Button>
                 )}
               </div>
             ) : (
               <fieldset className="space-y-4">
-                <legend className="sr-only">Adapter</legend>
+                <legend className="sr-only">{t("agentConfig.basics.adapterLegend")}</legend>
                 {isPending && (
                   <p role="status" className="text-sm text-muted-foreground">
-                    Loading adapters…
+                    {t("agentConfig.basics.loadingAdapters")}
                   </p>
                 )}
                 {error && (
@@ -217,12 +219,12 @@ export function AgentBasicsDialog({
                   })}
                 </div>
                 {experimentalRunnerAvailable && <details className="space-y-3">
-                  <summary className="cursor-pointer text-sm text-muted-foreground">Advanced</summary>
+                  <summary className="cursor-pointer text-sm text-muted-foreground">{t("agentConfig.basics.advanced")}</summary>
                   <div className="space-y-2">
-                    <label className="text-sm text-muted-foreground">Experimental harness</label>
-                    <SelectPopover aria-label="Experimental harness"
+                    <label className="text-sm text-muted-foreground">{t("agentConfig.basics.experimentalHarness")}</label>
+                    <SelectPopover aria-label={t("agentConfig.basics.experimentalHarness")}
                       value={adapterType === "paperclip_runner" ? runnerProvider : ""}
-                      placeholder="Choose a native harness…"
+                      placeholder={t("agentConfig.basics.nativeHarnessPlaceholder")}
                       onValueChange={provider => { setRunnerProvider(provider); setAdapterType("paperclip_runner"); }}
                       options={[
                         { value: "codex", label: "Codex (Paperclip Runner)" },
@@ -242,11 +244,11 @@ export function AgentBasicsDialog({
               onClick={() => (step === "name" ? onClose() : setStep("name"))}
             >
               {step === "name" ? (
-                "Cancel"
+                t("agentConfig.basics.cancel")
               ) : (
                 <>
                   <ArrowLeft className="size-4" />
-                  Back
+                  {t("agentConfig.basics.back")}
                 </>
               )}
             </Button>
@@ -254,7 +256,7 @@ export function AgentBasicsDialog({
               type="submit"
               disabled={!name.trim() || (step === "adapter" && !validAdapter)}
             >
-              {step === "name" ? "Choose adapter" : "Configure agent"}
+              {step === "name" ? t("agentConfig.basics.chooseAdapter") : t("agentConfig.basics.configureAgent")}
               <ArrowRight className="size-4" />
             </Button>
           </div>

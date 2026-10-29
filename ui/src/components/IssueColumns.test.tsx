@@ -182,13 +182,13 @@ describe("InboxIssueTrailingColumns attribution", () => {
     expect(container?.querySelector('[data-shape="circle"]')).not.toBeNull();
   });
 
-  it("attributes an agent-created issue to the transitive responsible user (circle, not agent square)", () => {
+  it("attributes an agent-created issue to the person who asked for it (circle, not agent square)", () => {
     const text = renderLeading(
       <InboxIssueTrailingColumns
         issue={makeIssue({
           createdByAgentId: "agent-1",
           createdByUserId: null,
-          responsibleUserId: "user-2",
+          requestedByUserId: "user-2",
           updatedAt: new Date("2026-04-06T12:00:00.000Z"),
         })}
         columns={["kickedOffBy"]}

@@ -4,6 +4,7 @@ import type {
   IssueBlockedInboxReason,
   IssueBlockedInboxSeverity,
 } from "@paperclipai/shared";
+import { t } from "@/i18n";
 
 export type BlockedReasonVariant =
   | "needs_decision"
@@ -38,27 +39,27 @@ export const BLOCKED_REASON_VARIANT_ORDER: BlockedReasonVariant[] = [
 ];
 
 export const BLOCKED_VARIANT_LABELS: Record<BlockedReasonVariant, string> = {
-  needs_decision: "Needs decision",
-  stalled: "Blocked chain stalled",
-  needs_attention: "Needs attention",
-  recovery_required: "Recovery required",
-  external_wait: "External wait",
-  owner_paused: "Owner paused",
+  get needs_decision() { return t("ui3lib.blockedInbox.variant.needsDecision"); },
+  get stalled() { return t("ui3lib.blockedInbox.variant.stalled"); },
+  get needs_attention() { return t("ui3lib.blockedInbox.variant.needsAttention"); },
+  get recovery_required() { return t("ui3lib.blockedInbox.variant.recoveryRequired"); },
+  get external_wait() { return t("ui3lib.blockedInbox.variant.externalWait"); },
+  get owner_paused() { return t("ui3lib.blockedInbox.variant.ownerPaused"); },
 };
 
 const REASON_LABELS: Record<IssueBlockedInboxReason, string> = {
-  pending_board_decision: "Pending board decision",
-  pending_user_decision: "Pending user decision",
-  missing_successful_run_disposition: "Pick disposition",
-  blocked_chain_stalled: "Blocked chain stalled",
-  blocked_by_unassigned_issue: "Unassigned blocker",
-  blocked_by_assigned_backlog_issue: "Parked blocker",
-  blocked_by_cancelled_issue: "Cancelled blocker",
-  in_review_without_action_path: "Review without action path",
-  invalid_review_participant: "Invalid review participant",
-  open_recovery_issue: "Recovery in progress",
-  external_owner_action: "External owner action",
-  blocked_by_uninvokable_assignee: "Owner paused",
+  get pending_board_decision() { return t("ui3lib.blockedInbox.reason.pendingBoardDecision"); },
+  get pending_user_decision() { return t("ui3lib.blockedInbox.reason.pendingUserDecision"); },
+  get missing_successful_run_disposition() { return t("ui3lib.blockedInbox.reason.pickDisposition"); },
+  get blocked_chain_stalled() { return t("ui3lib.blockedInbox.reason.chainStalled"); },
+  get blocked_by_unassigned_issue() { return t("ui3lib.blockedInbox.reason.unassignedBlocker"); },
+  get blocked_by_assigned_backlog_issue() { return t("ui3lib.blockedInbox.reason.parkedBlocker"); },
+  get blocked_by_cancelled_issue() { return t("ui3lib.blockedInbox.reason.cancelledBlocker"); },
+  get in_review_without_action_path() { return t("ui3lib.blockedInbox.reason.reviewWithoutActionPath"); },
+  get invalid_review_participant() { return t("ui3lib.blockedInbox.reason.invalidReviewParticipant"); },
+  get open_recovery_issue() { return t("ui3lib.blockedInbox.reason.recoveryInProgress"); },
+  get external_owner_action() { return t("ui3lib.blockedInbox.reason.externalOwnerAction"); },
+  get blocked_by_uninvokable_assignee() { return t("ui3lib.blockedInbox.reason.ownerPaused"); },
 };
 
 const SEVERITY_RANK: Record<IssueBlockedInboxSeverity, number> = {
@@ -75,7 +76,7 @@ export function blockedReasonVariant(reason: IssueBlockedInboxReason): BlockedRe
 }
 
 export function blockedReasonLabel(reason: IssueBlockedInboxReason): string {
-  return REASON_LABELS[reason] ?? "Stopped";
+  return REASON_LABELS[reason] ?? t("ui3lib.blockedInbox.stopped");
 }
 
 export function blockedVariantLabel(variant: BlockedReasonVariant): string {
@@ -249,27 +250,27 @@ export function blockedBadgeTone(rows: readonly BlockedInboxIssueRow[]): Blocked
 }
 
 export function formatStoppedAge(stoppedSinceAt: string | null, now: number = Date.now()): string {
-  if (!stoppedSinceAt) return "stopped";
+  if (!stoppedSinceAt) return t("ui3lib.blockedInbox.stoppedPlain");
   const then = new Date(stoppedSinceAt).getTime();
-  if (!Number.isFinite(then)) return "stopped";
+  if (!Number.isFinite(then)) return t("ui3lib.blockedInbox.stoppedPlain");
   const seconds = Math.max(0, Math.round((now - then) / 1000));
-  if (seconds < 60) return "stopped just now";
+  if (seconds < 60) return t("ui3lib.blockedInbox.stoppedJustNow");
   if (seconds < 3600) {
     const m = Math.floor(seconds / 60);
-    return `stopped ${m}m`;
+    return t("ui3lib.blockedInbox.stoppedMinutes", { n: m });
   }
   if (seconds < 86_400) {
     const h = Math.floor(seconds / 3600);
-    return `stopped ${h}h`;
+    return t("ui3lib.blockedInbox.stoppedHours", { n: h });
   }
   if (seconds < 86_400 * 7) {
     const d = Math.floor(seconds / 86_400);
-    return `stopped ${d}d`;
+    return t("ui3lib.blockedInbox.stoppedDays", { n: d });
   }
   if (seconds < 86_400 * 30) {
     const w = Math.floor(seconds / (86_400 * 7));
-    return `stopped ${w}w`;
+    return t("ui3lib.blockedInbox.stoppedWeeks", { n: w });
   }
   const mo = Math.floor(seconds / (86_400 * 30));
-  return `stopped ${mo}mo`;
+  return t("ui3lib.blockedInbox.stoppedMonths", { n: mo });
 }

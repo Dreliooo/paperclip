@@ -1,5 +1,6 @@
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { Link } from "@/lib/router";
+import { t, useTranslation } from "@/i18n";
 import { timeAgo } from "../lib/timeAgo";
 import { cn } from "../lib/utils";
 import { deriveProjectUrlKey, type ActivityEvent, type Agent } from "@paperclipai/shared";
@@ -43,86 +44,86 @@ function formatVerb(
 ): string {
   switch (action) {
     case "issue.created":
-      return "opened";
+      return t("ui2g0.feedCard.verb.opened");
     case "issue.updated": {
       const status = details?.status;
-      if (status === "in_review" && details?.externalConversationState === "waiting") return "moved to idle";
-      if (typeof status === "string") return `moved to ${humanize(status)}`;
+      if (status === "in_review" && details?.externalConversationState === "waiting") return t("ui2g0.feedCard.verb.movedIdle");
+      if (typeof status === "string") return t("ui2g0.feedCard.verb.movedTo", { status: humanize(status) });
       const priority = details?.priority;
-      if (typeof priority === "string") return `set priority to ${humanize(priority)} on`;
-      return "updated";
+      if (typeof priority === "string") return t("ui2g0.feedCard.verb.setPriorityOn", { priority: humanize(priority) });
+      return t("ui2g0.feedCard.verb.updated");
     }
     case "issue.document_created":
-      return "wrote doc on";
+      return t("ui2g0.feedCard.verb.wroteDocOn");
     case "issue.document_updated":
-      return "edited doc on";
+      return t("ui2g0.feedCard.verb.editedDocOn");
     case "issue.document_deleted":
-      return "deleted doc from";
+      return t("ui2g0.feedCard.verb.deletedDocFrom");
     case "issue.work_product_created":
-      return "delivered work on";
+      return t("ui2g0.feedCard.verb.deliveredWorkOn");
     case "issue.work_product_updated":
-      return "updated work on";
+      return t("ui2g0.feedCard.verb.updatedWorkOn");
     case "issue.work_product_deleted":
-      return "removed work from";
+      return t("ui2g0.feedCard.verb.removedWorkFrom");
     case "issue.checked_out":
-      return "picked up";
+      return t("ui2g0.feedCard.verb.pickedUp");
     case "issue.released":
-      return "released";
+      return t("ui2g0.feedCard.verb.released");
     case "issue.commented":
     case "issue.comment_added":
-      return "commented on";
+      return t("ui2g0.feedCard.verb.commentedOn");
     case "issue.attachment_added":
-      return "attached a file to";
+      return t("ui2g0.feedCard.verb.attachedFileTo");
     case "issue.attachment_removed":
-      return "removed attachment from";
+      return t("ui2g0.feedCard.verb.removedAttachmentFrom");
     case "issue.deleted":
-      return "deleted";
+      return t("ui2g0.feedCard.verb.deleted");
 
     case "approval.created":
-      return context === "pinned" ? "needs approval on" : "requested approval on";
+      return context === "pinned" ? t("ui2g0.feedCard.verb.needsApprovalOn") : t("ui2g0.feedCard.verb.requestedApprovalOn");
     case "approval.approved":
-      return "approved";
+      return t("ui2g0.feedCard.verb.approved");
     case "approval.rejected":
-      return "rejected";
+      return t("ui2g0.feedCard.verb.rejected");
     case "approval.revision_requested":
-      return "requested changes on";
+      return t("ui2g0.feedCard.verb.requestedChangesOn");
 
     case "agent.created":
-      return context === "pinned" ? "wants to hire" : "hired";
+      return context === "pinned" ? t("ui2g0.feedCard.verb.wantsToHire") : t("ui2g0.feedCard.verb.hired");
     case "agent.paused":
-      return "paused";
+      return t("ui2g0.feedCard.verb.paused");
     case "agent.resumed":
-      return "resumed";
+      return t("ui2g0.feedCard.verb.resumed");
     case "agent.updated":
-      return "updated";
+      return t("ui2g0.feedCard.verb.updated");
     case "agent.terminated":
-      return "terminated";
+      return t("ui2g0.feedCard.verb.terminated");
 
     case "heartbeat.invoked":
-      return "started a run on";
+      return t("ui2g0.feedCard.verb.startedRunOn");
     case "heartbeat.cancelled":
-      return "cancelled a run on";
+      return t("ui2g0.feedCard.verb.cancelledRunOn");
 
     case "project.created":
-      return "created project";
+      return t("ui2g0.feedCard.verb.createdProject");
     case "project.updated":
-      return "updated project";
+      return t("ui2g0.feedCard.verb.updatedProject");
     case "project.deleted":
-      return "deleted project";
+      return t("ui2g0.feedCard.verb.deletedProject");
     case "goal.created":
-      return "created goal";
+      return t("ui2g0.feedCard.verb.createdGoal");
     case "goal.updated":
-      return "updated goal";
+      return t("ui2g0.feedCard.verb.updatedGoal");
     case "goal.deleted":
-      return "deleted goal";
+      return t("ui2g0.feedCard.verb.deletedGoal");
     case "company.created":
-      return "created organization";
+      return t("ui2g0.feedCard.verb.createdOrganization");
     case "company.updated":
-      return "updated organization";
+      return t("ui2g0.feedCard.verb.updatedOrganization");
     case "company.archived":
-      return "archived organization";
+      return t("ui2g0.feedCard.verb.archivedOrganization");
     case "company.budget_updated":
-      return "updated organization budget";
+      return t("ui2g0.feedCard.verb.updatedOrganizationBudget");
 
     default:
       return action.replace(/[._]/g, " ");
@@ -295,10 +296,10 @@ function resolveContent(
   const actorName =
     actor?.name ??
     (event.actorType === "system"
-      ? "System"
+      ? t("ui2g0.feedCard.actor.system")
       : event.actorType === "user"
-        ? "Board"
-        : event.actorId || "Unknown");
+        ? t("ui2g0.feedCard.actor.board")
+        : event.actorId || t("ui2g0.feedCard.actor.unknown"));
 
   const entityTitle = entityTitleMap?.get(`${event.entityType}:${event.entityId}`) ?? null;
 
@@ -353,7 +354,7 @@ function resolveContent(
     if (approvalAgentName) {
       identifier = approvalAgentName;
     } else {
-      identifier = approvalType ? humanize(approvalType) : "approval";
+      identifier = approvalType ? humanize(approvalType) : t("ui2g0.feedCard.fallback.approval");
       identifierMono = false;
     }
     title = entityTitle;
@@ -425,6 +426,7 @@ export function FeedCard({
   isPinned = false,
   className,
 }: FeedCardProps) {
+  useTranslation();
   const details = event.details as Record<string, unknown> | null;
   const content = resolveContent(event, agentMap, entityNameMap, entityTitleMap);
   const verb = formatVerb(event.action, details, isPinned ? "pinned" : "chronological");
@@ -468,7 +470,7 @@ export function FeedCard({
         )}
       </span>
       {isPinned && (
-        <span className="shrink-0 text-xs text-muted-foreground">Review →</span>
+        <span className="shrink-0 text-xs text-muted-foreground">{t("ui2g0.feedCard.actor.review")}</span>
       )}
       <span data-fc="time" className="shrink-0 text-muted-foreground">
         {timeAgo(event.createdAt)}

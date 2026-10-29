@@ -17,6 +17,10 @@ API: `present` — representative operation IDs:
 
 - `GET /api/companies/{companyId}/costs/summary`.
 - `GET /api/companies/{companyId}/costs/by-agent`.
+- `GET /api/companies/{companyId}/costs/usage-breakdown` (tokens, reported spend and
+  API-equivalent cost by model, agent or person).
+- `GET /api/companies/{companyId}/agents/{agentId}/cache-reuse` and
+  `GET /api/issues/{issueId}/cache-reuse` (prompt-cache reuse; task cost read check).
 
 Agent access: `available` — REST / native call_api / CLI cost.
 

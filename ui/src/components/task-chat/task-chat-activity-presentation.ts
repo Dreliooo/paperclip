@@ -31,6 +31,7 @@ import {
   toolActivityPresentation,
   type ToolIcon,
 } from "./tool-taxonomy";
+import { t } from "@/i18n";
 
 export interface TaskChatActivityPresentation {
   icon: ToolIcon;
@@ -63,12 +64,12 @@ export function providerActivityPresentation(item: TaskChatProviderActivityItem)
     case "research": {
       const action = providerDetail(item, "Action")?.toLowerCase();
       if (action === "open_page") {
-        return { icon: Search, runningLabel: "Opening a web page", completedLabel: "Opened a web page", failedLabel: "Couldn’t open the web page", interruptedLabel: "Stopped opening the web page", detail };
+        return { icon: Search, runningLabel: t("ui3lib.taskChatActivity.openingWebPage"), completedLabel: t("ui3lib.taskChatActivity.openedWebPage"), failedLabel: t("ui3lib.taskChatActivity.openWebPageFailed"), interruptedLabel: t("ui3lib.taskChatActivity.openWebPageStopped"), detail };
       }
       if (action === "find_in_page") {
-        return { icon: Search, runningLabel: "Searching the page", completedLabel: "Searched the page", failedLabel: "Page search failed", interruptedLabel: "Page search stopped", detail };
+        return { icon: Search, runningLabel: t("ui3lib.taskChatActivity.searchingPage"), completedLabel: t("ui3lib.taskChatActivity.searchedPage"), failedLabel: t("ui3lib.taskChatActivity.pageSearchFailed"), interruptedLabel: t("ui3lib.taskChatActivity.pageSearchStopped"), detail };
       }
-      return { icon: Search, runningLabel: "Searching the web", completedLabel: "Searched the web", failedLabel: "Web search failed", interruptedLabel: "Web search stopped", detail };
+      return { icon: Search, runningLabel: t("ui3lib.taskChatActivity.searchingWeb"), completedLabel: t("ui3lib.taskChatActivity.searchedWeb"), failedLabel: t("ui3lib.taskChatActivity.webSearchFailed"), interruptedLabel: t("ui3lib.taskChatActivity.webSearchStopped"), detail };
     }
     case "tool_execution": {
       const name = providerDetail(item, "Name");
@@ -104,59 +105,59 @@ export function providerActivityPresentation(item: TaskChatProviderActivityItem)
       };
     }
     case "plan":
-      return { icon: ListChecks, runningLabel: "Updating the plan", completedLabel: "Updated the plan", failedLabel: "Plan update failed", interruptedLabel: "Plan update stopped", detail };
+      return { icon: ListChecks, runningLabel: t("ui3lib.taskChatActivity.updatingPlan"), completedLabel: t("ui3lib.taskChatActivity.updatedPlan"), failedLabel: t("ui3lib.taskChatActivity.planUpdateFailed"), interruptedLabel: t("ui3lib.taskChatActivity.planUpdateStopped"), detail };
     case "delegation": {
       const action = providerDetail(item, "Action")?.toLowerCase();
-      if (action === "message") return { icon: Users, runningLabel: "Messaging a subagent", completedLabel: "Messaged a subagent", failedLabel: "Subagent message failed", interruptedLabel: "Subagent message stopped", detail };
-      if (action === "resume") return { icon: Users, runningLabel: "Resuming a subagent", completedLabel: "Resumed a subagent", failedLabel: "Couldn’t resume the subagent", interruptedLabel: "Subagent resume stopped", detail };
-      if (action === "close") return { icon: Users, runningLabel: "Closing a subagent", completedLabel: "Closed a subagent", failedLabel: "Couldn’t close the subagent", interruptedLabel: "Subagent close stopped", detail };
-      if (action === "wait") return { icon: Users, runningLabel: "Waiting for subagents", completedLabel: "Finished waiting for subagents", failedLabel: "Subagent wait failed", interruptedLabel: "Stopped waiting for subagents", detail };
-      return { icon: Users, runningLabel: "Starting a subagent", completedLabel: "Started a subagent", failedLabel: "Subagent start failed", interruptedLabel: "Subagent start stopped", detail };
+      if (action === "message") return { icon: Users, runningLabel: t("ui3lib.taskChatActivity.messagingSubagent"), completedLabel: t("ui3lib.taskChatActivity.messagedSubagent"), failedLabel: t("ui3lib.taskChatActivity.subagentMessageFailed"), interruptedLabel: t("ui3lib.taskChatActivity.subagentMessageStopped"), detail };
+      if (action === "resume") return { icon: Users, runningLabel: t("ui3lib.taskChatActivity.resumingSubagent"), completedLabel: t("ui3lib.taskChatActivity.resumedSubagent"), failedLabel: t("ui3lib.taskChatActivity.resumeSubagentFailed"), interruptedLabel: t("ui3lib.taskChatActivity.subagentResumeStopped"), detail };
+      if (action === "close") return { icon: Users, runningLabel: t("ui3lib.taskChatActivity.closingSubagent"), completedLabel: t("ui3lib.taskChatActivity.closedSubagent"), failedLabel: t("ui3lib.taskChatActivity.closeSubagentFailed"), interruptedLabel: t("ui3lib.taskChatActivity.subagentCloseStopped"), detail };
+      if (action === "wait") return { icon: Users, runningLabel: t("ui3lib.taskChatActivity.waitingSubagents"), completedLabel: t("ui3lib.taskChatActivity.finishedWaitingSubagents"), failedLabel: t("ui3lib.taskChatActivity.subagentWaitFailed"), interruptedLabel: t("ui3lib.taskChatActivity.stoppedWaitingSubagents"), detail };
+      return { icon: Users, runningLabel: t("ui3lib.taskChatActivity.startingSubagent"), completedLabel: t("ui3lib.taskChatActivity.startedSubagent"), failedLabel: t("ui3lib.taskChatActivity.subagentStartFailed"), interruptedLabel: t("ui3lib.taskChatActivity.subagentStartStopped"), detail };
     }
     case "model_identity":
       return item.eventType === "model.route.changed"
-        ? { icon: Bot, runningLabel: "Switching models", completedLabel: "Switched models", failedLabel: "Model switch failed", interruptedLabel: "Model switch stopped", detail }
-        : { icon: Bot, runningLabel: "Verifying the model", completedLabel: "Verified the model", failedLabel: "Model verification failed", interruptedLabel: "Model verification stopped", detail };
+        ? { icon: Bot, runningLabel: t("ui3lib.taskChatActivity.switchingModels"), completedLabel: t("ui3lib.taskChatActivity.switchedModels"), failedLabel: t("ui3lib.taskChatActivity.modelSwitchFailed"), interruptedLabel: t("ui3lib.taskChatActivity.modelSwitchStopped"), detail }
+        : { icon: Bot, runningLabel: t("ui3lib.taskChatActivity.verifyingModel"), completedLabel: t("ui3lib.taskChatActivity.verifiedModel"), failedLabel: t("ui3lib.taskChatActivity.modelVerificationFailed"), interruptedLabel: t("ui3lib.taskChatActivity.modelVerificationStopped"), detail };
     case "context":
-      return { icon: Database, runningLabel: "Compacting context", completedLabel: "Compacted context", failedLabel: "Context compaction failed", interruptedLabel: "Context compaction stopped", detail };
+      return { icon: Database, runningLabel: t("ui3lib.taskChatActivity.compactingContext"), completedLabel: t("ui3lib.taskChatActivity.compactedContext"), failedLabel: t("ui3lib.taskChatActivity.contextCompactionFailed"), interruptedLabel: t("ui3lib.taskChatActivity.contextCompactionStopped"), detail };
     case "artifact": {
       const viewed = item.eventType === "artifact.viewed";
       return viewed
-        ? { icon: Box, runningLabel: "Viewing an artifact", completedLabel: "Viewed an artifact", failedLabel: "Couldn’t view the artifact", interruptedLabel: "Artifact view stopped", detail }
-        : { icon: Box, runningLabel: "Generating an artifact", completedLabel: "Generated an artifact", failedLabel: "Artifact generation failed", interruptedLabel: "Artifact generation stopped", detail };
+        ? { icon: Box, runningLabel: t("ui3lib.taskChatActivity.viewingArtifact"), completedLabel: t("ui3lib.taskChatActivity.viewedArtifact"), failedLabel: t("ui3lib.taskChatActivity.viewArtifactFailed"), interruptedLabel: t("ui3lib.taskChatActivity.artifactViewStopped"), detail }
+        : { icon: Box, runningLabel: t("ui3lib.taskChatActivity.generatingArtifact"), completedLabel: t("ui3lib.taskChatActivity.generatedArtifact"), failedLabel: t("ui3lib.taskChatActivity.artifactGenerationFailed"), interruptedLabel: t("ui3lib.taskChatActivity.artifactGenerationStopped"), detail };
     }
     case "review": {
       const state = providerDetail(item, "State")?.toLowerCase();
       return state === "exited"
-        ? { icon: FileCheck2, runningLabel: "Leaving review mode", completedLabel: "Left review mode", failedLabel: "Couldn’t leave review mode", interruptedLabel: "Review-mode change stopped", detail }
-        : { icon: FileCheck2, runningLabel: "Entering review mode", completedLabel: "Entered review mode", failedLabel: "Couldn’t enter review mode", interruptedLabel: "Review-mode change stopped", detail };
+        ? { icon: FileCheck2, runningLabel: t("ui3lib.taskChatActivity.leavingReviewMode"), completedLabel: t("ui3lib.taskChatActivity.leftReviewMode"), failedLabel: t("ui3lib.taskChatActivity.leaveReviewModeFailed"), interruptedLabel: t("ui3lib.taskChatActivity.reviewModeChangeStopped"), detail }
+        : { icon: FileCheck2, runningLabel: t("ui3lib.taskChatActivity.enteringReviewMode"), completedLabel: t("ui3lib.taskChatActivity.enteredReviewMode"), failedLabel: t("ui3lib.taskChatActivity.enterReviewModeFailed"), interruptedLabel: t("ui3lib.taskChatActivity.reviewModeChangeStopped"), detail };
     }
     case "hook":
-      return { icon: GitBranch, runningLabel: "Running a hook", completedLabel: "Ran a hook", failedLabel: "Hook failed", interruptedLabel: "Hook stopped", detail };
+      return { icon: GitBranch, runningLabel: t("ui3lib.taskChatActivity.runningHook"), completedLabel: t("ui3lib.taskChatActivity.ranHook"), failedLabel: t("ui3lib.taskChatActivity.hookFailed"), interruptedLabel: t("ui3lib.taskChatActivity.hookStopped"), detail };
     case "memory":
-      return { icon: BookOpen, runningLabel: "Checking memory", completedLabel: "Referenced memory", failedLabel: "Memory lookup failed", interruptedLabel: "Memory lookup stopped", detail };
+      return { icon: BookOpen, runningLabel: t("ui3lib.taskChatActivity.checkingMemory"), completedLabel: t("ui3lib.taskChatActivity.referencedMemory"), failedLabel: t("ui3lib.taskChatActivity.memoryLookupFailed"), interruptedLabel: t("ui3lib.taskChatActivity.memoryLookupStopped"), detail };
     case "safety":
-      return { icon: ShieldCheck, runningLabel: "Reviewing safety", completedLabel: "Reviewed safety", failedLabel: "Safety review failed", interruptedLabel: "Safety review stopped", detail };
+      return { icon: ShieldCheck, runningLabel: t("ui3lib.taskChatActivity.reviewingSafety"), completedLabel: t("ui3lib.taskChatActivity.reviewedSafety"), failedLabel: t("ui3lib.taskChatActivity.safetyReviewFailed"), interruptedLabel: t("ui3lib.taskChatActivity.safetyReviewStopped"), detail };
     case "terminal":
-      return { icon: TerminalSquare, runningLabel: "Sending terminal input", completedLabel: "Sent terminal input", failedLabel: "Terminal input failed", interruptedLabel: "Terminal input stopped", detail };
+      return { icon: TerminalSquare, runningLabel: t("ui3lib.taskChatActivity.sendingTerminalInput"), completedLabel: t("ui3lib.taskChatActivity.sentTerminalInput"), failedLabel: t("ui3lib.taskChatActivity.terminalInputFailed"), interruptedLabel: t("ui3lib.taskChatActivity.terminalInputStopped"), detail };
     case "wait":
-      return { icon: Clock3, runningLabel: "Waiting", completedLabel: "Finished waiting", failedLabel: "Wait failed", interruptedLabel: "Wait stopped", detail };
+      return { icon: Clock3, runningLabel: t("ui3lib.taskChatActivity.waiting"), completedLabel: t("ui3lib.taskChatActivity.finishedWaiting"), failedLabel: t("ui3lib.taskChatActivity.waitFailed"), interruptedLabel: t("ui3lib.taskChatActivity.waitStopped"), detail };
     case "provider_notice":
-      return { icon: providerNoticeSeverity(item) === "info" ? Info : AlertTriangle, runningLabel: "Provider notice", completedLabel: "Provider notice", failedLabel: "Provider error", interruptedLabel: "Provider notice", detail };
+      return { icon: providerNoticeSeverity(item) === "info" ? Info : AlertTriangle, runningLabel: t("ui3lib.taskChatActivity.providerNotice"), completedLabel: t("ui3lib.taskChatActivity.providerNotice"), failedLabel: t("ui3lib.taskChatActivity.providerError"), interruptedLabel: t("ui3lib.taskChatActivity.providerNotice"), detail };
   }
 }
 
 function workspaceChangePresentation(item: TaskChatWorkspaceChangeItem): TaskChatActivityPresentation {
   const count = item.totals.files || item.files.length;
-  const detail = count > 0 ? `${count} ${count === 1 ? "file" : "files"}` : undefined;
-  return { icon: FilePenLine, runningLabel: "Editing files", completedLabel: "Edited files", detail };
+  const detail = count > 0 ? `t("ui3lib.taskChatActivity.fileCount", { count })` : undefined;
+  return { icon: FilePenLine, runningLabel: t("ui3lib.taskChatActivity.editingFiles"), completedLabel: t("ui3lib.taskChatActivity.editedFiles"), detail };
 }
 
 function workspaceFilePresentation(item: TaskChatWorkspaceFileItem): TaskChatActivityPresentation {
   return {
     icon: FileText,
-    runningLabel: "Referencing a file",
-    completedLabel: "Referenced a file",
+    runningLabel: t("ui3lib.taskChatActivity.referencingFile"),
+    completedLabel: t("ui3lib.taskChatActivity.referencedFile"),
     detail: item.line == null ? item.path : `${item.path}:${item.line}`,
   };
 }
@@ -164,8 +165,8 @@ function workspaceFilePresentation(item: TaskChatWorkspaceFileItem): TaskChatAct
 function resourcePresentation(item: TaskChatMaterializedResourceItem): TaskChatActivityPresentation {
   return {
     icon: item.resourceKind === "document" ? FileText : PackageCheck,
-    runningLabel: "Saving a resource",
-    completedLabel: item.resourceKind === "document" ? "Added a document" : "Added a deliverable",
+    runningLabel: t("ui3lib.taskChatActivity.savingResource"),
+    completedLabel: item.resourceKind === "document" ? t("ui3lib.taskChatActivity.addedDocument") : t("ui3lib.taskChatActivity.addedDeliverable"),
     detail: item.title,
   };
 }
@@ -193,7 +194,7 @@ export function protocolActivityLabel(item: TaskChatProtocolItem, presentation: 
   if (item.surface !== "provider_activity") {
     return protocolActivityIsRunning(item) ? presentation.runningLabel : presentation.completedLabel;
   }
-  if (item.status === "failed") return presentation.failedLabel ?? `${presentation.completedLabel} · failed`;
-  if (item.status === "interrupted") return presentation.interruptedLabel ?? `${presentation.completedLabel} · interrupted`;
+  if (item.status === "failed") return presentation.failedLabel ?? t("ui3lib.taskChatActivity.statusFailed", { label: presentation.completedLabel });
+  if (item.status === "interrupted") return presentation.interruptedLabel ?? t("ui3lib.taskChatActivity.statusInterrupted", { label: presentation.completedLabel });
   return item.status === "running" ? presentation.runningLabel : presentation.completedLabel;
 }

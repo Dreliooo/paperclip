@@ -1,4 +1,5 @@
 import { auditSectionHref, type AuditSection } from "./audit/audit-navigation";
+import { t } from "@/i18n";
 
 export type AgentDetailView =
   | "overview"
@@ -20,28 +21,28 @@ export const AGENT_DETAIL_NAVIGATION: ReadonlyArray<{
   items: ReadonlyArray<{ value: AgentLocalDetailView; label: string }>;
 }> = [
   {
-    label: "Agent",
+    get label() { return t("ui3lib.agentDetailNav.groupAgent"); },
     items: [
-      { value: "overview", label: "Overview" },
-      { value: "instructions", label: "Instructions" },
-      { value: "skills", label: "Skills" },
+      { value: "overview", get label() { return t("ui3lib.agentDetailNav.overview"); } },
+      { value: "instructions", get label() { return t("ui3lib.agentDetailNav.instructions"); } },
+      { value: "skills", get label() { return t("ui3lib.agentDetailNav.skills"); } },
     ],
   },
   {
-    label: "Runtime",
+    get label() { return t("ui3lib.agentDetailNav.groupRuntime"); },
     items: [
-      { value: "runtime", label: "Harness / Runtime" },
-      { value: "secrets", label: "Secrets" },
-      { value: "tools", label: "Tools" },
-      { value: "channels", label: "Channels" },
+      { value: "runtime", get label() { return t("ui3lib.agentDetailNav.runtime"); } },
+      { value: "secrets", get label() { return t("ui3lib.agentDetailNav.secrets"); } },
+      { value: "tools", get label() { return t("ui3lib.agentDetailNav.tools"); } },
+      { value: "channels", get label() { return t("ui3lib.agentDetailNav.channels"); } },
     ],
   },
   {
-    label: "Governance",
+    get label() { return t("ui3lib.agentDetailNav.groupGovernance"); },
     items: [
-      { value: "permissions", label: "Permissions / Trust" },
-      { value: "api-keys", label: "API Keys" },
-      { value: "revisions", label: "Revisions" },
+      { value: "permissions", get label() { return t("ui3lib.agentDetailNav.permissionsTrust"); } },
+      { value: "api-keys", get label() { return t("ui3lib.agentDetailNav.apiKeys"); } },
+      { value: "revisions", get label() { return t("ui3lib.agentDetailNav.revisions"); } },
     ],
   },
 ] as const;

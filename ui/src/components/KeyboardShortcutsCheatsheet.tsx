@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface ShortcutEntry {
@@ -15,48 +16,48 @@ interface ShortcutSection {
 
 const sections: ShortcutSection[] = [
   {
-    title: "Inbox",
+    title: "ui2g2.keyboardShortcuts.sectionInbox",
     shortcuts: [
-      { keys: ["j"], label: "Move down" },
-      { keys: ["↓"], label: "Move down" },
-      { keys: ["k"], label: "Move up" },
-      { keys: ["↑"], label: "Move up" },
-      { keys: ["←"], label: "Collapse selected group" },
-      { keys: ["→"], label: "Expand selected group" },
-      { keys: ["Enter"], label: "Open selected item" },
-      { keys: ["a"], label: "Archive item" },
-      { keys: ["y"], label: "Archive item" },
-      { keys: ["r"], label: "Mark as read" },
-      { keys: ["U"], label: "Mark as unread" },
+      { keys: ["j"], label: "ui2g2.keyboardShortcuts.moveDown" },
+      { keys: ["↓"], label: "ui2g2.keyboardShortcuts.moveDown" },
+      { keys: ["k"], label: "ui2g2.keyboardShortcuts.moveUp" },
+      { keys: ["↑"], label: "ui2g2.keyboardShortcuts.moveUp" },
+      { keys: ["←"], label: "ui2g2.keyboardShortcuts.collapseGroup" },
+      { keys: ["→"], label: "ui2g2.keyboardShortcuts.expandGroup" },
+      { keys: ["Enter"], label: "ui2g2.keyboardShortcuts.openItem" },
+      { keys: ["a"], label: "ui2g2.keyboardShortcuts.archiveItem" },
+      { keys: ["y"], label: "ui2g2.keyboardShortcuts.archiveItem" },
+      { keys: ["r"], label: "ui2g2.keyboardShortcuts.markRead" },
+      { keys: ["U"], label: "ui2g2.keyboardShortcuts.markUnread" },
     ],
   },
   {
-    title: "Task detail",
+    title: "ui2g2.keyboardShortcuts.sectionTask",
     shortcuts: [
-      { keys: ["y"], label: "Quick-archive back to inbox" },
-      { keys: ["g", "i"], label: "Go to inbox" },
-      { keys: ["g", "c"], label: "Focus comment composer" },
+      { keys: ["y"], label: "ui2g2.keyboardShortcuts.quickArchive" },
+      { keys: ["g", "i"], label: "ui2g2.keyboardShortcuts.goInbox" },
+      { keys: ["g", "c"], label: "ui2g2.keyboardShortcuts.focusComposer" },
     ],
   },
   {
-    title: "Decisions",
+    title: "ui2g2.keyboardShortcuts.sectionDecisions",
     shortcuts: [
-      { keys: ["j"], label: "Move down" },
-      { keys: ["↓"], label: "Move down" },
-      { keys: ["k"], label: "Move up" },
-      { keys: ["↑"], label: "Move up" },
-      { keys: ["Enter"], label: "Open or close selected decision" },
-      { keys: ["x"], label: "Dismiss selected decision" },
+      { keys: ["j"], label: "ui2g2.keyboardShortcuts.moveDown" },
+      { keys: ["↓"], label: "ui2g2.keyboardShortcuts.moveDown" },
+      { keys: ["k"], label: "ui2g2.keyboardShortcuts.moveUp" },
+      { keys: ["↑"], label: "ui2g2.keyboardShortcuts.moveUp" },
+      { keys: ["Enter"], label: "ui2g2.keyboardShortcuts.openCloseDecision" },
+      { keys: ["x"], label: "ui2g2.keyboardShortcuts.dismissDecision" },
     ],
   },
   {
-    title: "Global",
+    title: "ui2g2.keyboardShortcuts.sectionGlobal",
     shortcuts: [
-      { keys: ["/"], label: "Search current page or quick search" },
-      { keys: ["c"], label: "New task" },
-      { keys: ["["], label: "Toggle sidebar" },
-      { keys: ["]"], label: "Toggle panel" },
-      { keys: ["?"], label: "Show keyboard shortcuts" },
+      { keys: ["/"], label: "ui2g2.keyboardShortcuts.searchPage" },
+      { keys: ["c"], label: "ui2g2.keyboardShortcuts.newTask" },
+      { keys: ["["], label: "ui2g2.keyboardShortcuts.toggleSidebar" },
+      { keys: ["]"], label: "ui2g2.keyboardShortcuts.togglePanel" },
+      { keys: ["?"], label: "ui2g2.keyboardShortcuts.showShortcuts" },
     ],
   },
 ];
@@ -70,13 +71,14 @@ function KeyCap({ children }: { children: string }) {
 }
 
 export function KeyboardShortcutsCheatsheetContent() {
+  const { t } = useTranslation();
   return (
     <>
       <div className="divide-y divide-border border-t border-border">
         {sections.map((section) => (
           <div key={section.title} className="px-5 py-3">
             <h3 className="mb-2 text-(length:--text-micro) font-semibold uppercase tracking-wider text-muted-foreground">
-              {section.title}
+              {t(section.title)}
             </h3>
             <div className="space-y-1.5">
               {section.shortcuts.map((shortcut) => (
@@ -84,13 +86,13 @@ export function KeyboardShortcutsCheatsheetContent() {
                   key={shortcut.label + shortcut.keys.join()}
                   className="flex items-center justify-between gap-4"
                 >
-                  <span className="text-sm text-foreground/90">{shortcut.label}</span>
+                  <span className="text-sm text-foreground/90">{t(shortcut.label)}</span>
                   <div className="flex items-center gap-1">
                     {shortcut.keys.map((key, i) => (
                       <span key={key} className="flex items-center gap-1">
                         {i > 0 && (
                           <span className="text-xs text-muted-foreground">
-                            {shortcut.combo ? "+" : "then"}
+                            {shortcut.combo ? "+" : t("ui2g2.keyboardShortcuts.then")}
                           </span>
                         )}
                         <KeyCap>{key}</KeyCap>
@@ -105,7 +107,7 @@ export function KeyboardShortcutsCheatsheetContent() {
       </div>
       <div className="border-t border-border px-5 py-3">
         <p className="text-xs text-muted-foreground">
-          Press <KeyCap>Esc</KeyCap> to close &middot; Shortcuts are disabled in text fields
+          {t("ui2g2.keyboardShortcuts.pressPrefix")} <KeyCap>Esc</KeyCap> {t("ui2g2.keyboardShortcuts.closeHint")}
         </p>
       </div>
     </>
@@ -119,11 +121,12 @@ export function KeyboardShortcutsCheatsheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md gap-0 p-0 overflow-hidden" showCloseButton={false}>
         <DialogHeader className="px-5 pt-5 pb-3">
-          <DialogTitle className="text-base">Keyboard shortcuts</DialogTitle>
+          <DialogTitle className="text-base">{t("ui2g2.keyboardShortcuts.title")}</DialogTitle>
         </DialogHeader>
         <KeyboardShortcutsCheatsheetContent />
       </DialogContent>
