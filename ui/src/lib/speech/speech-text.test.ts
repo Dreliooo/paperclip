@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { markdownToSpeechText, splitIntoSpeechChunks } from "./speech-text";
+import { detectSpeechLanguage, markdownToSpeechText, normalizeForSpeech, splitIntoSpeechChunks } from "./speech-text";
 
 describe("markdownToSpeechText", () => {
   it("replaces fenced code blocks with the placeholder as their own line", () => {
@@ -112,5 +112,38 @@ describe("splitIntoSpeechChunks", () => {
       expect(chunk.length).toBeLessThan(101);
       expect(chunk.split(" ").every((part) => part === "word")).toBe(true);
     }
+  });
+});
+
+describe("normalizeForSpeech", () => {
+  it("reads tax ids and long numbers in pairs, and keeps amounts whole", () => {
+    expect(normalizeForSpeech("CUIT 20-22980803-7")).toBe("CUIT 20 22 98 08 03 7");
+    expect(normalizeForSpeech("CUIT 20229808037")).toBe("CUIT 20 22 98 08 03 7");
+    expect(normalizeForSpeech("Total $1500000")).toBe("Total $1500000");
+  });
+
+  it("turns ISO dates into day/month/year and leaves short dates alone", () => {
+    expect(normalizeForSpeech("Vence el 2026-10-20 y el 20/10")).toBe("Vence el 20/10/2026 y el 20/10");
+  });
+
+  it("drops machine ids and emoji, and silences mention signs and arrows", () => {
+    expect(normalizeForSpeech("Pasalo a @Maestra Dolores 🚀 (86fbfeeb-0eed-4d4e-b31b-a2c4d5e6f7a8) -> listo"))
+      .toBe("Pasalo a Maestra Dolores, listo");
+    expect(normalizeForSpeech("commit 98ebf98dd3e051ee788")).toBe("commit ");
+  });
+
+  it("keeps only the file name of a path, but not of y/o", () => {
+    expect(normalizeForSpeech("Revisá server/src/services/issues.ts y/o docs/plan.md")).toBe("Revisá issues y/o plan");
+  });
+});
+
+describe("detectSpeechLanguage", () => {
+  it("detects an English reply in a Spanish interface", () => {
+    expect(detectSpeechLanguage("The task is done and the report was sent to the client.", "es-AR")).toBe("en");
+  });
+
+  it("keeps the interface tag for Spanish text and for short or unclear text", () => {
+    expect(detectSpeechLanguage("La tarea quedó lista y el informe ya está en la carpeta del cliente.", "es-AR")).toBe("es-AR");
+    expect(detectSpeechLanguage("OK", "es-AR")).toBe("es-AR");
   });
 });

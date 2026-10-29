@@ -9,7 +9,8 @@ export interface MarkdownToSpeechOptions {
   codePlaceholder?: string;
 }
 
-const DEFAULT_CHUNK_LENGTH = 220;
+// Short enough that Chrome's online voices never hit their ~15 second cut-off.
+const DEFAULT_CHUNK_LENGTH = 200;
 const FENCE_OPEN = /^\s*(`{3,}|~{3,})/;
 const FENCE_CLOSE = /^\s*(`{3,}|~{3,})\s*$/;
 const TABLE_SEPARATOR = /^\|?[\s:|-]*-[\s:|-]*\|?$/;
@@ -75,10 +76,68 @@ function speakLine(input: string): string {
       .join(", ");
   }
 
-  return line
+  return normalizeForSpeech(line)
     .replace(/\s+([.,;:!?])/g, "$1")
     .replace(/[ \t]+/g, " ")
     .trim();
+}
+
+const UUID = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi;
+// Hashes and other machine ids: long runs of hex that contain both letters and digits.
+const HEX_ID = /\b(?=[0-9a-f]*\d)(?=[0-9a-f]*[a-f])[0-9a-f]{12,}\b/gi;
+const ISO_DATE = /\b(\d{4})-(\d{2})-(\d{2})\b/g;
+// File paths with a letter and either two slashes or a file extension; "20/10" and "y/o" are left alone.
+const PATH = /(^|\s)(?=\S*[A-Za-z])(?:(?:\.{0,2}\/)?(?:[\w.-]+\/){2,}([\w-]+)(?:\.\w+)?|(?:[\w.-]+\/)+([\w-]+)\.\w{1,5})(?=\s|$|[,;:!?)])/g;
+
+/** Group a long digit run so it is read as digits ("22 98 08 03"), not as one huge number. Amounts stay whole. */
+function groupDigits(run: string, offset: number, text: string): string {
+  if (/(\$|\b(?:usd|ars|eur|u\$s)\s?)\s*$/i.test(text.slice(Math.max(0, offset - 6), offset))) return run;
+  const groups: string[] = [];
+  for (let index = 0; index < run.length; index += 2) groups.push(run.slice(index, index + 2));
+  return groups.join(" ");
+}
+
+/**
+ * Rewrite things synthesizers read badly: machine ids and emoji are dropped,
+ * ISO dates become day/month/year, hyphens between digits (CUIT, phone numbers)
+ * stop being read as "minus", long digit runs are read in pairs, arrows become
+ * pauses, file paths keep their last name, and "@" before a name is silent.
+ */
+export function normalizeForSpeech(text: string): string {
+  return text
+    .replace(UUID, "")
+    .replace(HEX_ID, "")
+    .replace(PATH, (_match, lead: string, deep?: string, file?: string) => `${lead}${deep ?? file ?? ""}`)
+    .replace(ISO_DATE, "$3/$2/$1")
+    .replace(/(\d)-(?=\d)/g, "$1 ")
+    .replace(/\b\d{7,}\b/g, groupDigits)
+    .replace(/\s*(?:->|=>|→|⇒|➜)\s*/g, ", ")
+    .replace(/(^|[\s(])@(?=\p{L})/gu, "$1")
+    .replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}]/gu, "")
+    .replace(/\(\s*\)/g, "")
+    .replace(/[ \t]+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ");
+}
+
+const LANGUAGE_HINTS: Record<string, RegExp> = {
+  es: /\b(el|la|los|las|que|de|del|para|por|con|una|es|está|están|pero|como|más|también|tarea|hay|fue|son|ya|sin)\b/gi,
+  en: /\b(the|and|is|are|to|of|for|with|that|this|was|be|have|it|not|on|you|will|task|from)\b/gi,
+  pt: /\b(não|você|está|são|uma|para|com|também|isso|então|pelo|pela|ao|aos|foi)\b/gi,
+};
+
+/**
+ * Best guess of the language a reply is written in ("es", "en" or "pt"), so
+ * an English reply is not read with a Spanish voice. Falls back to `fallback`
+ * (the interface language) when the text is too short or ambiguous.
+ */
+export function detectSpeechLanguage(text: string, fallback: string): string {
+  const counts = Object.entries(LANGUAGE_HINTS).map(([lang, pattern]) => [lang, text.match(pattern)?.length ?? 0] as const);
+  counts.sort((a, b) => b[1] - a[1]);
+  const [best, second] = counts;
+  if (!best || best[1] < 3 || best[1] < (second?.[1] ?? 0) * 1.5) return fallback;
+  const fallbackPrimary = fallback.toLowerCase().split(/[-_]/)[0];
+  // Keep the interface's regional tag (es-AR) when the detected language matches it.
+  return best[0] === fallbackPrimary ? fallback : best[0];
 }
 
 /**

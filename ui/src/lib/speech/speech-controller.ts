@@ -1,10 +1,18 @@
-import { splitIntoSpeechChunks } from "./speech-text";
+import { detectSpeechLanguage, splitIntoSpeechChunks } from "./speech-text";
+import { preferredRegions, primaryLanguage, rankVoicesForLanguage, type RankedVoice } from "./voice-ranking";
 
 /**
  * Framework-agnostic controller for "Listen". It drives one speech synthesizer
  * with at most one utterance in flight: queued text is split into chunks and
  * each chunk is handed to the synthesizer only after the previous one ended.
- * Nothing leaves the device; voices come from the browser's built-in set.
+ * Voices come from the browser. By default only on-device voices are used;
+ * online voices (which send the text to the browser vendor) are used only after
+ * the person allows them.
+ *
+ * Pause is implemented as "stop and replay the current sentence": native
+ * pause/resume is unreliable (Chrome often never resumes, and some voices
+ * ignore it). A watchdog advances when a browser never reports the end of an
+ * utterance, which otherwise stalls the whole queue.
  */
 
 export type SpeechStatus = "idle" | "speaking" | "paused";
@@ -16,7 +24,12 @@ export interface SpeechState {
   /** Chunks waiting behind the one in flight. */
   queueLength: number;
   rate: number;
-  voiceURI: string | null;
+  /** Chosen voice per primary language ("es", "en"); missing means automatic. */
+  voiceByLang: Record<string, string>;
+  /** Online voices may be used (the text goes to the browser vendor). */
+  allowOnlineVoices: boolean;
+  /** Language of what is being read, e.g. "es-AR". */
+  currentLang: string | null;
 }
 
 export interface VoiceLike {
@@ -24,6 +37,7 @@ export interface VoiceLike {
   name: string;
   lang: string;
   localService: boolean;
+  default?: boolean;
 }
 
 export interface UtteranceLike {
@@ -53,8 +67,17 @@ export interface StorageLike {
 }
 
 export interface SpeakOptions {
-  /** BCP 47 language of the text, e.g. "es-AR". Used to pick a voice. */
+  /** Interface language, e.g. "es-AR". The text's own language wins when it is clear. */
   lang?: string;
+  /** Read with this voice regardless of the saved choice (voice preview). */
+  voiceURI?: string;
+}
+
+export interface SpeechControllerOptions {
+  /** Reader's languages, best first (navigator.languages). Used to prefer their region. */
+  browserLanguages?: readonly string[];
+  setTimer?: (callback: () => void, ms: number) => unknown;
+  clearTimer?: (handle: unknown) => void;
 }
 
 export type SpeechListener = () => void;
@@ -70,9 +93,15 @@ export interface SpeechController {
   stop(): void;
   /** Clamped to 0.5–2 and persisted. */
   setRate(rate: number): void;
-  /** Persisted. `null` selects the system default voice. */
-  setVoice(voiceURI: string | null): void;
+  /** Persisted per language. `null` returns to the automatic best voice. */
+  setVoice(lang: string, voiceURI: string | null): void;
+  /** Persisted. Off by default because online voices send the text to the browser vendor. */
+  setAllowOnlineVoices(allowed: boolean): void;
   getVoices(): VoiceLike[];
+  /** Usable voices for a language, best first, honoring the online setting. */
+  rankedVoices(lang: string): RankedVoice<VoiceLike>[];
+  /** The voice that would read `lang` now. */
+  voiceFor(lang: string): VoiceLike | null;
   subscribeVoices(listener: SpeechListener): () => void;
   subscribe(listener: SpeechListener): () => void;
   getState(): SpeechState;
@@ -93,15 +122,12 @@ interface QueuedChunk {
   id: string;
   text: string;
   lang: string | undefined;
+  voiceURI?: string;
 }
 
 function clampRate(rate: number): number {
   if (!Number.isFinite(rate)) return SPEECH_DEFAULT_RATE;
   return Math.min(SPEECH_MAX_RATE, Math.max(SPEECH_MIN_RATE, rate));
-}
-
-function primarySubtag(tag: string | undefined): string {
-  return (tag ?? "").trim().toLowerCase().split(/[-_]/)[0] ?? "";
 }
 
 function readJson(storage: StorageLike | undefined, key: string): unknown {
@@ -138,22 +164,38 @@ function loadAutoReadAt(storage: StorageLike | undefined): Record<string, number
   return result;
 }
 
+function loadVoiceByLang(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const result: Record<string, string> = {};
+  for (const [lang, uri] of Object.entries(value)) {
+    if (typeof uri === "string" && uri) result[lang] = uri;
+  }
+  return result;
+}
+
 export function createSpeechController(
   synth: SpeechSynthesisLike,
   createUtterance: (text: string) => UtteranceLike,
   storage?: StorageLike,
+  options: SpeechControllerOptions = {},
 ): SpeechController {
   const savedSettings = readJson(storage, SPEECH_SETTINGS_STORAGE_KEY) as
-    | { rate?: unknown; voiceURI?: unknown }
+    | { rate?: unknown; voiceURI?: unknown; voiceByLang?: unknown; allowOnlineVoices?: unknown }
     | null;
   let rate =
     savedSettings && typeof savedSettings.rate === "number"
       ? clampRate(savedSettings.rate)
       : SPEECH_DEFAULT_RATE;
-  let voiceURI =
+  const voiceByLang = loadVoiceByLang(savedSettings?.voiceByLang);
+  // A voice chosen before choices were kept per language still applies to its own language.
+  const legacyVoiceURI =
     savedSettings && typeof savedSettings.voiceURI === "string" && savedSettings.voiceURI
       ? savedSettings.voiceURI
       : null;
+  let allowOnlineVoices = savedSettings?.allowOnlineVoices === true;
+  const browserLanguages = options.browserLanguages ?? [];
+  const setTimer = options.setTimer ?? ((callback: () => void, ms: number) => setTimeout(callback, ms));
+  const clearTimer = options.clearTimer ?? ((handle: unknown) => clearTimeout(handle as ReturnType<typeof setTimeout>));
 
   const autoReadKeys = loadAutoReadKeys(storage);
   const autoReadAt = loadAutoReadAt(storage);
@@ -161,13 +203,23 @@ export function createSpeechController(
   let queue: QueuedChunk[] = [];
   let status: SpeechStatus = "idle";
   let currentId: string | null = null;
+  let current: QueuedChunk | null = null;
+  let watchdog: unknown = null;
   // Bumped whenever playback is reset so callbacks from cancelled utterances are ignored.
   let generation = 0;
   let inFlight = false;
   const listeners = new Set<SpeechListener>();
 
   function buildSnapshot(): SpeechState {
-    return { status, currentId, queueLength: queue.length, rate, voiceURI };
+    return {
+      status,
+      currentId,
+      queueLength: queue.length,
+      rate,
+      voiceByLang: { ...voiceByLang },
+      allowOnlineVoices,
+      currentLang: current?.lang ?? null,
+    };
   }
 
   // Cached so useSyncExternalStore sees a new identity only when state changes.
@@ -186,29 +238,38 @@ export function createSpeechController(
     }
   }
 
-  function pickVoice(lang: string | undefined): VoiceLike | null {
+  function rankedVoices(lang: string): RankedVoice<VoiceLike>[] {
+    return rankVoicesForLanguage(getVoices(), lang, { allowOnline: allowOnlineVoices, browserLanguages });
+  }
+
+  function pickVoice(lang: string | undefined, explicitURI?: string): VoiceLike | null {
     const voices = getVoices();
-    if (voiceURI) {
-      const chosen = voices.find((voice) => voice.voiceURI === voiceURI);
+    if (explicitURI) {
+      const chosen = voices.find((voice) => voice.voiceURI === explicitURI);
       if (chosen) return chosen;
     }
-    const primary = primarySubtag(lang);
+    const primary = primaryLanguage(lang);
     if (!primary) return null;
-    // Automatic choice never picks an online voice: those (e.g. Chrome's
-    // "Google …" voices) send the text to the browser vendor. Online voices are
-    // used only when the person selects one explicitly.
-    const matches = voices.filter((voice) => primarySubtag(voice.lang) === primary && voice.localService);
-    return matches[0] ?? null;
+    const sameLanguage = (uri: string | null | undefined) =>
+      uri ? voices.find((voice) => voice.voiceURI === uri && primaryLanguage(voice.lang) === primary) ?? null : null;
+    // A voice the person chose is honored even when it is online: choosing it is the consent.
+    return sameLanguage(voiceByLang[primary]) ?? sameLanguage(legacyVoiceURI) ?? rankedVoices(primary)[0]?.voice ?? null;
+  }
+
+  function clearWatchdog(): void {
+    if (watchdog !== null) clearTimer(watchdog);
+    watchdog = null;
   }
 
   /** Cancels whatever is playing and empties the queue. */
   function resetPlayback(): void {
     generation += 1;
+    clearWatchdog();
     queue = [];
     inFlight = false;
-    if (status === "paused") synth.resume();
     status = "idle";
     currentId = null;
+    current = null;
     synth.cancel();
   }
 
@@ -228,28 +289,37 @@ export function createSpeechController(
     inFlight = true;
     status = "speaking";
     currentId = next.id;
+    current = next;
     const gen = generation;
     const utterance = createUtterance(next.text);
+    const voice = pickVoice(next.lang, next.voiceURI);
     utterance.rate = rate;
-    utterance.lang = next.lang ?? "";
-    utterance.voice = pickVoice(next.lang);
+    utterance.voice = voice;
+    utterance.lang = voice?.lang ?? (next.lang ? preferredRegions(next.lang, browserLanguages)[0] ?? next.lang : "");
+    let done = false;
     const finish = () => {
-      if (gen !== generation) return;
+      if (done || gen !== generation) return;
+      done = true;
+      clearWatchdog();
       inFlight = false;
+      current = null;
       startNext();
     };
     utterance.onend = finish;
     utterance.onerror = finish;
     synth.speak(utterance);
+    // Generous upper bound for this sentence; only a browser that never reports the end hits it.
+    watchdog = setTimer(finish, 8000 + (next.text.length * 120) / rate);
     emit();
   }
 
   function chunksFor(id: string, text: string, opts?: SpeakOptions): QueuedChunk[] {
-    return splitIntoSpeechChunks(text).map((chunk) => ({ id, text: chunk, lang: opts?.lang }));
+    const lang = opts?.lang ? detectSpeechLanguage(text, opts.lang) : undefined;
+    return splitIntoSpeechChunks(text).map((chunk) => ({ id, text: chunk, lang, voiceURI: opts?.voiceURI }));
   }
 
   function persistSettings(): void {
-    writeJson(storage, SPEECH_SETTINGS_STORAGE_KEY, { rate, voiceURI });
+    writeJson(storage, SPEECH_SETTINGS_STORAGE_KEY, { rate, voiceByLang, allowOnlineVoices, voiceURI: legacyVoiceURI });
   }
 
   function persistAutoRead(): void {
@@ -274,16 +344,21 @@ export function createSpeechController(
 
     pause() {
       if (status !== "speaking") return;
-      synth.pause();
+      // Stop now and replay the interrupted sentence on resume.
+      generation += 1;
+      clearWatchdog();
+      if (current) queue.unshift(current);
+      current = null;
+      inFlight = false;
       status = "paused";
+      synth.cancel();
       emit();
     },
 
     resume() {
       if (status !== "paused") return;
-      synth.resume();
-      status = "speaking";
-      emit();
+      status = "idle";
+      startNext();
     },
 
     stop() {
@@ -297,13 +372,32 @@ export function createSpeechController(
       emit();
     },
 
-    setVoice(next) {
-      voiceURI = next || null;
+    setVoice(lang, next) {
+      const primary = primaryLanguage(lang);
+      if (!primary) return;
+      if (next) voiceByLang[primary] = next;
+      else delete voiceByLang[primary];
+      persistSettings();
+      emit();
+    },
+
+    setAllowOnlineVoices(allowed) {
+      allowOnlineVoices = allowed;
+      // Turning online voices off also drops any online voice chosen earlier.
+      if (!allowed) {
+        const online = new Set(getVoices().filter((voice) => !voice.localService).map((voice) => voice.voiceURI));
+        for (const [lang, uri] of Object.entries(voiceByLang)) if (online.has(uri)) delete voiceByLang[lang];
+      }
       persistSettings();
       emit();
     },
 
     getVoices,
+    rankedVoices,
+
+    voiceFor(lang) {
+      return pickVoice(lang);
+    },
 
     subscribeVoices(listener) {
       if (!synth.addEventListener || !synth.removeEventListener) return () => {};
@@ -369,7 +463,10 @@ function createDefaultController(): SpeechController | null {
     storage = undefined;
   }
 
-  return createSpeechController(synth, createUtterance, storage);
+  const browserLanguages = typeof navigator !== "undefined"
+    ? [...(navigator.languages ?? []), navigator.language].filter((tag): tag is string => Boolean(tag))
+    : [];
+  return createSpeechController(synth, createUtterance, storage, { browserLanguages });
 }
 
 /**

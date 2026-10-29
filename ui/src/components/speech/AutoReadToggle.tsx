@@ -7,6 +7,7 @@ import {
 } from "@/lib/speech/speech-controller";
 import { cn } from "@/lib/utils";
 import { markdownToSpeechText } from "@/lib/speech/speech-text";
+import { SpeechSettingsButton } from "./SpeechSettingsPanel";
 
 /** Message ids already handed to the speech queue. Module-level so remounts never repeat a reply. */
 const enqueuedMessageIds = new Set<string>();
@@ -41,19 +42,22 @@ export function AutoReadToggle({
   if (!controller) return null;
 
   return (
-    <button
-      type="button"
-      aria-pressed={enabled}
-      title={t(scope === "agent" ? "speech.autoReadAgentHint" : "speech.autoReadHint")}
-      onClick={() => controller.setAutoRead(autoReadKey, !enabled)}
-      className={cn(
-        "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs transition-colors hover:bg-accent hover:text-foreground",
-        enabled ? "bg-accent text-foreground" : "text-muted-foreground",
-      )}
-    >
-      <AudioLines className="h-3.5 w-3.5" />
-      <span>{enabled ? t("speech.autoReadOn") : t(scope === "agent" ? "speech.autoReadAgent" : "speech.autoRead")}</span>
-    </button>
+    <span className="inline-flex items-center gap-0.5">
+      <button
+        type="button"
+        aria-pressed={enabled}
+        title={t(scope === "agent" ? "speech.autoReadAgentHint" : "speech.autoReadHint")}
+        onClick={() => controller.setAutoRead(autoReadKey, !enabled)}
+        className={cn(
+          "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs transition-colors hover:bg-accent hover:text-foreground",
+          enabled ? "bg-accent text-foreground" : "text-muted-foreground",
+        )}
+      >
+        <AudioLines className="h-3.5 w-3.5" />
+        <span>{enabled ? t("speech.autoReadOn") : t(scope === "agent" ? "speech.autoReadAgent" : "speech.autoRead")}</span>
+      </button>
+      <SpeechSettingsButton />
+    </span>
   );
 }
 

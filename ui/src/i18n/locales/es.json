@@ -353,7 +353,22 @@
     "autoReadHint": "Las respuestas nuevas del agente en esta conversación se leerán en voz alta, de a una.",
     "onlineVoice": "en línea: el texto se envía al proveedor del navegador",
     "autoReadAgent": "Leer a este agente en voz alta",
-    "autoReadAgentHint": "Las respuestas nuevas de este agente se leerán en voz alta en cualquier conversación que tengas abierta, de a una."
+    "autoReadAgentHint": "Las respuestas nuevas de este agente se leerán en voz alta en cualquier conversación que tengas abierta, de a una.",
+    "language": "Idioma de la voz",
+    "automaticVoice": "Automática (la mejor: {{name}})",
+    "naturalVoice": "natural",
+    "onlineVoiceShort": "en línea",
+    "preview": "Probar",
+    "previewText": {
+      "es": "Hola. Así suena esta voz cuando lee las respuestas de tus agentes.",
+      "en": "Hello. This is how this voice sounds when it reads your agents' replies.",
+      "pt": "Olá. É assim que esta voz soa ao ler as respostas dos seus agentes."
+    },
+    "noVoices": "Este dispositivo no tiene una voz para este idioma. Instalá una desde la configuración del sistema o activá las voces en línea.",
+    "betterVoicesHint": "Solo hay voces básicas instaladas. Para que suene más natural: en Windows, abrí Configuración → Hora e idioma → Voz y agregá una voz; en Mac, Configuración del Sistema → Accesibilidad → Contenido leído → Voz del sistema → Gestionar voces y descargá una «Mejorada» o «Premium». O activá las voces en línea acá abajo.",
+    "onlineVoices": "Voces naturales en línea",
+    "onlineVoicesOff": "Desactivado: solo se usan las voces instaladas en este dispositivo y el texto nunca sale de él.",
+    "onlineVoicesOn": "Activado: se pueden usar las voces marcadas «en línea». Suenan mucho mejor, pero el texto que se lee se envía al fabricante del navegador (Microsoft en Edge, Google en Chrome). A Paperclip no se envía nada."
   },
   "taskChat": {
     "run": {

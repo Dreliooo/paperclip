@@ -353,7 +353,22 @@
     "autoReadHint": "New agent replies in this conversation will be read aloud, one at a time.",
     "onlineVoice": "online: text is sent to the browser vendor",
     "autoReadAgent": "Read this agent aloud",
-    "autoReadAgentHint": "New replies from this agent will be read aloud in any conversation you have open, one at a time."
+    "autoReadAgentHint": "New replies from this agent will be read aloud in any conversation you have open, one at a time.",
+    "language": "Language of the voice",
+    "automaticVoice": "Automatic (best: {{name}})",
+    "naturalVoice": "natural",
+    "onlineVoiceShort": "online",
+    "preview": "Try",
+    "previewText": {
+      "es": "Hola. Así suena esta voz cuando lee las respuestas de tus agentes.",
+      "en": "Hello. This is how this voice sounds when it reads your agents' replies.",
+      "pt": "Olá. É assim que esta voz soa ao ler as respostas dos seus agentes."
+    },
+    "noVoices": "This device has no voice for this language. Install one in your system settings, or turn on online voices.",
+    "betterVoicesHint": "Only basic voices are installed. For a more natural sound: on Windows, open Settings → Time & language → Speech and add a voice; on Mac, System Settings → Accessibility → Spoken Content → System voice → Manage voices and download an \"Enhanced\" or \"Premium\" one. Or turn on online voices below.",
+    "onlineVoices": "Online natural voices",
+    "onlineVoicesOff": "Off: only voices installed on this device are used, and the text never leaves it.",
+    "onlineVoicesOn": "On: voices marked \"online\" can be used. They sound much better, but the text being read is sent to your browser's maker (Microsoft in Edge, Google in Chrome). Nothing is sent to Paperclip."
   },
   "taskChat": {
     "run": {

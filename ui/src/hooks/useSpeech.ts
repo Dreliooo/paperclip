@@ -11,7 +11,9 @@ const IDLE_STATE: SpeechState = {
   currentId: null,
   queueLength: 0,
   rate: SPEECH_DEFAULT_RATE,
-  voiceURI: null,
+  voiceByLang: {},
+  allowOnlineVoices: false,
+  currentLang: null,
 };
 
 const noopUnsubscribe = () => {};

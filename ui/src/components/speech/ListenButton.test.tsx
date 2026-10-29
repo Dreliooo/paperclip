@@ -107,7 +107,22 @@ describe("ListenButton", () => {
     clickFirstButton(host);
 
     expect(synth.speak.mock.calls).toHaveLength(1);
-    expect(synth.pause.mock.calls).toHaveLength(1);
+    // Pause stops the voice and remembers the sentence; it does not rely on the browser's pause.
+    expect(synth.cancel.mock.calls.length).toBeGreaterThan(0);
+    expect(synth.pause.mock.calls).toHaveLength(0);
+
+    clickFirstButton(host);
+    expect(synth.speak.mock.calls).toHaveLength(2);
+    expect((synth.speak.mock.calls[1][0] as { text: string }).text).toBe("Hello there.");
+  });
+
+  it("offers reading settings while it is reading", () => {
+    installSpeechSynthesis();
+    resetSpeechControllerForTests();
+
+    const host = render(<ListenButton id="msg-4" text="Hello there." />);
+    clickFirstButton(host);
+    expect(host.querySelector('button[aria-label="Reading settings"]')).not.toBeNull();
   });
 
   it("renders nothing when speech synthesis is unavailable", () => {
